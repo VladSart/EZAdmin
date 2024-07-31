@@ -24,6 +24,7 @@ $apps = @(
     "7zip.install",
     "7zip",
     "citrix-workspace",
+    "forticlientvpn",
     "microsoft-teams-new-bootstrapper"
 )
 
