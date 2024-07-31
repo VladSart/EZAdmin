@@ -9,6 +9,8 @@
 ## How to add more packages
 On the apps list create a new ("xxxx",) without the "()" and replace the xxxx with a name of the package in https://community.chocolatey.org/packages?q=
 
+## Script
+
 ```
 
 # Set execution policy and install Chocolatey
