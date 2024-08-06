@@ -39,7 +39,7 @@ $apps = @(
 # Simulate progress bar for installations
 $totalApps = $apps.Count
 $progress = 0
-
+ 
 Write-Host "Installing applications..."
 
 foreach ($app in $apps) {
