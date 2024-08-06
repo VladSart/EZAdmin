@@ -1,4 +1,4 @@
-name: Update README with setup.ps1 Content
+name: Update README
 
 on:
   push:
@@ -10,20 +10,19 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Update README.md
+      - uses: actions/checkout@v2
+      - name: Update README
         run: |
-          echo '## Setup Script' > README.md
-          echo '```powershell' >> README.md
+          echo -e "\n## Script\n\n\`\`\`powershell" >> README.md
           cat setup.ps1 >> README.md
-          echo '```' >> README.md
-
-      - name: Commit and push changes
+          echo -e "\n\`\`\`" >> README.md
+      - name: Commit changes
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git add README.md
-          git commit -m 'Update README with setup.ps1 content'
-          git push
+          git commit -m "Update README with latest script content" || exit 0
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
