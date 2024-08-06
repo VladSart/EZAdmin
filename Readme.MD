@@ -12,7 +12,6 @@ On the apps list create a new ("xxxx",) without the "()" and replace the xxxx wi
 ## Script
 
 ```
-
-read setup.ps1
+[View the code](https://github.com/VladSart/EZAdmin/blob/main/setup.ps1)
 
 ```
