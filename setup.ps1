@@ -13,7 +13,6 @@ function Install-ApplicationSilently($appName) {
 
 # Define the applications to install
 $apps = @(
-    "office365business",
     "adobereader",
     "googlechrome",
     "firefox",
@@ -27,7 +26,13 @@ $apps = @(
     "microsoft-teams-new-bootstrapper"
 )
 
-# Start installations concurrently using background jobs
+# Start Office365Business installation separately
+Write-Host "Starting Office365Business installation..."
+Start-Job -ScriptBlock {
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco upgrade office365business -y" -NoNewWindow -Wait -RedirectStandardOutput "$using:logFilePath"
+} | Out-Null
+
+# Start installations concurrently using background jobs for the rest of the apps
 foreach ($app in $apps) {
     Install-ApplicationSilently -appName $app
 }
