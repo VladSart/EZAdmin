@@ -1,5 +1,13 @@
-# Define the URL of the main script on GitHub
-$scriptUrl = 'https://github.com/username/repository/raw/main/setup.ps1'
+# Define the path to the default documents folder
+$documentsPath = [Environment]::GetFolderPath("MyDocuments")
+$logFilePath = Join-Path -Path $documentsPath -ChildPath "InstallationLog.txt"
+
+# Function to install applications silently and log output
+function Install-ApplicationSilently($appName) {
+    Write-Host "Installing $appName..."
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco install $appName -y --force --params /ALLUSERS" -NoNewWindow -Wait -RedirectStandardOutput "$logFilePath" -PassThru | Out-Null
+    Write-Progress -Activity "Installing applications..." -Status "Installing $appName" -PercentComplete ([math]::Round((100 / $apps.Count)))
+}
 
 # Check if winget is installed, if not, install it silently
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
@@ -8,22 +16,22 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     $wingetInstallerPath = [System.IO.Path]::GetTempFileName() + '.appxbundle'
     Invoke-WebRequest -Uri $wingetInstallUrl -OutFile $wingetInstallerPath
     Write-Host "Downloading winget installer..."
-    Start-Process -FilePath $wingetInstallerPath -ArgumentList '/quiet' -NoNewWindow -Wait
+    Start-Process -FilePath $wingetInstallerPath -ArgumentList '/quiet' -NoNewWindow -Wait | Out-Null
     Write-Host "winget installed successfully."
     Remove-Item $wingetInstallerPath
 }
 
-# Set execution policy and install Chocolatey
+# Set execution policy and install Chocolatey silently
 Write-Host "Setting execution policy and installing Chocolatey..."
 Set-ExecutionPolicy Bypass -Scope Process -Force
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) | Out-File -FilePath "$logFilePath" -Append
 Write-Host "Chocolatey installed successfully."
 
 # Enable Chocolatey features for smoother installations
 Write-Host "Enabling Chocolatey features..."
 choco feature enable -n=useRememberedArgumentsForUpgrades
-choco feature enable -n=allowGlobalConfirmation
+choco feature enable -n=allowGlobalConfirmation | Out-File -FilePath "$logFilePath" -Append
 Write-Host "Chocolatey features enabled."
 
 # Define the applications to install
@@ -42,27 +50,18 @@ $apps = @(
     "microsoft-teams-new-bootstrapper"
 )
 
-# Simulate progress bar for installations
-$totalApps = $apps.Count
-$progress = 0
-
-Write-Host "Installing applications..."
-
+# Install applications silently and log output
 foreach ($app in $apps) {
-    Write-Host "Installing $app..."
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco install $app -y --force --params /ALLUSERS" -NoNewWindow -PassThru
-    $progress += [math]::Round((100 / $totalApps))
-    Write-Progress -PercentComplete $progress -Status "Installing applications..." -CurrentOperation "Installing $app"
-    Write-Host "$app installation started in a new window."
+    Install-ApplicationSilently -appName $app
 }
 
-# Install and configure PSWindowsUpdate
+# Install and configure PSWindowsUpdate silently
 Write-Host "Installing and configuring PSWindowsUpdate..."
-Start-Process -FilePath "powershell.exe" -ArgumentList "-Command Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Install-Module -Name PSWindowsUpdate -Force -AllowClobber; Import-Module PSWindowsUpdate; Get-WindowsUpdate -Install -AcceptAll -IgnoreReboot" -NoNewWindow -PassThru
+Start-Process -FilePath "powershell.exe" -ArgumentList "-Command Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Install-Module -Name PSWindowsUpdate -Force -AllowClobber; Import-Module PSWindowsUpdate; Get-WindowsUpdate -Install -AcceptAll -IgnoreReboot" -NoNewWindow -Wait | Out-Null
 Write-Host "PSWindowsUpdate installed and configured."
 
-# Optional: Add a work or school account
+# Optional: Add a work or school account silently
 Write-Host "Opening work or school account settings..."
-Start-Process -FilePath "powershell.exe" -ArgumentList "-Command Start-Process -FilePath 'ms-settings:workplace' -Wait" -NoNewWindow -PassThru
+Start-Process -FilePath "powershell.exe" -ArgumentList "-Command Start-Process -FilePath 'ms-settings:workplace' -Wait" -NoNewWindow -PassThru | Out-Null
 
 Write-Host "Setup complete."
