@@ -4,35 +4,12 @@ $logFilePath = Join-Path -Path $documentsPath -ChildPath "InstallationLog.txt"
 
 # Function to install applications silently and log output
 function Install-ApplicationSilently($appName) {
-    Write-Host "Installing $appName..."
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco install $appName -y --force --params /ALLUSERS" -NoNewWindow -Wait -RedirectStandardOutput "$logFilePath" -PassThru | Out-Null
-    Write-Progress -Activity "Installing applications..." -Status "Installing $appName" -PercentComplete ([math]::Round((100 / $apps.Count)))
+    Write-Host "Starting installation of $appName..."
+    Start-Job -ScriptBlock {
+        param($app)
+        Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco install $app -y --force --params /ALLUSERS" -NoNewWindow -Wait -RedirectStandardOutput "$using:logFilePath"
+    } -ArgumentList $appName | Out-Null
 }
-
-# Check if winget is installed, if not, install it silently
-if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    Write-Host "winget not found. Installing winget..."
-    $wingetInstallUrl = 'https://aka.ms/getwinget'
-    $wingetInstallerPath = [System.IO.Path]::GetTempFileName() + '.appxbundle'
-    Invoke-WebRequest -Uri $wingetInstallUrl -OutFile $wingetInstallerPath
-    Write-Host "Downloading winget installer..."
-    Start-Process -FilePath $wingetInstallerPath -ArgumentList '/quiet' -NoNewWindow -Wait | Out-Null
-    Write-Host "winget installed successfully."
-    Remove-Item $wingetInstallerPath
-}
-
-# Set execution policy and install Chocolatey silently
-Write-Host "Setting execution policy and installing Chocolatey..."
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) | Out-File -FilePath "$logFilePath" -Append
-Write-Host "Chocolatey installed successfully."
-
-# Enable Chocolatey features for smoother installations
-Write-Host "Enabling Chocolatey features..."
-choco feature enable -n=useRememberedArgumentsForUpgrades
-choco feature enable -n=allowGlobalConfirmation | Out-File -FilePath "$logFilePath" -Append
-Write-Host "Chocolatey features enabled."
 
 # Define the applications to install
 $apps = @(
@@ -50,18 +27,32 @@ $apps = @(
     "microsoft-teams-new-bootstrapper"
 )
 
-# Install applications silently and log output
+# Start installations concurrently using background jobs
 foreach ($app in $apps) {
     Install-ApplicationSilently -appName $app
 }
 
-# Install and configure PSWindowsUpdate silently
-Write-Host "Installing and configuring PSWindowsUpdate..."
-Start-Process -FilePath "powershell.exe" -ArgumentList "-Command Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted; Install-Module -Name PSWindowsUpdate -Force -AllowClobber; Import-Module PSWindowsUpdate; Get-WindowsUpdate -Install -AcceptAll -IgnoreReboot" -NoNewWindow -Wait | Out-Null
-Write-Host "PSWindowsUpdate installed and configured."
+# Function to display progress based on completed jobs
+function Show-Progress {
+    param($totalJobs)
+    $completedJobs = Get-Job | Where-Object { $_.State -eq 'Completed' } | Measure-Object | %{$_.Count}
+    $progress = ($completedJobs / $totalJobs) * 100
+    Write-Host "Overall Progress: $([math]::Round($progress))% completed."
+}
 
-# Optional: Add a work or school account silently
-Write-Host "Opening work or school account settings..."
-Start-Process -FilePath "powershell.exe" -ArgumentList "-Command Start-Process -FilePath 'ms-settings:workplace' -Wait" -NoNewWindow -PassThru | Out-Null
+# Periodically check and display progress
+while ((Get-Job | Where-Object { $_.State -eq 'Running' }).Count -gt 0) {
+    Show-Progress -totalJobs $apps.Count
+    Start-Sleep -Seconds 30 # Adjust sleep duration based on preference
+}
 
-Write-Host "Setup complete."
+# Wait for all jobs to complete
+Get-Job | Wait-Job
+
+# Receive job results (if needed)
+# Get-Job | Receive-Job
+
+Write-Host "All installations started. Please check the log file for details."
+
+# Cleanup
+Get-Job | Remove-Job
