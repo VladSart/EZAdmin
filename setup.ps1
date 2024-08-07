@@ -11,19 +11,12 @@ function Install-ApplicationSilently($appName) {
     } -ArgumentList $appName -Name $appName | Out-Null
 }
 
-# Function to install Winget silently
-function Install-WingetSilently {
-    Write-Host "Starting Winget installation..."
-    $wingetInstallerUrl = "https://aka.ms/winget-install"
-    Invoke-WebRequest -Uri $wingetInstallerUrl -OutFile winget-installer.exe
-    Start-Process -FilePath "./winget-installer.exe" -ArgumentList "/silent /accept-package-agreements /accept-msixjs-license" -Wait
-    Remove-Item winget-installer.exe
-}
-
 # Function to install PSWindowsUpdate module silently
 function Install-PSWindowsUpdateModuleSilently {
     Write-Host "Installing PSWindowsUpdate module..."
+    # Ensure NuGet is installed and up-to-date
     Install-PackageProvider -Name NuGet -Force -Confirm:$false
+    # Install the PSWindowsUpdate module
     Install-Module -Name PSWindowsUpdate -Force -Confirm:$false
 }
 
@@ -49,9 +42,6 @@ $apps = @(
     "forticlientvpn",
     "microsoft-teams-new-bootstrapper"
 )
-
-# Install Winget silently
-Install-WingetSilently
 
 # Install PSWindowsUpdate module silently
 Install-PSWindowsUpdateModuleSilently
