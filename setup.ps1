@@ -8,11 +8,35 @@ function Install-ApplicationSilently($appName) {
     Start-Job -ScriptBlock {
         param($app)
         Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco install $app -y --force --params /ALLUSERS" -NoNewWindow -Wait -RedirectStandardOutput "$using:logFilePath"
-    } -ArgumentList $appName | Out-Null
+    } -ArgumentList $appName -Name $appName | Out-Null
+}
+
+# Function to install Winget silently
+function Install-WingetSilently {
+    Write-Host "Starting Winget installation..."
+    $wingetInstallerUrl = "https://aka.ms/winget-install"
+    Invoke-WebRequest -Uri $wingetInstallerUrl -OutFile winget-installer.exe
+    Start-Process -FilePath "./winget-installer.exe" -ArgumentList "/silent /accept-package-agreements /accept-msixjs-license" -Wait
+    Remove-Item winget-installer.exe
+}
+
+# Function to install PSWindowsUpdate module silently
+function Install-PSWindowsUpdateModuleSilently {
+    Write-Host "Installing PSWindowsUpdate module..."
+    Install-PackageProvider -Name NuGet -Force -Confirm:$false
+    Install-Module -Name PSWindowsUpdate -Force -Confirm:$false
+}
+
+# Function to fetch and install Windows updates silently
+function Install-WindowsUpdatesSilently {
+    Write-Host "Fetching and installing Windows updates..."
+    Import-Module PSWindowsUpdate
+    Get-WindowsUpdate -AcceptAll -Install -AutoReboot
 }
 
 # Define the applications to install
 $apps = @(
+    "office365business",
     "adobereader",
     "googlechrome",
     "firefox",
@@ -26,13 +50,13 @@ $apps = @(
     "microsoft-teams-new-bootstrapper"
 )
 
-# Start Office365Business installation separately
-Write-Host "Starting Office365Business installation..."
-Start-Job -ScriptBlock {
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-Command choco upgrade office365business -y" -NoNewWindow -Wait -RedirectStandardOutput "$using:logFilePath"
-} | Out-Null
+# Install Winget silently
+Install-WingetSilently
 
-# Start installations concurrently using background jobs for the rest of the apps
+# Install PSWindowsUpdate module silently
+Install-PSWindowsUpdateModuleSilently
+
+# Start installations concurrently using background jobs
 foreach ($app in $apps) {
     Install-ApplicationSilently -appName $app
 }
@@ -53,6 +77,9 @@ while ((Get-Job | Where-Object { $_.State -eq 'Running' }).Count -gt 0) {
 
 # Wait for all jobs to complete
 Get-Job | Wait-Job
+
+# Fetch and install Windows updates silently
+Install-WindowsUpdatesSilently
 
 # Receive job results (if needed)
 # Get-Job | Receive-Job
