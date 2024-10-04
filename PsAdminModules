@@ -1,73 +1,40 @@
-# Check current PowerShell version and prompt for installation if needed
-$currentVersion = $PSVersionTable.PSVersion.Major
-
-if ($currentVersion -lt 7) {
-    Write-Host "Current PowerShell version is $currentVersion. Updating to PowerShell 7.x..."
-
-    # Function to install PowerShell 7.x from GitHub
-    function Install-PowerShell {
-        # Define the URL for the latest PowerShell release
-        $url = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.4.3-win-x64.msi" # Update this URL to the latest version if necessary
-
-        # Define the path for the downloaded installer
-        $installerPath = "$env:TEMP\PowerShellInstaller.msi"
-
-        # Download the installer
-        try {
-            Write-Host "Downloading PowerShell installer..."
-            Invoke-WebRequest -Uri $url -OutFile $installerPath -ErrorAction Stop
-
-            # Install PowerShell silently
-            Write-Host "Installing PowerShell..."
-            Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait
-
-            Write-Host "PowerShell installation completed successfully."
-        } catch {
-            Write-Host "Failed to download or install PowerShell: $_"
-        } finally {
-            # Clean up installer file
-            Remove-Item $installerPath -ErrorAction SilentlyContinue
-        }
-    }
-
-    Install-PowerShell
-
-} else {
-    Write-Host "You are already running PowerShell version $currentVersion or higher."
+# Check if running PowerShell 7
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Please run this script in PowerShell 7."
+    exit
 }
 
+# Ensure PowerShellGet is up-to-date
+Install-Module -Name PowerShellGet -Force -Scope AllUsers
 
-# Part 1: Ensure required PowerShell modules are installed and imported
+# Set TLS protocol to ensure secure connections
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-# Function to ensure required PowerShell modules are installed
-function Ensure-Modules {
-    $requiredModules = @(
-        "PnP.PowerShell",           # PnP PowerShell for SharePoint
-        "Microsoft.Graph",          # Microsoft Graph PowerShell
-        "ExchangeOnlineManagement",  # Exchange Online Management
-        "AzureAD",                  # Azure Active Directory PowerShell for Graph
-        "MSOnline"                  # MSOnline module for legacy Azure AD management
-    )
+# Install required modules
+$requiredModules = @(
+    "PnP.PowerShell",
+    "Microsoft.Graph",
+    "ExchangeOnlineManagement",
+    "AzureAD",
+    "MSOnline"
+)
 
-    # Set TLS protocol to ensure secure connections
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    foreach ($module in $requiredModules) {
-        try {
-            # Check if the module is already installed
-            if (-not (Get-Module -ListAvailable -Name $module)) {
-                Write-Host "Installing module: $module"
-                Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber -ErrorAction Stop
-            } else {
-                Write-Host "Module already installed: $module"
-            }
-            # Import the module after installation
-            Import-Module -Name $module -ErrorAction Stop  
-        } catch {
-            Write-Host "Failed to install or import module ${module}: $_"  # Use ${} for proper variable referencing
+foreach ($module in $requiredModules) {
+    try {
+        if (-not (Get-Module -ListAvailable -Name $module)) {
+            Write-Host "Installing module: $module"
+            Install-Module -Name $module -Force -Scope AllUsers -AllowClobber -ErrorAction Stop
+        } else {
+            Write-Host "Module already installed: $module"
         }
+        Import-Module -Name $module -ErrorAction Stop
+    } catch {
+        Write-Host "Failed to install or import module ${module}: $_"
     }
 }
 
-# Call the function to ensure all required modules are installed and imported
-Ensure-Modules
+# Verify module installation
+Write-Host "Verifying module installation..."
+Get-Module -ListAvailable | Where-Object { $_.Name -in $requiredModules }
+
+# Continue with your main script functionality here...
