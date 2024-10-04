@@ -31,7 +31,7 @@ function Install-PowerShell7 {
         Write-Host "PowerShell installation completed successfully."
     } catch {
         Write-Host "Failed to download or install PowerShell: $_"
-        exit
+        
     } finally {
         # Clean up installer file
         Remove-Item $installerPath -ErrorAction SilentlyContinue
@@ -55,7 +55,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
         exit  # Exit the current session after launching PowerShell 7
     } else {
         Write-Host "Unable to find PowerShell 7 executable."
-        exit
+        
     }
 } else {
     Write-Host "You are already running PowerShell version $($PSVersionTable.PSVersion)."
