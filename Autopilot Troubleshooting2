@@ -8,12 +8,19 @@ function Ensure-Modules {
         "MSOnline"                  # MSOnline module for legacy Azure AD management
     )
 
+    # Set TLS protocol to ensure secure connections
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
     foreach ($module in $requiredModules) {
-        if (-not (Get-Module -ListAvailable -Name $module)) {
-            Write-Host "Installing module: $module"
-            Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber
-        } else {
-            Write-Host "Module already installed: $module"
+        try {
+            if (-not (Get-Module -ListAvailable -Name $module)) {
+                Write-Host "Installing module: $module"
+                Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber -ErrorAction Stop
+            } else {
+                Write-Host "Module already installed: $module"
+            }
+        } catch {
+            Write-Host "Failed to install module $module: $_"
         }
     }
 }
