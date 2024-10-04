@@ -20,7 +20,7 @@ function Ensure-Modules {
                 Write-Host "Module already installed: $module"
             }
         } catch {
-            Write-Host "Failed to install module $module: $_"
+            Write-Host "Failed to install module ${module}: $_"  # Use ${} for proper variable referencing
         }
     }
 }
