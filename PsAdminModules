@@ -1,3 +1,42 @@
+# Check current PowerShell version and prompt for installation if needed
+$currentVersion = $PSVersionTable.PSVersion.Major
+
+if ($currentVersion -lt 7) {
+    Write-Host "Current PowerShell version is $currentVersion. Updating to PowerShell 7.x..."
+
+    # Function to install PowerShell 7.x from GitHub
+    function Install-PowerShell {
+        # Define the URL for the latest PowerShell release
+        $url = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.4.3-win-x64.msi" # Update this URL to the latest version if necessary
+
+        # Define the path for the downloaded installer
+        $installerPath = "$env:TEMP\PowerShellInstaller.msi"
+
+        # Download the installer
+        try {
+            Write-Host "Downloading PowerShell installer..."
+            Invoke-WebRequest -Uri $url -OutFile $installerPath -ErrorAction Stop
+
+            # Install PowerShell silently
+            Write-Host "Installing PowerShell..."
+            Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait
+
+            Write-Host "PowerShell installation completed successfully."
+        } catch {
+            Write-Host "Failed to download or install PowerShell: $_"
+        } finally {
+            # Clean up installer file
+            Remove-Item $installerPath -ErrorAction SilentlyContinue
+        }
+    }
+
+    Install-PowerShell
+
+} else {
+    Write-Host "You are already running PowerShell version $currentVersion or higher."
+}
+
+
 # Part 1: Ensure required PowerShell modules are installed and imported
 
 # Function to ensure required PowerShell modules are installed
