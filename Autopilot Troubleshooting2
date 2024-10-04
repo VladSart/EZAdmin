@@ -112,16 +112,19 @@ if (-not $targetFolder) { $targetFolder = $defaultTargetFolder }
 # Create the SharePoint site if it doesn't exist
 Create-SharePointSite -SiteUrl $siteUrl -SiteTitle "Autopilot Reports"
 
-# Run connectivity tests and generate report (as per your previous code)
-# ... (Insert your existing connectivity test code here)
+# Run connectivity tests and generate report (insert your existing connectivity test code here)
+# Example placeholder for results collection:
+$results = @()  # Replace this with your actual connectivity test results collection logic
 
-# Save results to a file
+# Save results to a file locally before attempting upload
 $reportPath = "$env:TEMP\AutopilotConnectivityReport.csv"
 $results | Export-Csv -Path $reportPath -NoTypeInformation
 
-# Upload report to SharePoint
-$uploadResult = Upload-ReportToSharePoint -SiteUrl $siteUrl -ReportPath $reportPath -TargetFolder $targetFolder
-Write-Host $uploadResult
+Write-Host "`nDetailed report saved locally to: $reportPath"
 
-# Output summary to console
-Write-Host "`nDetailed report saved to: $reportPath"
+# Attempt to upload report to SharePoint
+$uploadResult = Upload-ReportToSharePoint -SiteUrl $siteUrl -ReportPath $reportPath -TargetFolder $targetFolder
+Write-Host "$uploadResult"
+
+# Output summary to console at the end of the script execution.
+Write-Host "`nFinal Report Location: `"$reportPath`" and uploaded location: `"$siteUrl/$targetFolder/$(Split-Path $reportPath -Leaf)`""
