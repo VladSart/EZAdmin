@@ -1,10 +1,19 @@
+# Check if required modules are installed, if not, install them
+$requiredModules = @("PnP.PowerShell", "Microsoft.Online.SharePoint.PowerShell")
+foreach ($module in $requiredModules) {
+    if (!(Get-Module -ListAvailable -Name $module)) {
+        Install-Module -Name $module -Force -Scope CurrentUser
+    }
+    Import-Module $module
+}
 
-Test-NetConnection -ComputerName endpoint.microsoft.com -Port 443
-Resolve-DnsName -Name endpoint.microsoft.com
-Test-NetConnection -ComputerName endpoint.microsoft.com -TraceRoute
-$url = "https://endpoint.microsoft.com"
-$req = [Net.HttpWebRequest]::Create($url)
-$req.GetResponse().Close()
+# Define the list of URLs to test
+$urls = @(
+    "https://login.microsoftonline.com",
+    "https://graph.windows.net",
+    "https://ztd.dds.microsoft.com",
+    # Add more URLs as needed
+)
 
 function Test-Url {
     param (
@@ -31,3 +40,67 @@ function Test-Url {
         return @{Status = "Error"; Message = "Error: Unable to reach $Url. $($_.Exception.Message)"}
     }
 }
+
+# Test NTP
+function Test-NTP {
+    $ntpServer = "time.windows.com"
+    $ntpPort = 123
+    try {
+        $result = Test-NetConnection -ComputerName $ntpServer -Port $ntpPort -WarningAction SilentlyContinue
+        if ($result.TcpTestSucceeded) {
+            return @{Status = "Success"; Message = "NTP server $ntpServer is reachable."}
+        } else {
+            return @{Status = "Error"; Message = "NTP server $ntpServer is not reachable."}
+        }
+    } catch {
+        return @{Status = "Error"; Message = "Error testing NTP server: $($_.Exception.Message)"}
+    }
+}
+
+# Run tests and collect results
+$results = @()
+foreach ($url in $urls) {
+    $results += Test-Url -Url $url
+}
+$results += Test-NTP
+
+# Generate report
+$reportPath = "$env:TEMP\AutopilotConnectivityReport.csv"
+$results | Export-Csv -Path $reportPath -NoTypeInformation
+
+# Function to upload report to SharePoint
+function Upload-ReportToSharePoint {
+    param (
+        [string]$SiteUrl,
+        [string]$ReportPath,
+        [string]$TargetFolder
+    )
+
+    try {
+        Connect-PnPOnline -Url $SiteUrl -Interactive
+        Add-PnPFile -Path $ReportPath -Folder $TargetFolder
+        Disconnect-PnPOnline
+        return "Report uploaded successfully to SharePoint."
+    }
+    catch {
+        return "Error uploading report to SharePoint: $($_.Exception.Message)"
+    }
+}
+
+# SharePoint site details
+$sharePointSiteUrl = "https://yourtenant.sharepoint.com/sites/AutopilotReports"
+$targetFolder = "Shared Documents/AutopilotReports"
+
+# Upload report to SharePoint
+$uploadResult = Upload-ReportToSharePoint -SiteUrl $sharePointSiteUrl -ReportPath $reportPath -TargetFolder $targetFolder
+Write-Host $uploadResult
+
+# Output summary to console
+Write-Host "`nSummary Report:"
+$results | Format-Table -AutoSize
+
+Write-Host "`nDetailed report saved to: $reportPath"
+Write-Host "Report uploaded to: $sharePointSiteUrl/$targetFolder/$(Split-Path $reportPath -Leaf)"
+
+# Return the SharePoint URL for Intune to collect
+"$sharePointSiteUrl/$targetFolder/$(Split-Path $reportPath -Leaf)"
