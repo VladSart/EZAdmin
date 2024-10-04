@@ -1,32 +1,5 @@
-# Function to ensure required PowerShell modules are installed
-function Ensure-Modules {
-    $requiredModules = @(
-        "PnP.PowerShell",           # PnP PowerShell for SharePoint
-        "Microsoft.Graph",          # Microsoft Graph PowerShell
-        "ExchangeOnlineManagement",  # Exchange Online Management
-        "AzureAD",                  # Azure Active Directory PowerShell for Graph
-        "MSOnline"                  # MSOnline module for legacy Azure AD management
-    )
 
-    # Set TLS protocol to ensure secure connections
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    foreach ($module in $requiredModules) {
-        try {
-            if (-not (Get-Module -ListAvailable -Name $module)) {
-                Write-Host "Installing module: $module"
-                Install-Module -Name $module -Force -Scope CurrentUser -AllowClobber -ErrorAction Stop
-            } else {
-                Write-Host "Module already installed: $module"
-            }
-        } catch {
-            Write-Host "Failed to install module ${module}: $_"  # Use ${} for proper variable referencing
-        }
-    }
-}
-
-# Call the function to ensure all required modules are installed
-Ensure-Modules
+# Part 2: Main functionality of the script
 
 # Function to get the SharePoint Admin URL dynamically
 function Get-SharePointAdminUrl {
