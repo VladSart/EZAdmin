@@ -1,40 +1,62 @@
-# Check if running PowerShell 7
-if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Host "Please run this script in PowerShell 7."
-    exit
-}
-
-# Ensure PowerShellGet is up-to-date
-Install-Module -Name PowerShellGet -Force -Scope AllUsers
-
-# Set TLS protocol to ensure secure connections
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-# Install required modules
-$requiredModules = @(
-    "PnP.PowerShell",
-    "Microsoft.Graph",
-    "ExchangeOnlineManagement",
-    "AzureAD",
-    "MSOnline"
-)
-
-foreach ($module in $requiredModules) {
-    try {
-        if (-not (Get-Module -ListAvailable -Name $module)) {
-            Write-Host "Installing module: $module"
-            Install-Module -Name $module -Force -Scope AllUsers -AllowClobber -ErrorAction Stop
-        } else {
-            Write-Host "Module already installed: $module"
-        }
-        Import-Module -Name $module -ErrorAction Stop
-    } catch {
-        Write-Host "Failed to install or import module ${module}: $_"
+# Check if PowerShell 7 is installed
+function Check-PowerShell7 {
+    $pwshPath = "$env:ProgramFiles\PowerShell\7\pwsh.exe"
+    
+    if (Test-Path $pwshPath) {
+        Write-Host "PowerShell 7 is already installed."
+        return $true
+    } else {
+        Write-Host "PowerShell 7 is not installed."
+        return $false
     }
 }
 
-# Verify module installation
-Write-Host "Verifying module installation..."
-Get-Module -ListAvailable | Where-Object { $_.Name -in $requiredModules }
+# Function to download and install PowerShell 7
+function Install-PowerShell7 {
+    # Define the URL for the latest PowerShell release
+    $url = "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.4.3-win-x64.msi" # Update this URL to the latest version if necessary
 
-# Continue with your main script functionality here...
+    # Define the path for the downloaded installer
+    $installerPath = "$env:TEMP\PowerShellInstaller.msi"
+
+    # Download the installer
+    try {
+        Write-Host "Downloading PowerShell installer..."
+        Invoke-WebRequest -Uri $url -OutFile $installerPath -ErrorAction Stop
+
+        # Install PowerShell silently
+        Write-Host "Installing PowerShell..."
+        Start-Process msiexec.exe -ArgumentList "/i `"$installerPath`" /quiet /norestart" -Wait
+
+        Write-Host "PowerShell installation completed successfully."
+    } catch {
+        Write-Host "Failed to download or install PowerShell: $_"
+        exit
+    } finally {
+        # Clean up installer file
+        Remove-Item $installerPath -ErrorAction SilentlyContinue
+    }
+}
+
+# Main logic to check and install PowerShell 7, then restart the session
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    Write-Host "Current PowerShell version is $($PSVersionTable.PSVersion)."
+
+    if (-not (Check-PowerShell7)) {
+        Install-PowerShell7
+    }
+
+    # Start a new PowerShell 7 session
+    $pwshPath = "$env:ProgramFiles\PowerShell\7\pwsh.exe"
+    
+    if (Test-Path $pwshPath) {
+        Write-Host "Starting PowerShell 7..."
+        Start-Process -FilePath $pwshPath -ArgumentList "-NoExit" # Keep the window open
+        exit  # Exit the current session after launching PowerShell 7
+    } else {
+        Write-Host "Unable to find PowerShell 7 executable."
+        exit
+    }
+} else {
+    Write-Host "You are already running PowerShell version $($PSVersionTable.PSVersion)."
+}
