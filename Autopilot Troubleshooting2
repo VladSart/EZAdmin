@@ -1,0 +1,33 @@
+
+Test-NetConnection -ComputerName endpoint.microsoft.com -Port 443
+Resolve-DnsName -Name endpoint.microsoft.com
+Test-NetConnection -ComputerName endpoint.microsoft.com -TraceRoute
+$url = "https://endpoint.microsoft.com"
+$req = [Net.HttpWebRequest]::Create($url)
+$req.GetResponse().Close()
+
+function Test-Url {
+    param (
+        [string]$Url
+    )
+    
+    $uri = [System.Uri]$Url
+    $hostname = $uri.Host
+    $port = if ($uri.Port -eq 80 -or $uri.Port -eq 443) { $uri.Port } else { 443 }
+
+    try {
+        # DNS resolution check
+        $dnsResult = Resolve-DnsName -Name $hostname -ErrorAction Stop
+        
+        # TCP connection test
+        $tcpTest = Test-NetConnection -ComputerName $hostname -Port $port -WarningAction SilentlyContinue
+
+        if ($tcpTest.TcpTestSucceeded) {
+            return @{Status = "Success"; Message = "$Url is reachable (TCP connection successful)."}
+        } else {
+            return @{Status = "Warning"; Message = "Warning: TCP connection to $Url failed, but DNS resolved."}
+        }
+    } catch {
+        return @{Status = "Error"; Message = "Error: Unable to reach $Url. $($_.Exception.Message)"}
+    }
+}
