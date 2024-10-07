@@ -1,0 +1,11 @@
+# Install PSWindowsUpdate module
+Install-Module -Name PSWindowsUpdate -Force
+
+# Import the module
+Import-Module PSWindowsUpdate
+
+# Add Microsoft Update service
+Add-WUServiceManager -ServiceID "7971f918-a847-4430-9279-4a52d1efe18d" -Confirm:$false
+
+# Install all available updates and auto-reboot if necessary
+Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -AutoReboot
