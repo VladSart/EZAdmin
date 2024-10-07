@@ -1,3 +1,4 @@
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 # Install PSWindowsUpdate module
 Install-Module -Name PSWindowsUpdate -Force
 
