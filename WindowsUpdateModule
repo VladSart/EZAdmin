@@ -7,10 +7,13 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 # Set execution policy for this process
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
 
+# Force install NuGet provider
+Install-PackageProvider -Name NuGet -Force -Scope CurrentUser
+
 # Install PSWindowsUpdate module if not already installed
 if (!(Get-Module -ListAvailable -Name PSWindowsUpdate)) {
     Write-Host "Installing PSWindowsUpdate module..."
-    Install-Module PSWindowsUpdate -Force
+    Install-Module PSWindowsUpdate -Force -Scope CurrentUser
 }
 
 # Import the module
