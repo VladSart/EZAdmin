@@ -1,15 +1,8 @@
-# This gets a new machine up and going with apps most client machines need
+# What is this for?
 
+This is just a page where I collect my scripts that I use on the regular basis to work on clients machines to make my life easier.
+It's targeted towards Windows and M365 Administration sometimes using the Graph API.
 
-## How to use this?
-1. Run a Admin Powershell session, preferably as an admin user (local user or domain admin signed-in)
-2. Copy and Paste
-3. Profit
+Of course, machines that are behaving eratically can get worst or better depending on the dependencies of the thing you're dealing with.
 
-## How to add more packages
-On the apps list create a new ("xxxx",) without the "()" and replace the xxxx with a name of the package in https://community.chocolatey.org/packages?q=
-
-## Script
-
-[View the code](https://github.com/VladSart/EZAdmin/blob/main/setup.ps1)
-
+Nothing is ever guaranteed in IT so use at your own risk. Which you're going to do anyways, so at least give it a shot
