@@ -1,46 +1,18 @@
-<file name=Troubleshooting.md path=/Users/vladimirsartini/Documents/GitHub/EZAdmin/LLM/Prompt>
-# MODE A — Reference / Verbose
+# Windows Update — Not Retrieving Latest Feature Update (25H2) (MODE A)
 
-## Required section order (must match exactly)
-
-1) Skim Index (jump links)
-2) Scope + Assumptions
-3) How it works (in this environment)
-4) Dependency stack (layered: hardware → OS → policy → network → external services)
-5) Symptom → Likely cause map (fast triage)
-6) Validation steps (top-to-bottom, commands + expected “good/bad”)
-7) Troubleshooting steps (top-to-bottom, minimal risk first)
-8) Remediation playbooks (by root cause; include rollback notes)
-9) Evidence pack (what to collect for escalation)
-10) Appendix: command cheat sheet
-
-## Detail rules
-
-- Always include a **Skim Index** at the top with jump links to every major section.
-- Use clear section headings with numbering.
-- Provide detailed commands and expected outputs.
-- Include rollback notes in remediation playbooks.
-- Use collapsible details for optional reading.
-- Use code blocks for commands.
-- Maintain consistent formatting and style.
-
-</file>
-
-<file name=Update to Latest.md path=/Users/vladimirsartini/Documents/GitHub/EZAdmin/Windows/Troubleshooting/Windows Update>
-# Windows Update — Not Retrieving Latest Feature Update (25H2)
-
-> **Audience:** L2/L3 IT Support  
-> **Scope:** Windows 11 **24H2**, **Entra ID joined**, **Intune/MDM managed**, on **corp LAN**  
-> **Constraint:** Admin OK, **no reboot** (note: some remediations normally expect a reboot)
+> **Output:** Mode A (Reference/Deep Dive)
+> **Audience:** L2/L3 IT Support
+> **Environment:** Windows 11 24H2 • Entra ID joined • Intune/MDM • Corp LAN
+> **Constraints:** Admin OK • No reboot (note: some remediations normally expect a reboot)
 
 ---
 
 ## Skim Index
 
 - [Scope + Assumptions](#1-scope--assumptions)
-- [How it works](#2-how-it-works-in-this-environment)
+- [How it works in this environment](#2-how-it-works-in-this-environment)
 - [Dependency stack](#3-dependency-stack)
-- [Symptom → Likely cause map](#4-symptom--likely-cause-map)
+- [Symptom → likely cause map](#4-symptom--likely-cause-map)
 - [Validation steps](#5-validation-steps-top-to-bottom)
 - [Troubleshooting steps](#6-troubleshooting-steps-top-to-bottom)
 - [Remediation playbooks](#7-remediation-playbooks-by-root-cause)
@@ -563,4 +535,3 @@ net start cryptsvc & net start bits & net start msiserver & net start wuauserv
 # Logs
 wevtutil qe Microsoft-Windows-WindowsUpdateClient/Operational /c:80 /f:text
 ```
-</file>

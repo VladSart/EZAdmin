@@ -7,57 +7,16 @@ Use this file to generate **GitHub-ready troubleshooting documentation** in one 
 
 ---
 
-## How you ask me to use this (examples)
-
-### Example request — Mode B (Ops)
-
-```text
-Use `LLM/Prompt/Troubleshooting.md`
-OUTPUT MODE: B
-SUBJECT: Windows Time Sync not updating
-ENVIRONMENT:
-- OS: Windows 11 25H2
-- Join/Identity: Entra ID joined
-- Management: Intune/MDM
-- Network context: Corp LAN + VPN
-- Constraints: Remote-only, admin ok
-CONTEXT:
-- Symptoms observed: `w32tm /query /source` shows `Local CMOS Clock`
-- Error messages: None
-- What changed recently: New VPN client rollout
-- What already tried: Sync now in Settings, `w32tm /resync`
-```
-
-### Example request — Mode A (Reference)
-
-```text
-Use `LLM/Prompt/Troubleshooting.md`
-OUTPUT MODE: A
-SUBJECT: BitLocker recovery prompts after updates
-ENVIRONMENT:
-- OS: Windows 11 24H2
-- Join/Identity: Hybrid joined
-- Management: GPO + Intune co-management
-- Network context: Corp LAN
-- Constraints: No reboot during business hours
-CONTEXT:
-- Symptoms observed: Users asked for BitLocker key after reboot
-- What changed recently: Monthly patch Tuesday
-- What already tried: None
-```
-
----
-
 ## RUN CONFIG (edit these)
 
-OUTPUT MODE: <A|B>
-SUBJECT: <TOPIC>
+OUTPUT MODE: <B>
+SUBJECT: <Detect and Change WSUS to WFUB>
 ENVIRONMENT:
-- OS: <Windows 11 25H2 / Server 2022 / macOS / etc>
-- Join/Identity: <Entra ID joined / Hybrid / AD DS domain joined / Workgroup>
-- Management: <Intune/MDM / GPO / RMM / none>
-- Network context: <corp LAN / VPN / proxy / ZTNA / guest Wi‑Fi / home>
-- Constraints: <no admin / admin ok / no reboot / remote-only / change freeze / etc>
+- OS: <Windows 11 24h2>
+- Join/Identity: <Entra ID joined>
+- Management: <Intune/MDM>
+- Network context: <corp LAN
+- Constraints: <admin ok / no reboot>
 
 CONTEXT (optional but recommended):
 - Symptoms observed: <what the user sees>
