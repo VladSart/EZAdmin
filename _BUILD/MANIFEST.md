@@ -612,12 +612,76 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `EntraID/Troubleshooting/SSPR-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/SSPR-A.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — SharePoint Permission Management Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/SharePoint/Permission-Management-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Online Protection (EOP)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/EOP-AntiSpam-B.md` | ✅ | auto-build |
+
+---
+
+## Windows — Always On VPN Scripts
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Test-VPNConnectivity.ps1` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Online Protection Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/EOP-AntiSpam-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Assignment Filters
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Filters-B.md` | ✅ | auto-build |
+
+---
+
+## Security — Conditional Access Named Locations
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/ConditionalAccess/Named-Locations-B.md` | ✅ | auto-build |
+
+---
+
+## Intune — Assignment Filters Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Filters-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Conditional Access Named Locations Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/ConditionalAccess/Named-Locations-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Assignment Report Script
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Scripts/Get-IntuneAssignmentReport.ps1` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 144
-- Completed: 144
+- Total files: 154
+- Completed: 154
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: PrintSpooler-B, PrintSpooler-A, Get-PrinterDiagnostics.ps1, SSPR-B)
+- Last updated: 2026-06-06 (auto-build: Filters-A, Named-Locations-A, Get-IntuneAssignmentReport.ps1)
