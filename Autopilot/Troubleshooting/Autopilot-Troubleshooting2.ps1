@@ -1,0 +1,110 @@
+
+# Part 2: Main functionality of the script
+
+# Function to get the SharePoint Admin URL dynamically
+function Get-SharePointAdminUrl {
+    try {
+        # Connect to Microsoft Graph to retrieve tenant information
+        Connect-PnPOnline -Scopes "Sites.Read.All" -Interactive
+
+        # Get the current user's tenant ID
+        $tenantId = (Get-PnPTenant).TenantId
+        
+        # Construct the SharePoint Admin URL
+        return "https://$($tenantId)-admin.sharepoint.com"
+    } catch {
+        Write-Host "Error retrieving SharePoint Admin URL: $_"
+        
+    }
+}
+
+# Function to create a SharePoint site if it doesn't exist
+function Create-SharePointSite {
+    param (
+        [string]$SiteUrl,
+        [string]$SiteTitle
+    )
+    
+    try {
+        # Connect to SharePoint Admin Center
+        Connect-PnPOnline -Url (Get-SharePointAdminUrl) -Interactive
+        
+        # Check if site exists
+        $site = Get-PnPTenantSite | Where-Object { $_.Url -eq $SiteUrl }
+        
+        if (-not $site) {
+            # Create the site
+            New-PnPSite -Type TeamSite -Title $SiteTitle -Alias "autopilotreports" -IsPublic $false
+            Write-Host "Created new SharePoint site at $SiteUrl"
+        } else {
+            Write-Host "SharePoint site already exists at $SiteUrl"
+        }
+        
+        Disconnect-PnPOnline
+    } catch {
+        Write-Host "Error creating site: $_"
+    }
+}
+
+# Function to upload report to SharePoint
+function Upload-ReportToSharePoint {
+    param (
+        [string]$SiteUrl,
+        [string]$ReportPath,
+        [string]$TargetFolder
+    )
+
+    try {
+        Connect-PnPOnline -Url $SiteUrl -Interactive
+        
+        # Check if target folder exists, create if not
+        $folder = Get-PnPFolder -Url $TargetFolder -ErrorAction SilentlyContinue
+        
+        if (-not $folder) {
+            New-PnPFolder -Name (Split-Path $TargetFolder -Leaf) -Folder (Split-Path $TargetFolder -Parent) -Web $SiteUrl
+            Write-Host "Created folder: $TargetFolder"
+        }
+
+        Add-PnPFile -Path $ReportPath -Folder $TargetFolder
+        Disconnect-PnPOnline
+        
+        return "Report uploaded successfully to SharePoint."
+    } catch {
+        return "Error uploading report to SharePoint: $_"
+    }
+}
+
+# Main script execution starts here
+
+# Get the SharePoint Admin URL dynamically
+$adminUrl = Get-SharePointAdminUrl
+
+# Prompt user for SharePoint site URL and target folder (with defaults)
+$defaultSiteUrl = "$adminUrl/sites/AutopilotReports"
+$defaultTargetFolder = "Shared Documents/AutopilotReports"
+
+$siteUrl = Read-Host "Enter SharePoint Site URL (default: $defaultSiteUrl)" 
+if (-not $siteUrl) { $siteUrl = $defaultSiteUrl }
+
+$targetFolder = Read-Host "Enter Target Folder (default: $defaultTargetFolder)" 
+if (-not $targetFolder) { $targetFolder = $defaultTargetFolder }
+
+# Create the SharePoint site if it doesn't exist
+Create-SharePointSite -SiteUrl $siteUrl -SiteTitle "Autopilot Reports"
+
+# Run connectivity tests and generate report (insert your existing connectivity test code here)
+# Example placeholder for results collection:
+$results = @()  # Replace this with your actual connectivity test results collection logic
+
+# Save results to a file locally before attempting upload
+$reportPath = "$env:TEMP\AutopilotConnectivityReport.csv"
+$results | Export-Csv -Path $reportPath -NoTypeInformation
+
+Write-Host "`nDetailed report saved locally to: $reportPath"
+
+# Attempt to upload report to SharePoint
+$uploadResult = Upload-ReportToSharePoint -SiteUrl $siteUrl -ReportPath $reportPath -TargetFolder $targetFolder
+Write-Host "$uploadResult"
+
+# Output summary to console at the end of the script execution.
+Write-Host "`nFinal Report Location: `"$reportPath`" and uploaded location: `"$siteUrl/$targetFolder/$(Split-Path $reportPath -Leaf)`""

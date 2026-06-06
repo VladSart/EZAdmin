@@ -1,0 +1,127 @@
+# EZAdmin — Agent Index & Master Routing
+
+> **For AI agents:** Read this file first. It tells you where to go, how to respond, and what to check across modules before answering any question.
+
+---
+
+## Universal Response Format
+
+Every response in this repo follows three layers. **Never skip any layer.**
+
+### Layer 1 — Hotfix Mode
+> Used when: someone needs this fixed NOW. Client is down, ticket is open.
+
+Structure:
+1. **Triage** — 3–5 commands to confirm the break in under 60 seconds
+2. **Fix** — ordered steps, highest-probability cause first
+3. **Validate** — proof commands that confirm it's actually fixed
+
+Rules: No theory. No history. Every command has a reason. Strong "if X → do Y" language.
+
+---
+
+### Layer 2 — Deep Dive Mode
+> Used when: understanding the system, writing a post-mortem, building something, or the hotfix didn't work.
+
+Structure:
+1. Full dependency chain (what must be true for this to work)
+2. How the system actually works in this environment
+3. Symptom → cause map
+4. All remediation paths with rollback notes
+5. Community findings (Reddit r/sysadmin, r/Intune, r/Office365, Spiceworks, MS Tech Community)
+6. Evidence pack for escalation
+
+Rules: Explain why, not just what. Include architecture. Flag policy override risks (Intune/GPO always win).
+
+---
+
+### Layer 3 — Learning Pointers
+> Always appended after any Hotfix or Deep Dive response.
+
+Format: 3–6 bullet points. Each one is a concept, topic, or resource tied directly to what just happened — not generic study advice. Goal: you get better every time you close a ticket.
+
+---
+
+## Domain Map — Where to Route
+
+| Topic | Primary Folder | Also Check |
+|-------|---------------|------------|
+| DFS Namespace failures, referrals, access | `DFS/` | `EntraID/`, `Windows/` |
+| DFS Replication backlog, SYSVOL, conflicts | `DFS/` | `Windows/` |
+| Intune enrollment failures | `Intune/` | `Autopilot/`, `EntraID/` |
+| Intune policy conflicts, compliance not applying | `Intune/` | `EntraID/`, `Windows/` |
+| Autopilot enrollment, hybrid join, hash upload | `Autopilot/` | `Intune/`, `EntraID/` |
+| Entra ID join, PRT issues, device registration | `EntraID/` | `Intune/`, `Security/ConditionalAccess/` |
+| Conditional Access policy conflicts, CA failures | `Security/ConditionalAccess/` | `EntraID/`, `Intune/` |
+| Hybrid join (HAADJ), Entra Connect sync | `EntraID/` | `Security/ConditionalAccess/` |
+| Windows Update, WfUB, WSUS conflicts | `Windows/` | `Intune/` |
+| BitLocker, key escrow, recovery | `Windows/` | `Intune/`, `EntraID/` |
+| Power Automate flows, connectors, licensing | `PowerAutomate/` | `M365/SharePoint-OneDrive/`, `EntraID/` |
+| SharePoint site creation, permissions via automation | `PowerAutomate/SharePoint/` | `EntraID/`, `M365/SharePoint-OneDrive/` |
+| Exchange Online mail flow, rules, hybrid | `M365/Exchange/` | `EntraID/` |
+| SharePoint/OneDrive sync, permissions, migration | `M365/SharePoint-OneDrive/` | `PowerAutomate/` |
+| Teams calling, policies, devices | `M365/Teams/` | `EntraID/` |
+| M365 licensing, group-based, service plans | `M365/Licensing/` | `EntraID/` |
+| Defender for Endpoint onboarding, ASR, alerts | `Security/Defender/` | `Intune/`, `EntraID/` |
+| Graph API queries, automation, reporting | `EntraID/Graph/` | Any domain using Graph |
+| macOS Intune enrollment, ADE, shell scripts | `macOS/` | `Intune/`, `EntraID/` |
+
+---
+
+## Cross-Domain Rules
+
+Before answering any identity-related question, check `EntraID/` — almost everything touches identity.
+
+Before answering any device management question, check `Intune/` — policies flow from there.
+
+Before answering any security/access question, check `Security/ConditionalAccess/` — CA overrides most other access logic.
+
+If PowerShell is needed for a fix, look for an existing script in the relevant `Scripts/` folder first.
+
+---
+
+## Technology Ranking by MSP Frequency
+
+Built from real-world MSP ticket patterns. Build order = priority order.
+
+| Rank | Domain | Why it's here |
+|------|--------|---------------|
+| 1 | DFS | SMB/enterprise staple; replication failures = user impact immediately |
+| 2 | Power Automate | SharePoint automation is in every org; permission flows break constantly |
+| 3 | Intune | Every managed device touches this; policy conflicts are daily |
+| 4 | Windows Update / WfUB | Perpetual pain; WSUS conflicts, update rings, dual-scan |
+| 5 | Entra ID + Hybrid Join | Identity is the dependency for everything |
+| 6 | Conditional Access | Policies break access silently; hardest to diagnose under pressure |
+| 7 | Autopilot | Enrollment failures cost hours; TPM, hash, network all in play |
+| 8 | Exchange Online | Mail flow rules, hybrid coexistence, shared mailboxes |
+| 9 | BitLocker | Recovery key gaps, escrow failures discovered at worst time |
+| 10 | SharePoint/OneDrive | Sync client issues, permission inheritance breaks, migration |
+| 11 | Defender for Endpoint | ASR rules blocking legit apps, onboarding gaps |
+| 12 | Teams | Calling plans, device policies, federation |
+| 13 | Azure AD Connect / Entra Connect | Sync errors, attribute conflicts, password hash |
+| 14 | M365 Licensing | Group-based licensing failures, service plan conflicts |
+| 15 | macOS via Intune | ADE enrollment, profile delivery, shell script failures |
+
+---
+
+## Repo Conventions
+
+- `_AGENT.md` in every folder — agent-specific instructions for that domain
+- `Troubleshooting/Topic/Topic-B.md` — Hotfix runbook
+- `Troubleshooting/Topic/Topic-A.md` — Deep Dive reference
+- `Scripts/` — PowerShell scripts, named with `Verb-Noun.ps1` pattern
+- All scripts follow: Preflight → Detect → Execute → Validate → Report
+
+---
+
+## Learning Pointers Trigger
+
+After every resolved issue, append this section to your response:
+
+```
+## 🎓 Learning Pointers
+Based on what just happened, here are things worth exploring:
+- [concept] — why it matters here
+- [tool/cmdlet] — what it does and when you'd reach for it
+- [community resource] — thread/doc that goes deep on this edge case
+```
