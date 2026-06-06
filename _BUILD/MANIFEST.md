@@ -548,9 +548,30 @@
 
 ---
 
+## Autopilot — Profile Not Assigned Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Autopilot/Troubleshooting/Profile-Not-Assigned-A.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — External Identities Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/ExternalIdentities-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Universal Print Scripts
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/UniversalPrint/Scripts/Get-UniversalPrintReport.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 133
-- Completed: 133
+- Total files: 136
+- Completed: 136
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: Throttling-Limits-A, FileVault-A, Get-SharePointSiteReport.ps1)
+- Last updated: 2026-06-06 (auto-build: Profile-Not-Assigned-A, ExternalIdentities-A, Get-UniversalPrintReport.ps1)
