@@ -569,9 +569,39 @@
 
 ---
 
+---
+
+## Security — Conditional Access Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/ConditionalAccess/CA-Troubleshooting-A.md` | ✅ | auto-build |
+
+---
+
+## Autopilot — Hybrid Join Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Autopilot/Troubleshooting/HybridJoin-Autopilot-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Licensing Scripts
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Licensing/Scripts/Get-LicenseReport.ps1` | ✅ | auto-build |
+
+---
+
+## M365 — Universal Print Agent
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/UniversalPrint/_AGENT.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 136
-- Completed: 136
+- Total files: 140
+- Completed: 140
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: Profile-Not-Assigned-A, ExternalIdentities-A, Get-UniversalPrintReport.ps1)
+- Last updated: 2026-06-06 (auto-build: CA-Troubleshooting-A, HybridJoin-Autopilot-A, Get-LicenseReport.ps1, UniversalPrint/_AGENT.md)
