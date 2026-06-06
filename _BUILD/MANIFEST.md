@@ -612,12 +612,34 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `EntraID/Troubleshooting/SSPR-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/SSPR-A.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — SharePoint Permission Management Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/SharePoint/Permission-Management-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Online Protection (EOP)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/EOP-AntiSpam-B.md` | ✅ | auto-build |
+
+---
+
+## Windows — Always On VPN Scripts
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Test-VPNConnectivity.ps1` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 144
-- Completed: 144
+- Total files: 148
+- Completed: 148
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: PrintSpooler-B, PrintSpooler-A, Get-PrinterDiagnostics.ps1, SSPR-B)
+- Last updated: 2026-06-06 (auto-build: SSPR-A, Permission-Management-A, EOP-AntiSpam-B, Test-VPNConnectivity.ps1)
