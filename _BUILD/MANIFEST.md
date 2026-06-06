@@ -638,8 +638,29 @@
 ---
 
 ## Build Progress
-- Total files: 148
-- Completed: 148
+- Total files: 151
+- Completed: 151
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: SSPR-A, Permission-Management-A, EOP-AntiSpam-B, Test-VPNConnectivity.ps1)
+- Last updated: 2026-06-06 (auto-build: EOP-AntiSpam-A, Filters-B, Named-Locations-B)
+
+---
+
+## M365 — Exchange Online Protection Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/EOP-AntiSpam-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Assignment Filters
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Filters-B.md` | ✅ | auto-build |
+
+---
+
+## Security — Conditional Access Named Locations
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/ConditionalAccess/Named-Locations-B.md` | ✅ | auto-build |
