@@ -684,8 +684,21 @@
 ---
 
 ## Build Progress
-- Total files: 154
-- Completed: 154
+- Total files: 157
+- Completed: 157
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: Filters-A, Named-Locations-A, Get-IntuneAssignmentReport.ps1)
+- Last updated: 2026-06-06 (auto-build: DNS-Client-A/B, NetworkProtection-B)
+
+## Windows — DNS Client
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/DNS-Client-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/DNS-Client-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Defender Network Protection
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/NetworkProtection-B.md` | ✅ | auto-build |
