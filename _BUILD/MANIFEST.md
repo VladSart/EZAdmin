@@ -599,9 +599,25 @@
 
 ---
 
+## Windows — Print Spooler
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/PrintSpooler-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/PrintSpooler-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-PrinterDiagnostics.ps1` | ✅ | auto-build |
+
+---
+
+## Entra ID — SSPR
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/SSPR-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 140
-- Completed: 140
+- Total files: 144
+- Completed: 144
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: CA-Troubleshooting-A, HybridJoin-Autopilot-A, Get-LicenseReport.ps1, UniversalPrint/_AGENT.md)
+- Last updated: 2026-06-06 (auto-build: PrintSpooler-B, PrintSpooler-A, Get-PrinterDiagnostics.ps1, SSPR-B)
