@@ -637,6 +637,15 @@
 
 ---
 
+## Build Progress
+- Total files: 151
+- Completed: 151
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-06-06 (auto-build: EOP-AntiSpam-A, Filters-B, Named-Locations-B)
+
+---
+
 ## M365 — Exchange Online Protection Deep Dive
 | File | Status | Assigned |
 |------|--------|---------|
@@ -680,8 +689,8 @@
 ---
 
 ## Build Progress
-- Total files: 154
-- Completed: 154
+- Total files: 158
+- Completed: 158
 - In progress: 0
 - Queued: 0
 - Last updated: 2026-06-06 (auto-build: Filters-A, Named-Locations-A, Get-IntuneAssignmentReport.ps1)
