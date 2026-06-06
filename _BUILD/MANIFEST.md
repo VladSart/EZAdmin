@@ -527,9 +527,30 @@
 
 ---
 
+## Power Automate — Throttling Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/Troubleshooting/Throttling-Limits-A.md` | ✅ | auto-build |
+
+---
+
+## macOS — FileVault Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/FileVault-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — SharePoint Scripts
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/SharePoint-OneDrive/Scripts/Get-SharePointSiteReport.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 130
-- Completed: 130
+- Total files: 133
+- Completed: 133
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: Group-Based-Licensing-A, Tamper-Protection-A, Teams-Rooms-A)
+- Last updated: 2026-06-06 (auto-build: Throttling-Limits-A, FileVault-A, Get-SharePointSiteReport.ps1)
