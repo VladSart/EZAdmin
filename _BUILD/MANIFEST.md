@@ -89,6 +89,8 @@
 | `Windows/Troubleshooting/BitLocker/BitLocker-B.md` | ✅ | - |
 | `Windows/Troubleshooting/BitLocker/BitLocker-A.md` | ✅ | - |
 | `Windows/Troubleshooting/VBS-CredentialGuard-B.md` | ✅ | Task-4 |
+| `Windows/Scripts/Get-BitLockerStatus.ps1` | ✅ | auto-build |
+| `Windows/Troubleshooting/DNS-Client-B.md` | ✅ | auto-build |
 
 ---
 
@@ -98,6 +100,7 @@
 | `Security/ConditionalAccess/CA-Troubleshooting-B.md` | ✅ | - |
 | `Security/ConditionalAccess/CA-Design-A.md` | ✅ | Task-4 |
 | `Security/ConditionalAccess/Scripts/Get-CASignInAnalysis.ps1` | ✅ | Task-4 |
+| `Security/ConditionalAccess/CA-Filters-B.md` | ✅ | auto-build |
 
 ---
 
@@ -128,6 +131,7 @@
 | `M365/Exchange/SharedMailbox-B.md` | ✅ | - |
 | `M365/Exchange/SharedMailbox-A.md` | ✅ | auto-build |
 | `M365/Exchange/Hybrid-Coexistence-B.md` | ✅ | Task-6 |
+| `M365/Exchange/Scripts/Get-ExchangeHybridHealth.ps1` | ✅ | auto-build |
 
 ---
 
