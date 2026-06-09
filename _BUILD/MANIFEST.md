@@ -887,12 +887,27 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `M365/Exchange/ArchiveRetention-B.md` | ✅ | auto-build |
+| `M365/Exchange/ArchiveRetention-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — User Profile Corruption
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/UserProfile-B.md` | ✅ | auto-build |
+
+---
+
+## Security — Purview eDiscovery
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Purview/eDiscovery-B.md` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 190
-- Completed: 190
+- Total files: 193
+- Completed: 193
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: PIM-B, PIM-A, ArchiveRetention-B)
+- Last updated: 2026-06-09 (auto-build: ArchiveRetention-A, UserProfile-B, eDiscovery-B)
