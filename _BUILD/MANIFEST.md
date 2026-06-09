@@ -795,9 +795,30 @@
 
 ---
 
+## Security — Purview Insider Risk Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Purview/Insider-Risk-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Defender for Identity
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/MDI-B.md` | ✅ | auto-build |
+
+---
+
+## Intune — Windows Update for Business
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/WUfB-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 175
-- Completed: 175
+- Total files: 178
+- Completed: 178
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: NetworkAdapters-A, Migration-A, Insider-Risk-B)
+- Last updated: 2026-06-09 (auto-build: Insider-Risk-A, MDI-B, WUfB-B)
