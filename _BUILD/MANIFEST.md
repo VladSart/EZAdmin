@@ -833,9 +833,30 @@
 
 ---
 
+## Security — Defender for Identity Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/MDI-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Message Encryption (OME)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/MessageEncryption-B.md` | ✅ | auto-build |
+
+---
+
+## Windows — WMI Corruption
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/WMI-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 181
-- Completed: 181
+- Total files: 184
+- Completed: 184
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: AVD-B, AVD-A, WUfB-A)
+- Last updated: 2026-06-09 (auto-build: MDI-A, MessageEncryption-B, WMI-B)
