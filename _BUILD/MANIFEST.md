@@ -697,12 +697,33 @@
 
 ---
 
+## Windows — AppLocker Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/AppLocker-A.md` | ✅ | auto-build |
+
+---
+
+## macOS — MDM Certificate Renewal Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/MDM-Certificate-Renewal-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — SharePoint On-Premises to SPO Migration
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/SharePoint-OneDrive/Migration-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 160
-- Completed: 160
+- Total files: 163
+- Completed: 163
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: NetworkProtection-A, MDM-Certificate-Renewal-B, AppLocker-B)
+- Last updated: 2026-06-09 (auto-build: AppLocker-A, MDM-Certificate-Renewal-A, SharePoint Migration-B)
 
 ## Windows — DNS Client
 | File | Status | Assigned |
