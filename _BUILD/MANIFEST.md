@@ -719,11 +719,11 @@
 ---
 
 ## Build Progress
-- Total files: 163
-- Completed: 163
+- Total files: 166
+- Completed: 166
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: AppLocker-A, MDM-Certificate-Renewal-A, SharePoint Migration-B)
+- Last updated: 2026-06-09 (auto-build: EventLog-B, EventLog-A, ScopeTags-B)
 
 ## Windows — DNS Client
 | File | Status | Assigned |
@@ -738,3 +738,18 @@
 |------|--------|---------|
 | `Security/Defender/NetworkProtection-B.md` | ✅ | auto-build |
 | `Security/Defender/NetworkProtection-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — Event Log
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/EventLog-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/EventLog-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Scope Tags & RBAC
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/ScopeTags-B.md` | ✅ | auto-build |
