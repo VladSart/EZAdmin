@@ -772,9 +772,32 @@
 
 ---
 
+---
+
+## Windows — Network Adapters Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/NetworkAdapters-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — SharePoint Migration Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/SharePoint-OneDrive/Migration-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Purview Insider Risk Management
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Purview/Insider-Risk-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 172
-- Completed: 172
+- Total files: 175
+- Completed: 175
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: ScopeTags-A, NetworkAdapters-B, Get-MessageTrace.ps1; backfill: DefenderVulnMgmt-A/B)
+- Last updated: 2026-06-09 (auto-build: NetworkAdapters-A, Migration-A, Insider-Risk-B)
