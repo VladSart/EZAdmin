@@ -718,13 +718,6 @@
 
 ---
 
-## Build Progress
-- Total files: 166
-- Completed: 166
-- In progress: 0
-- Queued: 0
-- Last updated: 2026-06-09 (auto-build: EventLog-B, EventLog-A, ScopeTags-B)
-
 ## Windows — DNS Client
 | File | Status | Assigned |
 |------|--------|---------|
@@ -753,3 +746,35 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Intune/Troubleshooting/ScopeTags-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/ScopeTags-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — Network Adapters
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/NetworkAdapters-B.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Scripts (Message Trace)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/Scripts/Get-MessageTrace.ps1` | ✅ | auto-build |
+
+---
+
+## Security — Defender Vulnerability Management (untracked backfill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/DefenderVulnMgmt-B.md` | ✅ | auto-build |
+| `Security/Defender/DefenderVulnMgmt-A.md` | ✅ | auto-build |
+
+---
+
+## Build Progress
+- Total files: 172
+- Completed: 172
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-06-09 (auto-build: ScopeTags-A, NetworkAdapters-B, Get-MessageTrace.ps1; backfill: DefenderVulnMgmt-A/B)
