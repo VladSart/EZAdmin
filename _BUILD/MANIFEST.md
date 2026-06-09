@@ -683,12 +683,26 @@
 
 ---
 
+## macOS — MDM Certificate Renewal
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/MDM-Certificate-Renewal-B.md` | ✅ | auto-build |
+
+---
+
+## Windows — AppLocker
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/AppLocker-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 157
-- Completed: 157
+- Total files: 160
+- Completed: 160
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-06 (auto-build: DNS-Client-A/B, NetworkProtection-B)
+- Last updated: 2026-06-09 (auto-build: NetworkProtection-A, MDM-Certificate-Renewal-B, AppLocker-B)
 
 ## Windows — DNS Client
 | File | Status | Assigned |
@@ -702,3 +716,4 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Security/Defender/NetworkProtection-B.md` | ✅ | auto-build |
+| `Security/Defender/NetworkProtection-A.md` | ✅ | auto-build |
