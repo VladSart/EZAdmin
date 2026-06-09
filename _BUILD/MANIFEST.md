@@ -816,9 +816,26 @@
 
 ---
 
+---
+
+## Azure Virtual Desktop
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/AVD-B.md` | ✅ | auto-build |
+| `Azure/AVD/AVD-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — WUfB Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/WUfB-A.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 178
-- Completed: 178
+- Total files: 181
+- Completed: 181
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: Insider-Risk-A, MDI-B, WUfB-B)
+- Last updated: 2026-06-09 (auto-build: AVD-B, AVD-A, WUfB-A)
