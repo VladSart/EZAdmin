@@ -875,9 +875,24 @@
 
 ---
 
+## Entra ID — PIM (Privileged Identity Management)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/PIM-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/PIM-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Archive & Retention
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/ArchiveRetention-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 187
-- Completed: 187
+- Total files: 190
+- Completed: 190
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: WMI-A, MessageEncryption-A, CA-Filters-A)
+- Last updated: 2026-06-09 (auto-build: PIM-B, PIM-A, ArchiveRetention-B)
