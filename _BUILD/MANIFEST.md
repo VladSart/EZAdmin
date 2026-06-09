@@ -854,9 +854,30 @@
 
 ---
 
+## Windows — WMI Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/WMI-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Message Encryption Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/MessageEncryption-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Conditional Access Filters Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/ConditionalAccess/CA-Filters-A.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 184
-- Completed: 184
+- Total files: 187
+- Completed: 187
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: MDI-A, MessageEncryption-B, WMI-B)
+- Last updated: 2026-06-09 (auto-build: WMI-A, MessageEncryption-A, CA-Filters-A)
