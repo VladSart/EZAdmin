@@ -895,6 +895,7 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Windows/Troubleshooting/UserProfile-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/UserProfile-A.md` | ✅ | auto-build |
 
 ---
 
@@ -902,12 +903,21 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Security/Purview/eDiscovery-B.md` | ✅ | auto-build |
+| `Security/Purview/eDiscovery-A.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — DLP Policies
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/Troubleshooting/DLP-Policies-B.md` | ✅ | auto-build |
+| `PowerAutomate/Troubleshooting/DLP-Policies-A.md` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 193
-- Completed: 193
+- Total files: 197
+- Completed: 197
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-09 (auto-build: ArchiveRetention-A, UserProfile-B, eDiscovery-B)
+- Last updated: 2026-06-26 (auto-build: eDiscovery-A, UserProfile-A, DLP-Policies-B, DLP-Policies-A)
