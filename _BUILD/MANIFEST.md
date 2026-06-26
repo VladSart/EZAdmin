@@ -1023,9 +1023,30 @@
 
 ---
 
+## Windows — RDP Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RDP-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Security Baselines Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Security-Baselines-A.md` | ✅ | auto-build |
+
+---
+
+## Azure AVD — Network Connectivity (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/AVD-Connectivity-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 215
-- Completed: 215
+- Total files: 218
+- Completed: 218
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: FSLogix-A, RDP-B, Security-Baselines-B)
+- Last updated: 2026-06-27 (auto-build: RDP-A, Security-Baselines-A, AVD-Connectivity-B)
