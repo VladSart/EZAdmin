@@ -960,9 +960,30 @@
 
 ---
 
+## Security — Defender Cloud Protection Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/CloudProtection-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — NTLM Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/NTLM-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — SMB File Share Access
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SMB-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 206
-- Completed: 206
+- Total files: 209
+- Completed: 209
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-26 (auto-build: DriverManagement-A, NTLM-B, CloudProtection-B)
+- Last updated: 2026-06-26 (auto-build: CloudProtection-A, NTLM-A, SMB-B)
