@@ -942,12 +942,27 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Intune/Troubleshooting/DriverManagement-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/DriverManagement-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — NTLM Authentication
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/NTLM-B.md` | ✅ | auto-build |
+
+---
+
+## Security — Defender Cloud Protection
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/CloudProtection-B.md` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 203
-- Completed: 203
+- Total files: 206
+- Completed: 206
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-26 (auto-build: UserProfile-A, AVD _AGENT, Get-AVDSessionHealth.ps1, Kerberos-B, Kerberos-A, DriverManagement-B)
+- Last updated: 2026-06-26 (auto-build: DriverManagement-A, NTLM-B, CloudProtection-B)
