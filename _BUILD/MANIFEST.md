@@ -915,9 +915,39 @@
 
 ---
 
+## Windows — User Profile Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/UserProfile-A.md` | ✅ | auto-build |
+
+---
+
+## Azure Virtual Desktop — Agent & Scripts (expansion)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/_AGENT.md` | ✅ | auto-build |
+| `Azure/AVD/Scripts/Get-AVDSessionHealth.ps1` | ✅ | auto-build |
+
+---
+
+## Windows — Kerberos Authentication (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/Kerberos-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/Kerberos-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Driver Management (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/DriverManagement-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 197
-- Completed: 197
+- Total files: 203
+- Completed: 203
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-26 (auto-build: eDiscovery-A, UserProfile-A, DLP-Policies-B, DLP-Policies-A)
+- Last updated: 2026-06-26 (auto-build: UserProfile-A, AVD _AGENT, Get-AVDSessionHealth.ps1, Kerberos-B, Kerberos-A, DriverManagement-B)
