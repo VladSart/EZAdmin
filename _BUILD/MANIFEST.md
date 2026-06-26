@@ -1002,9 +1002,30 @@
 
 ---
 
+## Azure AVD — FSLogix Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/FSLogix-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — RDP Troubleshooting
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RDP-B.md` | ✅ | auto-build |
+
+---
+
+## Intune — Security Baselines
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Security-Baselines-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 212
-- Completed: 212
+- Total files: 215
+- Completed: 215
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-26 (auto-build: SMB-A, FSLogix-B, Get-PIMReport.ps1)
+- Last updated: 2026-06-27 (auto-build: FSLogix-A, RDP-B, Security-Baselines-B)
