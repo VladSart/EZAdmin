@@ -981,9 +981,30 @@
 
 ---
 
+## Windows — SMB Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SMB-A.md` | ✅ | auto-build |
+
+---
+
+## Azure AVD — FSLogix Profiles
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/FSLogix-B.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — PIM Audit Script
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Scripts/Get-PIMReport.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 209
-- Completed: 209
+- Total files: 212
+- Completed: 212
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-26 (auto-build: CloudProtection-A, NTLM-A, SMB-B)
+- Last updated: 2026-06-26 (auto-build: SMB-A, FSLogix-B, Get-PIMReport.ps1)
