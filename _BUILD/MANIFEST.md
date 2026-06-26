@@ -1044,9 +1044,33 @@
 
 ---
 
+---
+
+## Azure AVD — Connectivity Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/AVD-Connectivity-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — Firewall (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/Firewall-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/Firewall-A.md` | ✅ | auto-build |
+
+---
+
+## macOS — Compliance Policies (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/Compliance-Policies-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 218
-- Completed: 218
+- Total files: 222
+- Completed: 222
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: RDP-A, Security-Baselines-A, AVD-Connectivity-B)
+- Last updated: 2026-06-27 (auto-build: AVD-Connectivity-A, Firewall-B, Firewall-A, Compliance-Policies-B)
