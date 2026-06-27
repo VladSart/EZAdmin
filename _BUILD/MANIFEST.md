@@ -1245,9 +1245,40 @@
 
 ---
 
+---
+
+## macOS — Managed Software Updates Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/SoftwareUpdates-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Defender for Cloud Apps Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/MDA-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Platform Scripts (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Platform-Scripts-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/Platform-Scripts-A.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — Flow Run History Script (new script)
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/Scripts/Get-FlowRunHistory.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 252
-- Completed: 252
+- Total files: 257
+- Completed: 257
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: CrossTenant-A, MDA-B, SoftwareUpdates-B)
+- Last updated: 2026-06-27 (auto-build: SoftwareUpdates-A, MDA-A, Platform-Scripts-B, Platform-Scripts-A, Get-FlowRunHistory.ps1)
