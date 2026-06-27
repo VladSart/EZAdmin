@@ -1122,9 +1122,30 @@
 
 ---
 
+## Intune — Managed Apps Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Managed-Apps-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Teams Meeting Policies Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Teams/Meeting-Policies-A.md` | ✅ | auto-build |
+
+---
+
+## macOS — System Extensions & Kernel Extensions (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/Extensions-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 230
-- Completed: 230
+- Total files: 233
+- Completed: 233
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: AppAttach-A, Managed-Apps-B, Meeting-Policies-B)
+- Last updated: 2026-06-27 (auto-build: Managed-Apps-A, Meeting-Policies-A, Extensions-B)
