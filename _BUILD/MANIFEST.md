@@ -1165,9 +1165,30 @@
 
 ---
 
+## Intune — Feature Update Policies Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/FeatureUpdates-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — Group Policy Troubleshooting (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/GPO-B.md` | ✅ | auto-build |
+
+---
+
+## Azure AVD — Scaling Plans & Autoscale (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/Scaling-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 237
-- Completed: 237
+- Total files: 241
+- Completed: 241
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: Extensions-A, CertificateServices-B, CertificateServices-A, FeatureUpdates-B)
+- Last updated: 2026-06-27 (auto-build: FeatureUpdates-A, GPO-B, Scaling-B)
