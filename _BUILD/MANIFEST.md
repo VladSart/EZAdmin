@@ -1099,9 +1099,32 @@
 
 ---
 
+---
+
+## Azure AVD — MSIX App Attach Deep Dive (expansion)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/AppAttach-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Managed Apps / MAM (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Managed-Apps-B.md` | ✅ | auto-build |
+
+---
+
+## M365 — Teams Meeting Policies (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Teams/Meeting-Policies-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 227
-- Completed: 227
+- Total files: 230
+- Completed: 230
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: Compliance-Policies-A, Azure/_AGENT.md, AppAttach-B, DMARC-DKIM-B, DMARC-DKIM-A)
+- Last updated: 2026-06-27 (auto-build: AppAttach-A, Managed-Apps-B, Meeting-Policies-B)
