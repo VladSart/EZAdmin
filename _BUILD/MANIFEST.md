@@ -1276,9 +1276,38 @@
 
 ---
 
+## M365 — Exchange Public Folders (expansion)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/PublicFolders-B.md` | ✅ | auto-build |
+| `M365/Exchange/PublicFolders-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Defender WDAC Scripts (expansion)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/Scripts/Get-WDACPolicyStatus.ps1` | ✅ | auto-build |
+
+---
+
+## Windows — GPO Diagnostics Script (expansion)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Get-GPOReport.ps1` | ✅ | auto-build |
+
+---
+
+## macOS — MDM Repair Script (expansion)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Scripts/Repair-MacMDMEnrollment.sh` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 257
-- Completed: 257
+- Total files: 262
+- Completed: 262
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: SoftwareUpdates-A, MDA-A, Platform-Scripts-B, Platform-Scripts-A, Get-FlowRunHistory.ps1)
+- Last updated: 2026-06-27 (auto-build: PublicFolders-B, PublicFolders-A, Get-WDACPolicyStatus.ps1, Get-GPOReport.ps1, Repair-MacMDMEnrollment.sh)
