@@ -1068,9 +1068,40 @@
 
 ---
 
+---
+
+## macOS — Compliance Policies Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/Compliance-Policies-A.md` | ✅ | auto-build |
+
+---
+
+## Azure — Agent Index (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/_AGENT.md` | ✅ | auto-build |
+
+---
+
+## Azure AVD — MSIX App Attach
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/AppAttach-B.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Email Authentication (DMARC/DKIM/SPF)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/DMARC-DKIM-B.md` | ✅ | auto-build |
+| `M365/Exchange/DMARC-DKIM-A.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 222
-- Completed: 222
+- Total files: 227
+- Completed: 227
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: AVD-Connectivity-A, Firewall-B, Firewall-A, Compliance-Policies-B)
+- Last updated: 2026-06-27 (auto-build: Compliance-Policies-A, Azure/_AGENT.md, AppAttach-B, DMARC-DKIM-B, DMARC-DKIM-A)
