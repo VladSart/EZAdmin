@@ -1305,9 +1305,24 @@
 
 ---
 
+## Intune — Kiosk / Assigned Access (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Kiosk-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/Kiosk-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Exchange Room / Resource Mailboxes (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/RoomMailbox-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 262
-- Completed: 262
+- Total files: 265
+- Completed: 265
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: PublicFolders-B, PublicFolders-A, Get-WDACPolicyStatus.ps1, Get-GPOReport.ps1, Repair-MacMDMEnrollment.sh)
+- Last updated: 2026-06-27 (auto-build: Kiosk-B, Kiosk-A, RoomMailbox-B)
