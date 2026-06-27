@@ -1335,9 +1335,30 @@
 
 ---
 
+## Entra ID — Entitlement Management / Access Packages (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/AccessPackages-B.md` | ✅ | auto-build |
+
+---
+
+## Windows — Credential Manager (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/CredentialManager-B.md` | ✅ | auto-build |
+
+---
+
+## Intune — App Protection Policies / MAM (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/AppProtection-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 268
-- Completed: 268
+- Total files: 271
+- Completed: 271
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: RoomMailbox-A, CustomCompliance-B, CustomCompliance-A)
+- Last updated: 2026-06-27 (auto-build: AccessPackages-B, CredentialManager-B, AppProtection-B)
