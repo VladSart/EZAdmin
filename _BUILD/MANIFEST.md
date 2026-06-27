@@ -1320,9 +1320,24 @@
 
 ---
 
+## M365 — Exchange Room Mailbox Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/RoomMailbox-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Custom Compliance Scripts (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/CustomCompliance-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/CustomCompliance-A.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 265
-- Completed: 265
+- Total files: 268
+- Completed: 268
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: Kiosk-B, Kiosk-A, RoomMailbox-B)
+- Last updated: 2026-06-27 (auto-build: RoomMailbox-A, CustomCompliance-B, CustomCompliance-A)
