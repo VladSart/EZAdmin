@@ -1208,9 +1208,25 @@
 
 ---
 
+## macOS — PPPC / TCC Privacy Controls (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/FileVault-B.md` | ✅ | auto-build (backfill) |
+| `macOS/Troubleshooting/PPPC-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/PPPC-A.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — Cross-Tenant Access (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/CrossTenant-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 245
-- Completed: 245
+- Total files: 249
+- Completed: 249
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: GPO-A, Scaling-A, MFA-B, MFA-A)
+- Last updated: 2026-06-27 (auto-build: PPPC-B, PPPC-A, CrossTenant-B, FileVault-B backfill)
