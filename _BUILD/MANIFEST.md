@@ -1339,6 +1339,7 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `EntraID/Troubleshooting/AccessPackages-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/AccessPackages-A.md` | ✅ | auto-build |
 
 ---
 
@@ -1346,6 +1347,7 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Windows/Troubleshooting/CredentialManager-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/CredentialManager-A.md` | ✅ | auto-build |
 
 ---
 
@@ -1353,12 +1355,13 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `Intune/Troubleshooting/AppProtection-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/AppProtection-A.md` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 271
-- Completed: 271
+- Total files: 274
+- Completed: 274
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: AccessPackages-B, CredentialManager-B, AppProtection-B)
+- Last updated: 2026-06-27 (auto-build: CredentialManager-A, AccessPackages-A, AppProtection-A)
