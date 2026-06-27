@@ -1143,9 +1143,31 @@
 
 ---
 
+## macOS — System Extensions Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/Extensions-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — Certificate Services / PKI (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/CertificateServices-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/CertificateServices-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Feature Update Policies (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/FeatureUpdates-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 233
-- Completed: 233
+- Total files: 237
+- Completed: 237
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: Managed-Apps-A, Meeting-Policies-A, Extensions-B)
+- Last updated: 2026-06-27 (auto-build: Extensions-A, CertificateServices-B, CertificateServices-A, FeatureUpdates-B)
