@@ -1224,9 +1224,30 @@
 
 ---
 
+## Entra ID — Cross-Tenant Access Deep Dive
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/CrossTenant-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Microsoft Defender for Cloud Apps
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/MDA-B.md` | ✅ | auto-build |
+
+---
+
+## macOS — Managed Software Updates
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/SoftwareUpdates-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 249
-- Completed: 249
+- Total files: 252
+- Completed: 252
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: PPPC-B, PPPC-A, CrossTenant-B, FileVault-B backfill)
+- Last updated: 2026-06-27 (auto-build: CrossTenant-A, MDA-B, SoftwareUpdates-B)
