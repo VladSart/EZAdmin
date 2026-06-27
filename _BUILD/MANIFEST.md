@@ -1186,9 +1186,31 @@
 
 ---
 
+## Windows — Group Policy Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/GPO-A.md` | ✅ | auto-build |
+
+---
+
+## Azure AVD — Scaling Plans Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/Scaling-A.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — MFA (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/MFA-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/MFA-A.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 241
-- Completed: 241
+- Total files: 245
+- Completed: 245
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: FeatureUpdates-A, GPO-B, Scaling-B)
+- Last updated: 2026-06-27 (auto-build: GPO-A, Scaling-A, MFA-B, MFA-A)
