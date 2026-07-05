@@ -14,6 +14,7 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 | `SharePoint-OneDrive/` | Permissions, sync client, migration, storage, external sharing |
 | `Teams/` | Calling plans, device policies, federation, meeting policies, guest access |
 | `Licensing/` | Group-based licensing, service plan conflicts, assignment automation |
+| `Copilot/` | Microsoft 365 Copilot licensing, policy, Conditional Access, and grounding/permission troubleshooting |
 
 ---
 

@@ -1359,9 +1359,54 @@
 
 ---
 
+## Windows — Windows Update Gap Fill (WSUS to WUfB deep dive)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/Windows Update/WSUS to WfUB A.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — Graph API Batch Operations (new topic, pairs with existing Invoke-GraphBatchQuery.ps1 script)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Graph/GraphAPI-BatchOperations-B.md` | ✅ | auto-build |
+| `EntraID/Graph/GraphAPI-BatchOperations-A.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — Identity Protection / Risky Users & Sign-Ins (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/IdentityProtection-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/IdentityProtection-A.md` | ✅ | auto-build |
+
+---
+
+## Intune — Windows Autopatch (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Autopatch-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/Autopatch-A.md` | ✅ | auto-build |
+
+---
+
+## M365 — Copilot (new domain)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Copilot/_AGENT.md` | ✅ | auto-build |
+| `M365/Copilot/Copilot-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 274
-- Completed: 274
+- Total files: 283
+- Completed: 283
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-06-27 (auto-build: CredentialManager-A, AccessPackages-A, AppProtection-A)
+- Last updated: 2026-07-05 (auto-build: Entra ID Protection B/A, Windows Autopatch B/A, M365 Copilot new domain _AGENT+B)
+
+---
+
+## ⚠️ Skipped Items
+- Azure/AVD folder (5 topics, _AGENT.md, Scripts) exists in the repo but was never backfilled into this manifest by earlier runs — content is complete, this is a bookkeeping gap only, not a missing-content gap. Left as-is since instructions say not to overwrite existing content; flagging for future manifest hygiene pass.
+- Legacy files with space-based naming (e.g. `Windows/Troubleshooting/Time/`, `Windows/Troubleshooting/Windows Update/Update to Latest *.md`, `LLM/Prompt/Archive/*`) do not follow the current FORMAT SPEC style (no Learning Pointers section, different code block style). These are pre-existing/stale records referenced in the project's broader rework goal but out of scope for this build-only run — did not touch per "never overwrite existing files."
