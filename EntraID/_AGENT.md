@@ -54,6 +54,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/HybridJoin-B.md` | Hotfix: HAADJ failures, Entra Connect sync |
 | `Troubleshooting/PRT-Issues-B.md` | Hotfix: PRT missing, SSO broken, CA failing |
 | `Troubleshooting/DynamicGroups-B.md` | Hotfix: dynamic group membership rule not evaluating, paused processing, sync lag |
+| `Troubleshooting/DynamicGroups-A.md` | Deep dive: dynamic group evaluation pipeline, rule syntax engine, downstream consumer lag |
+| `Troubleshooting/PasswordProtection-B.md` | Hotfix: Smart Lockout, banned password rejections, hybrid writeback/on-prem agent issues |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
@@ -69,6 +71,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Entra Connect attribute conflict / user not syncing" → `Troubleshooting/HybridJoin-B.md`
 - "Service principal client secret expired (flow/app broken)" → `Scripts/` + rotate secret in Entra App Registrations
 - "Guest user can't access SharePoint" → `EntraID/` B2B guest redemption + `M365/SharePoint-OneDrive/`
+- "Dynamic group not picking up new members / license not assigning" → `Troubleshooting/DynamicGroups-B.md`
+- "User locked out repeatedly / new password keeps getting rejected" → `Troubleshooting/PasswordProtection-B.md`
 
 ---
 

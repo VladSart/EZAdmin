@@ -53,6 +53,7 @@ Result: ALL matching policies' controls must be satisfied
 |------|---------------|
 | `CA-Troubleshooting-B.md` | Hotfix: CA blocking access, identifying the policy |
 | `CA-Design-A.md` | Deep dive: CA architecture, design principles, common patterns |
+| `CA-Design-B.md` | Hotfix: new/edited policy rollout gone wrong — rollback, pilot scoping, break-glass, overlap conflicts |
 | `Scripts/Get-CASignInAnalysis.ps1` | Analyse sign-in logs for CA failures across users |
 
 ---
@@ -65,6 +66,7 @@ Result: ALL matching policies' controls must be satisfied
 - "Legacy app stopped working after CA change" → CA blocking legacy auth
 - "Need break-glass accounts / emergency access" → `CA-Design-A.md`
 - "Designing CA policy for a new client" → `CA-Design-A.md`
+- "Just deployed/edited a policy and now users are locked out" → `CA-Design-B.md`
 
 ---
 

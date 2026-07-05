@@ -1413,15 +1413,37 @@
 
 ---
 
+## Entra ID — Dynamic Groups Deep Dive (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/DynamicGroups-A.md` | ✅ | auto-build |
+
+---
+
+## Security — Conditional Access Design Hotfix (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/ConditionalAccess/CA-Design-B.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — Password Protection & Smart Lockout (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/PasswordProtection-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 286
-- Completed: 286
+- Total files: 289
+- Completed: 289
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-05 (auto-build: M365 Copilot deep-dive A + usage report script (gap fill), Entra ID Dynamic Groups hotfix runbook (new topic))
+- Last updated: 2026-07-05 (auto-build: filled A/B asymmetry gaps — EntraID Dynamic Groups deep dive, CA-Design hotfix companion — plus new topic Entra Password Protection & Smart Lockout hotfix runbook)
 
 ---
 
 ## ⚠️ Skipped Items
 - Azure/AVD folder (5 topics, _AGENT.md, Scripts) exists in the repo but was never backfilled into this manifest by earlier runs — content is complete, this is a bookkeeping gap only, not a missing-content gap. Left as-is since instructions say not to overwrite existing content; flagging for future manifest hygiene pass.
 - Legacy files with space-based naming (e.g. `Windows/Troubleshooting/Time/`, `Windows/Troubleshooting/Windows Update/Update to Latest *.md`, `LLM/Prompt/Archive/*`) do not follow the current FORMAT SPEC style (no Learning Pointers section, different code block style). These are pre-existing/stale records referenced in the project's broader rework goal but out of scope for this build-only run — did not touch per "never overwrite existing files."
+- Manifest bookkeeping is significantly behind actual repo state: dozens of files exist on disk (e.g. `EntraID/Troubleshooting/PIM-*.md`, `MFA-*.md`, `SSPR-*.md`, `CrossTenant-*.md`, most of `Windows/Troubleshooting/*` beyond the originally-tracked set, most of `Security/Defender/*` beyond the originally-tracked set, `M365/Exchange/DMARC-DKIM-*.md`, `EOP-AntiSpam-*.md`, `ArchiveRetention-*.md`, `MessageEncryption-*.md`, `M365/SharePoint-OneDrive/Migration-*.md`, `M365/Teams/Meeting-Policies-*.md`) were built by prior auto-build runs but never added as manifest rows. Content is complete and high quality; this is a bookkeeping-only gap flagged for a future manifest reconciliation pass rather than a content gap.
