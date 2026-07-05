@@ -21,6 +21,8 @@ Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission tr
 | File | What it covers |
 |------|---------------|
 | `Copilot-B.md` | Hotfix runbook — license/policy/CA/grounding triage, diagnosis, and fix paths in under 10 minutes |
+| `Copilot-A.md` | Deep-dive reference — full architecture, Symptom → Cause map, phased troubleshooting, remediation playbooks |
+| `Scripts/Get-CopilotUsageReport.ps1` | Read-only tenant report: Copilot SKU pool, per-user license health (flags Copilot-without-base-license), Teams Copilot policy summary |
 
 ---
 

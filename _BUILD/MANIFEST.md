@@ -1398,12 +1398,27 @@
 
 ---
 
+## M365 — Copilot Deep Dive & Scripts (gap fill)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Copilot/Copilot-A.md` | ✅ | auto-build |
+| `M365/Copilot/Scripts/Get-CopilotUsageReport.ps1` | ✅ | auto-build |
+
+---
+
+## Entra ID — Dynamic Groups (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/DynamicGroups-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 283
-- Completed: 283
+- Total files: 286
+- Completed: 286
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-05 (auto-build: Entra ID Protection B/A, Windows Autopatch B/A, M365 Copilot new domain _AGENT+B)
+- Last updated: 2026-07-05 (auto-build: M365 Copilot deep-dive A + usage report script (gap fill), Entra ID Dynamic Groups hotfix runbook (new topic))
 
 ---
 

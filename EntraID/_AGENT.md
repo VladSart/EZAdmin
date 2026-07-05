@@ -53,6 +53,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 |------|---------------|
 | `Troubleshooting/HybridJoin-B.md` | Hotfix: HAADJ failures, Entra Connect sync |
 | `Troubleshooting/PRT-Issues-B.md` | Hotfix: PRT missing, SSO broken, CA failing |
+| `Troubleshooting/DynamicGroups-B.md` | Hotfix: dynamic group membership rule not evaluating, paused processing, sync lag |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
