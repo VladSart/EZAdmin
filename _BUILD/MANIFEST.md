@@ -1431,15 +1431,24 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `EntraID/Troubleshooting/PasswordProtection-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/PasswordProtection-A.md` | ✅ | auto-build |
+
+---
+
+## Windows — Delivery Optimization (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/DeliveryOptimization-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/DeliveryOptimization-A.md` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 289
-- Completed: 289
+- Total files: 292
+- Completed: 292
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-05 (auto-build: filled A/B asymmetry gaps — EntraID Dynamic Groups deep dive, CA-Design hotfix companion — plus new topic Entra Password Protection & Smart Lockout hotfix runbook)
+- Last updated: 2026-07-05 (auto-build: filled EntraID PasswordProtection-A gap — the only orphaned -B.md in the repo — plus new topic Windows Delivery Optimization B+A covering peer-to-peer update distribution, Group ID/mode config, and Microsoft Connected Cache for WAN saturation on patch day)
 
 ---
 
