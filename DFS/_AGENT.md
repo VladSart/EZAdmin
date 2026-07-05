@@ -26,8 +26,12 @@ This module covers setup, health validation, access failures, replication backlo
 | `Troubleshooting/Namespace/Namespace-A.md` | Deep dive: how DFSN works, dependency chain, all failure modes |
 | `Troubleshooting/Replication/Replication-B.md` | Hotfix: replication backlog, stuck replication, SYSVOL |
 | `Troubleshooting/Replication/Replication-A.md` | Deep dive: DFSR architecture, conflict types, health monitoring |
+| `Troubleshooting/FRS-Migration/FRS-to-DFSR-Migration-B.md` | Hotfix: stuck/failed SYSVOL migration from legacy FRS to DFSR |
+| `Troubleshooting/FRS-Migration/FRS-to-DFSR-Migration-A.md` | Deep dive: the 4-state migration model, AD dependency, irreversibility of Eliminated state |
+| `Troubleshooting/ABE/DFS-ABE-B.md` | Hotfix: Access-Based Enumeration hiding/showing wrong folders |
 | `Scripts/Test-DFSHealth.ps1` | Full health check: namespace targets, replication backlog, event errors |
 | `Scripts/Get-DFSRBacklog.ps1` | Backlog size per replication group/connection |
+| `Scripts/Get-DFSRMigrationState.ps1` | Cross-references dfsrmig state against live DC inventory, flags orphaned DCs and unshared SYSVOL |
 
 ---
 
@@ -39,7 +43,10 @@ This module covers setup, health validation, access failures, replication backlo
 - "SYSVOL not replicating / GPOs not applying" → `Replication-B.md`
 - "DFS conflict files appearing" → `Replication-A.md`
 - "Setting up DFS for the first time" → `Namespace-A.md` + `Replication-A.md`
-- "Health check before/after migration" → `Scripts/Test-DFSHealth.ps1`
+- "Migrating SYSVOL off FRS / dfsrmig stuck" → `FRS-Migration/FRS-to-DFSR-Migration-B.md`
+- "Planning a FRS-to-DFSR SYSVOL migration project" → `FRS-Migration/FRS-to-DFSR-Migration-A.md`
+- "Health check before/after migration" → `Scripts/Test-DFSHealth.ps1`, `Scripts/Get-DFSRMigrationState.ps1`
+- "Users see folders they shouldn't (or can't see ones they should)" → `Troubleshooting/ABE/DFS-ABE-B.md`
 
 ---
 

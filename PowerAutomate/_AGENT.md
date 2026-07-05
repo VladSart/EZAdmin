@@ -32,6 +32,8 @@ This module focuses on what MSPs actually use Power Automate for:
 | `SharePoint/Permission-Management-B.md` | Hotfix: permission flows failing |
 | `Troubleshooting/Connector-Auth-B.md` | Hotfix: connector auth failures, token expiry |
 | `Troubleshooting/Throttling-Limits-B.md` | Hotfix: 429 throttling, flow run quotas |
+| `Troubleshooting/Approval-Workflows-B.md` | Hotfix: stuck approvals, departed approvers, 30-day run ceiling |
+| `Groups-Teams/Groups-Teams-Provisioning-B.md` | Hotfix: M365 Group/Teams self-service provisioning flows — async race conditions, naming policy, owner assignment, guest access, group-based licensing lag |
 | `Scripts/New-SharePointSiteViaGraph.ps1` | PS equivalent: create SP site via Graph (for when Flow won't do it) |
 | `Scripts/Set-SharePointSitePermissions.ps1` | PS: assign/remove site permissions at scale |
 
@@ -46,6 +48,8 @@ This module focuses on what MSPs actually use Power Automate for:
 - "Getting 429 errors or flow suspended" → `Troubleshooting/Throttling-Limits-B.md`
 - "Need to build a site creation flow from scratch" → `SharePoint/SharePoint-Site-Provisioning-A.md`
 - "DLP policy blocking connector" → `EntraID/` (environment admin controls DLP)
+- "Approval flow stuck / approver never responds" → `Troubleshooting/Approval-Workflows-B.md`
+- "Self-service Team/Group provisioning flow fails or is inconsistent" → `Groups-Teams/Groups-Teams-Provisioning-B.md`
 
 ---
 

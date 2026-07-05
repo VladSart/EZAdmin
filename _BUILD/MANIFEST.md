@@ -37,6 +37,9 @@
 | `DFS/Troubleshooting/Replication/Replication-A.md` | ✅ | - |
 | `DFS/Scripts/Test-DFSHealth.ps1` | ✅ | - |
 | `DFS/Scripts/Get-DFSRBacklog.ps1` | ✅ | - |
+| `DFS/Troubleshooting/FRS-Migration/FRS-to-DFSR-Migration-B.md` | ✅ | auto-build |
+| `DFS/Troubleshooting/FRS-Migration/FRS-to-DFSR-Migration-A.md` | ✅ | auto-build |
+| `DFS/Scripts/Get-DFSRMigrationState.ps1` | ✅ | auto-build |
 
 ---
 
@@ -1443,12 +1446,33 @@
 
 ---
 
+## DFS — Access-Based Enumeration (new topic)
+| File | Status | Assigned |
+|------|--------|---------|
+| `DFS/Troubleshooting/ABE/DFS-ABE-B.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — M365 Group/Teams Provisioning (gap fill vs. _AGENT.md scope)
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/Groups-Teams/Groups-Teams-Provisioning-B.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — Approval Workflows (gap fill vs. _AGENT.md scope)
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/Troubleshooting/Approval-Workflows-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 292
-- Completed: 292
+- Total files: 298
+- Completed: 298
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-05 (auto-build: filled EntraID PasswordProtection-A gap — the only orphaned -B.md in the repo — plus new topic Windows Delivery Optimization B+A covering peer-to-peer update distribution, Group ID/mode config, and Microsoft Connected Cache for WAN saturation on patch day)
+- Last updated: 2026-07-06 (auto-build: DFS/PowerAutomate priority pass. Built DFS-ABE-B.md — Access-Based Enumeration, a distinct real-world pain point not covered by the existing Namespace/Replication/FRS-Migration topics. Built two Power Automate files closing gaps explicitly named in PowerAutomate/_AGENT.md's own scope description but never built: M365 Group/Teams self-service provisioning (async provisioning race conditions, naming policy, owner vs. member assignment, guest access, group-based licensing lag) and Approval workflow troubleshooting (stuck approvals, approver departure, 30-day run ceiling, Teams Adaptive Card failures). Chose these because DFS and Power Automate are user-designated top build priorities and both had documented scope gaps rather than needing invented topics.)
 
 ---
 
