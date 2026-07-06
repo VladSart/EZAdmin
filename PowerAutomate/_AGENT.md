@@ -44,6 +44,7 @@ This module focuses on what MSPs actually use Power Automate for:
 | `Scripts/Get-GroupsTeamsProvisioningHealth.ps1` | PS: flags async-race, no-owner, and license-pending conditions on self-service Group/Team provisioning |
 | `Scripts/Get-ApprovalApproverEligibilityAudit.ps1` | PS: checks approver account/license eligibility for a stuck approval, resolves manager for escalation |
 | `Scripts/Get-FlowOwnershipSweep.ps1` | PS: tenant-wide discovery of flows owned by a departing user — no-co-owner and premium-connector risk flags |
+| `Scripts/Get-ThrottlingLimitDiagnostics.ps1` | PS: flags confirmed 429/throttle runs, retry-cascade risk, missing loop concurrency, high-frequency recurrence triggers |
 
 ---
 

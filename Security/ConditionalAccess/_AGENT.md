@@ -60,6 +60,7 @@ Result: ALL matching policies' controls must be satisfied
 | `Scripts/Get-CASignInAnalysis.ps1` | Analyse sign-in logs for CA failures across users |
 | `Scripts/Get-NamedLocationAudit.ps1` | Named Location CIDR overlap/orphan/reference audit |
 | `Scripts/Get-CADeviceFilterAudit.ps1` | Device filter mode/expression risk, orphaned extensionAttribute, Autopilot coverage audit |
+| `Scripts/Get-CAPolicyDesignAudit.ps1` | Break-glass exclusion, pilot-scoping, legacy-auth-gap, recently-enabled, and cross-policy grant-conflict audit |
 
 ---
 

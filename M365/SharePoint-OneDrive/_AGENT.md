@@ -21,6 +21,7 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Migration-A.md` | Migration deep dive — SharePoint Migration Tool/Mover architecture, throttling behaviour, permission remapping |
 | `Scripts/Get-SharePointSiteReport.ps1` | Tenant-wide site inventory — storage, quota, sharing, orphaned-owner report |
 | `Scripts/Get-SharePointPermissionAudit.ps1` | Site sharing-capability alignment, unique-permission sprawl, M365 Group disconnection, guest redemption audit |
+| `Scripts/Get-SharePointMigrationStatus.ps1` | Dual-mode: local SPMT agent/connectivity/log check + destination SPO quota/site-admin check + source pre-scan (oversized files, long paths, bad characters) |
 
 ## Common entry points
 
