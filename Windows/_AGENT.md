@@ -56,6 +56,9 @@ Get-WinEvent -LogName System |
 - "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture)
 - "USB device being blocked by policy" → Intune Device Control policy + Windows event log
 - "VBS breaking a VM or application" → `Scripts/Enable-VBS.ps1` context + registry check
+- "Kerberos auth failing / NTLM fallback" → `Troubleshooting/Kerberos-B.md` + `Scripts/Get-KerberosDiagnostics.ps1`
+- "Can't access a file share / SMB errors" → `Troubleshooting/SMB-B.md` + `Scripts/Get-SMBDiagnostics.ps1`
+- "App or port blocked by firewall" → `Troubleshooting/Firewall-B.md` + `Scripts/Get-FirewallDiagnostics.ps1`
 
 ---
 

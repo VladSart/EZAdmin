@@ -1518,12 +1518,21 @@
 
 ---
 
+## Windows — Script Coverage Gap Fill (11 Troubleshooting topics had zero companion scripts vs. 1-3 in every other domain)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Get-KerberosDiagnostics.ps1` | ✅ | auto-build |
+| `Windows/Scripts/Get-SMBDiagnostics.ps1` | ✅ | auto-build |
+| `Windows/Scripts/Get-FirewallDiagnostics.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 314
-- Completed: 314
+- Total files: 317
+- Completed: 317
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: recovered and pushed 7 files left uncommitted by the prior run — `DHCP-Client-B/A.md`, `Get-DHCPClientDiagnostics.ps1`, `ABM-Token-Renewal-B.md` — after clearing stale git lock files from an earlier crashed process (see note below). Then closed the `ABM-Token-Renewal-A.md` gap explicitly flagged by the prior run's notes: a deep-dive companion to the existing hotfix runbook, covering the token's dual role (ADE device sync + VPP licensing), the "Renew vs Add" distinction, and a Graph-based expiry/parity evidence script. Built a new topic pair, `EntraID/Troubleshooting/CAE-B.md` + `CAE-A.md`, covering Continuous Access Evaluation — critical-event revocation, claims challenges, and strict location enforcement — a real and increasingly common MSP ticket pattern ("user randomly signed out mid-session") that had no existing coverage despite extensive PRT/token-adjacent content already in the repo. Also added `Azure/AVD/Scripts/Test-AVDConnectivity.ps1`, since Azure/AVD only had one script (`Get-AVDSessionHealth.ps1`) versus 2-4 scripts in every comparable domain folder — the new script sweeps all documented AVD/Entra/licensing/CRL endpoints plus optional RDP Shortpath and FSLogix share checks, directly supporting the existing `AVD-Connectivity-B/A.md` runbooks. Updated `EntraID/_AGENT.md`, `macOS/_AGENT.md`, `Azure/_AGENT.md`, and `Azure/AVD/_AGENT.md` entry points for all new files.)
+- Last updated: 2026-07-06 (auto-build: manifest queue was empty (314/314), so this run followed the EXPANSION RULES gap-check step. Surveyed every domain folder against its Scripts/ directory and found Windows was a clear outlier: 13 Troubleshooting topics (Kerberos, SMB, Firewall, NTLM, WMI, EventLog, CredentialManager, CertificateServices, UserProfile, NetworkAdapters, RDP, AppLocker, PrintSpooler) had zero dedicated companion scripts, versus every comparable domain (DFS, Intune, EntraID, Security, M365) having 1-4 topic-specific scripts per folder. Picked the three highest-frequency MSP ticket patterns from that list — Kerberos auth failures, SMB share access failures, and firewall app/port blocks — and built `Get-KerberosDiagnostics.ps1`, `Get-SMBDiagnostics.ps1`, and `Get-FirewallDiagnostics.ps1`, each directly automating the triage/diagnosis steps already documented in the matching `-B.md` hotfix runbook (ticket cache + time skew + DNS SRV + secure channel + SPN + event log for Kerberos; TCP445 + protocol/signing + share/ACL + service state for SMB; BFE/mpssvc + profile + port/program rule + RSOP override + drop-event audit for Firewall). All three follow the established script format: full comment-based help, Write-Status logging, per-check pass/fail rows, console summary, and CSV export shaped for the runbook's Escalation Evidence template. Updated `Windows/_AGENT.md` common entry points for all three. Also found and cleared a stale `.git/HEAD.lock` and `.git/myindex.lock` left by a prior interrupted run before committing (renamed out of the way per the environment note below, not deleted).)
 
 ---
 
