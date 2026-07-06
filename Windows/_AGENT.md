@@ -60,6 +60,8 @@ Get-WinEvent -LogName System |
 - "Can't access a file share / SMB errors" → `Troubleshooting/SMB-B.md` + `Scripts/Get-SMBDiagnostics.ps1`
 - "App or port blocked by firewall" → `Troubleshooting/Firewall-B.md` + `Scripts/Get-FirewallDiagnostics.ps1`
 - "Can't RDP / RDP connection refused or times out" → `Troubleshooting/RDP-B.md` + `Scripts/Get-RDPDiagnostics.ps1`
+- "Events missing / log full / log corrupted" → `Troubleshooting/EventLog-B.md` + `Scripts/Get-EventLogDiagnostics.ps1`
+- "App blocked, need to know which AppLocker rule / AppIDSvc stopped" → `Troubleshooting/AppLocker-B.md` + `Scripts/Get-AppLockerDiagnostics.ps1`
 
 ---
 

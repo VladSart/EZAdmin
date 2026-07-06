@@ -1551,12 +1551,21 @@
 
 ---
 
+## Windows / macOS — Script Coverage Gap Fill (continued, round 3)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Get-EventLogDiagnostics.ps1` | ✅ | auto-build |
+| `Windows/Scripts/Get-AppLockerDiagnostics.ps1` | ✅ | auto-build |
+| `macOS/Scripts/Get-PlatformSSOStatus.sh` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 323
-- Completed: 323
+- Total files: 326
+- Completed: 326
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: manifest queue was empty again, continued the script-coverage gap-check pattern from the prior two runs. Surveyed remaining domains for the same ratio problem — many B+A runbook pairs, few or no topic-specific scripts: macOS stood out hardest, with 10 Troubleshooting topics (ADE-Enrollment, FileVault, PPPC, Platform-SSO, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures) but only 2 generic shell scripts (Get-MacIntuneStatus.sh, Repair-MacMDMEnrollment.sh) in Scripts/, zero topic-specific. Windows still had a residual gap too (10 topics without companion scripts after the prior run's 3 additions). Picked the two highest-frequency macOS MSP ticket patterns with existing B+A pairs and clear client-side diagnostic value — FileVault (encryption/escrow/Secure Token/Bootstrap Token state) and ADE-Enrollment (DEP supervision, Bootstrap Token eligibility, Apple/Intune endpoint reachability, ManagedClient log errors) — both read-only, both cross-reference the exact Fix numbers in their `-B.md` runbooks, and FileVault script never prints/exports the actual recovery key. Also picked the highest-frequency remaining Windows gap: RDP (fDenyTSConnections, TermService+dependencies, port/firewall/NLA state, Remote Desktop Users membership, session event log, local-or-remote via PSRemoting) — follows the same comment-based-help + Write-Status + Preflight→Detect→Execute→Validate→Report + CSV pattern as the existing Kerberos/SMB/Firewall scripts. Updated `macOS/_AGENT.md` and `Windows/_AGENT.md` common entry points for all three. No git lock issues this run; ~8 Windows topics and 8 macOS topics remain script-less for a future pass (AppLocker, CredentialManager, DeliveryOptimization, DNS-Client, EventLog, NTLM, UserProfile, WMI, CertificateServices on Windows; PPPC, Platform-SSO, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures on macOS).
+- Last updated: 2026-07-06 (auto-build, night run: manifest queue empty again; continued the script-coverage gap-check pattern for a third consecutive run. From the prior run's flagged remainder list (Windows: AppLocker, CredentialManager, DeliveryOptimization, DNS-Client, EventLog, NTLM, UserProfile, WMI, CertificateServices; macOS: PPPC, Platform-SSO, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures), verified all these B/A runbook pairs still exist on disk and confirmed none of them yet had a companion script. Picked the two highest-value Windows topics — EventLog (service+dependency chain, log mode/size, corruption Event ID 6, clear events 104/1102, disk space, retention policy, plus a synthetic write-and-verify test) and AppLocker (AppIDSvc health, effective enforcement mode per rule collection, recent block/audit events across all three AppLocker logs, optional Test-AppLockerPolicy + file-identity lookup for a specific file, WDAC cross-check to rule out the other control) — and the highest-value macOS gap, Platform SSO (macOS version gate, MDM enrollment, Extensible SSO profile presence, app-sso registration state + auth method, Company Portal version + extension responsiveness, Kerberos SSO extension as informational hybrid signal, recent unified-log errors). All three follow the established comment-based-help + Write-Status/record + Preflight→Detect→Execute→Validate→Report + CSV-export pattern and cross-reference exact Fix numbers from their `-B.md` runbooks. Updated `Windows/_AGENT.md` and `macOS/_AGENT.md` common entry points; corrected a stale macOS `_AGENT.md` line that pointed "Platform SSO not working" at `EntraID/` when the actual runbook lives in `macOS/Troubleshooting/Platform-SSO-B.md`/`-A.md`. No git lock issues encountered this run. Remaining script-less topics after this run: ~6 on Windows (CredentialManager, DeliveryOptimization, DNS-Client, NTLM, UserProfile, WMI, CertificateServices) and ~7 on macOS (PPPC, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures) — good material for the next pass.
 
 ---
 

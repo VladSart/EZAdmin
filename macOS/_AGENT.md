@@ -50,7 +50,7 @@ sudo profiles -e /tmp/MDMProfile.plist
 - "FileVault not being reported to Intune" → compliance profile + FileVault escrow settings → `Troubleshooting/FileVault-B.md` + `Scripts/Get-FileVaultStatus.sh`
 - "Mac not enrolling / stuck at Setup Assistant" → `Troubleshooting/ADE-Enrollment-B.md` + `Scripts/Get-ADEEnrollmentStatus.sh`
 - "Company Portal shows no apps" → check app assignment + device group membership
-- "Platform SSO not working" → `EntraID/` — Entra ID macOS SSO extension
+- "Platform SSO not registering / user stuck at sign-in / SSO not working" → `Troubleshooting/Platform-SSO-B.md` + `Troubleshooting/Platform-SSO-A.md` + `Scripts/Get-PlatformSSOStatus.sh`
 
 ---
 
