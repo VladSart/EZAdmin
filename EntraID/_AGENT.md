@@ -59,8 +59,14 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/CAE-B.md` | Hotfix: Continuous Access Evaluation — unexpected sign-outs, strict location enforcement |
 | `Troubleshooting/CAE-A.md` | Deep dive: CAE architecture, critical event revocation, claims challenges, strict location enforcement |
 | `Troubleshooting/GlobalSecureAccess-B.md` | Hotfix: Global Secure Access (Internet Access/Private Access) client not tunneling, connector down, CA network compliance |
+| `Troubleshooting/GlobalSecureAccess-A.md` | Deep dive: GSA architecture, traffic forwarding profiles, Private Access connector topology |
+| `Troubleshooting/CrossTenant-A.md` / `-B.md` | Deep dive + hotfix: XTAS default/partner policies, B2B Direct Connect, cross-tenant sync |
+| `Troubleshooting/HybridJoin-A.md` | Deep dive: HAADJ two-phase registration model, SCP, Entra Connect sync timing |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
+| `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
+| `Scripts/Get-GlobalSecureAccessHealth.ps1` | Traffic forwarding profile state, Private Access connector/group health, app-to-connector mapping |
+| `Scripts/Get-HybridJoinDiagnostics.ps1` | Device-local HAADJ chain check: domain join, SCP, DRS reachability, scheduled task, device cert |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
 ---
@@ -78,6 +84,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "User locked out repeatedly / new password keeps getting rejected" → `Troubleshooting/PasswordProtection-B.md`
 - "User randomly signed out mid-session" / "session ended after password reset or VPN change" → `Troubleshooting/CAE-B.md`
 - "Traffic not tunneling / Private Access app unreachable / GSA client won't connect" → `Troubleshooting/GlobalSecureAccess-B.md`
+- "Guest from partner org keeps getting MFA prompts / Teams Shared Channel not available to external member" → `Troubleshooting/CrossTenant-B.md`
+- "Device domain-joined but stuck in Entra as Pending / dsregcmd shows AzureAdJoined: NO" → `Troubleshooting/HybridJoin-B.md` + `Scripts/Get-HybridJoinDiagnostics.ps1`
 
 ---
 
