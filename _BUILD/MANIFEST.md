@@ -1767,7 +1767,25 @@
 
 ---
 
+## M365/Teams, M365/SharePoint-OneDrive, Azure/Windows365 — Script Coverage Gap Fill (run 25 — Device-Policies, Permissions, Cloud PC fleet status)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Teams/Scripts/Get-TeamsDevicePolicyAudit.ps1` | ✅ | auto-build |
+| `M365/SharePoint-OneDrive/Scripts/Get-SharePointPermissionAudit.ps1` | ✅ | auto-build |
+| `Azure/Windows365/Scripts/Get-CloudPcFleetStatus.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
+- Total files: 394
+- Completed: 394
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-07-06 (auto-build, run 25, scheduled task "ezadmin-night-build": manifest queue still empty (only the legend row, no actual ⬜ items). Per the standing note at the top of this section and project memory, verified real script-coverage gaps directly against the filesystem (`ls`) rather than trusting older manifest text, per the repeated lesson that manifest bookkeeping drifts from actual repo state. Confirmed three real, filesystem-verified gaps and closed all three: `M365/Teams/Scripts/Get-TeamsDevicePolicyAudit.ps1` (Device-Policies was the only Teams topic still script-less — audits resource-account Entra ID state, Teams Rooms Pro/Basic or Common Area Phone licensing, TeamsUpdateManagementPolicy assignment, calendar AutomateProcessing=AutoAccept per Device-Policies-B.md Fix 6, and optionally IP phone policy/hot-desking state — flags ACCOUNT_DISABLED, NO_TEAMS_ROOMS_LICENSE, NO_UPDATE_POLICY_ASSIGNED, CALENDAR_NOT_AUTO_ACCEPT per the runbook's most common device-account root causes; also does a best-effort tenant-wide CA/MFA heuristic check tied to the runbook's #1 Learning Pointer that MFA must never be enforced on unattended resource accounts), `M365/SharePoint-OneDrive/Scripts/Get-SharePointPermissionAudit.ps1` (Permissions was the only SharePoint-OneDrive topic still script-less — cross-references site vs. tenant SharingCapability rank to flag SITE_SHARING_EXCEEDS_TENANT, flags SITE_LOCKED, counts broken-inheritance items in the default Documents library against a configurable threshold to flag HIGH_UNIQUE_PERMISSION_COUNT per Permissions-A.md's "permission sprawl" Learning Pointer, flags GROUP_CONNECTED_NO_GROUPID for Teams-template sites with an empty GroupId per Permissions-B.md Fix 4, and optionally checks guest ExternalUserState for PENDING_GUEST_REDEMPTION per Permissions-A.md Validation Step 6), and `Azure/Windows365/Scripts/Get-CloudPcFleetStatus.ps1` (the run-19/20-flagged gap, finally closed — mirrors the pattern of `Azure/AVD/Scripts/Get-AVDSessionHealth.ps1`: fleet-wide Cloud PC status/StatusDetails report flagging PROVISIONING_STUCK past a configurable pendingProvisioning-hours threshold and PROVISIONING_FAILED, independent ANC health section since one unhealthy ANC blocks all dependent provisioning, NOT_IN_INTUNE cross-check for the "provisioned but unusable" case, and a per-SKU Windows 365 license consumption summary flagging NEAR_EXHAUSTION at 95%+). All three read-only, no remediation actions. Also backfilled `M365/Teams/_AGENT.md` and `M365/SharePoint-OneDrive/_AGENT.md` folder-contents tables — both were significantly behind actual repo state (missing Meeting-Policies, Teams-Rooms, Calling-A, Device-Policies-A rows in Teams; missing Migration, Permissions-A, Sync-Issues-A rows in SharePoint-OneDrive; neither had any Scripts/ rows at all) — and added the new script to `Azure/_AGENT.md`. Confirmed via `ls .git/*.lock` that no stale lock files were present before committing. **Remaining known gaps for next run:** Intune script gaps (Filters, Kiosk, Platform-Scripts, ScopeTags — flagged since run 18, not yet reverified against filesystem this run), Exchange SharedMailbox (flagged script-less since run 21), Security/ConditionalAccess CA-Design and CA-Filters topics (confirmed via `ls` this run — only Get-CASignInAnalysis.ps1 and Get-NamedLocationAudit.ps1 exist, covering Named-Locations and CA-Troubleshooting; CA-Design and CA-Filters remain script-less).
+
+---
+
+## Build Progress (previous)
 - Total files: 391
 - Completed: 391
 - In progress: 0

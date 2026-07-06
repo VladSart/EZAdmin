@@ -34,6 +34,7 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `Files/Scripts/Get-AzureFileShareHealth.ps1` | Reports share quota/usage, identity auth config, network rules, RBAC assignments |
 | `Windows365/Windows365-B.md` | Windows 365 hotfix runbook — provisioning failures, ANC issues, resize/reprovision, client connectivity |
 | `Windows365/Windows365-A.md` | Windows 365 deep dive — provisioning policy pipeline, ANC architecture, licensing model, Frontline shared pools |
+| `Windows365/Scripts/Get-CloudPcFleetStatus.ps1` | Fleet-wide Cloud PC provisioning status, ANC health, and license consumption report |
 
 ---
 
@@ -49,6 +50,7 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"Rule out network as the cause before escalating"** → `AVD/Scripts/Test-AVDConnectivity.ps1`
 - **"Cloud PC stuck provisioning / failed"** → `Windows365/Windows365-B.md`
 - **"Windows 365 vs AVD — which do I use for this issue"** → `Windows365/Windows365-A.md` (comparison table)
+- **"Fleet-wide Cloud PC health for a ticket/report"** → `Windows365/Scripts/Get-CloudPcFleetStatus.ps1`
 
 ---
 

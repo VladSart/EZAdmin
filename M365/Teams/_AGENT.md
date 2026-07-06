@@ -15,7 +15,17 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | File | What it covers |
 |------|---------------|
 | `Calling-B.md` | Teams PSTN calling issues — no dial tone, call quality, direct routing, Operator Connect |
+| `Calling-A.md` | Teams calling deep dive — voice routing architecture, dial plans, PSTN gateway/Operator Connect internals |
 | `Device-Policies-B.md` | Teams device policies — meeting room devices, IP phones, update rings, Teams Rooms |
+| `Device-Policies-A.md` | Teams device policy deep dive — policy architecture, precedence, direct vs. group assignment, MTR/IP phone management planes |
+| `Meeting-Policies-B.md` | Meeting policy hotfix — recording/lobby/screen-share restrictions not applying |
+| `Meeting-Policies-A.md` | Meeting policy deep dive — policy sync, group assignment rank conflicts, organizer-vs-attendee precedence |
+| `Teams-Rooms-A.md` | Teams Rooms (MTR) deep dive — resource account model, licensing, device management plane |
+| `Teams-Rooms-B.md` | Teams Rooms hotfix — device not signing in, offline, wrong meeting policy |
+| `Scripts/Get-TeamsCallQuality.ps1` | Call quality dashboard (CQD-style) for a user or fleet |
+| `Scripts/Get-TeamsMeetingPolicyAudit.ps1` | Meeting policy + group assignment rank-conflict audit, optional per-user effective policy resolution |
+| `Scripts/Get-TeamsRoomDeviceHealth.ps1` | Teams Rooms resource account and licensing health fleet report |
+| `Scripts/Get-TeamsDevicePolicyAudit.ps1` | Device account health, update/IP-phone policy assignment, and calendar auto-accept audit for resource accounts |
 
 ## Common entry points
 
@@ -24,6 +34,8 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 - "Teams Room device not signing in" → `Device-Policies-B.md` Fix 1
 - "IP phone showing as offline" → `Device-Policies-B.md` Triage
 - "Teams device won't update firmware" → `Device-Policies-B.md` Fix 4
+- "Room shows wrong meeting info / calendar not auto-accepting" → `Device-Policies-B.md` Fix 6, or `Scripts/Get-TeamsDevicePolicyAudit.ps1` for a fleet-wide check
+- "Can't record / different users get different meeting features" → `Meeting-Policies-B.md`, use `Scripts/Get-TeamsMeetingPolicyAudit.ps1` for rank-conflict detection
 - "User can't join meetings" → check `EntraID/` for auth, then CA policy
 - "Teams not syncing calendar" → `M365/Exchange/` — EWS and Autodiscover
 - "Guest can't access team" → check Teams admin centre → Guest access settings

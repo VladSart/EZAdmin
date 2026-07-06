@@ -14,7 +14,13 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | File | What it covers |
 |------|---------------|
 | `Sync-Issues-B.md` | OneDrive/SharePoint sync client errors — AADSTS, locked files, quota, selective sync |
+| `Sync-Issues-A.md` | Sync client deep dive — sync engine architecture, libraries sync scope, conflict resolution |
 | `Permissions-B.md` | SharePoint permission inheritance breaks, sharing link failures, external access issues |
+| `Permissions-A.md` | Permission model deep dive — layered inheritance, sharing link types, M365 Group vs. SPO group sync |
+| `Migration-B.md` | Migration hotfix — failed migration jobs, throttling, mapping errors |
+| `Migration-A.md` | Migration deep dive — SharePoint Migration Tool/Mover architecture, throttling behaviour, permission remapping |
+| `Scripts/Get-SharePointSiteReport.ps1` | Tenant-wide site inventory — storage, quota, sharing, orphaned-owner report |
+| `Scripts/Get-SharePointPermissionAudit.ps1` | Site sharing-capability alignment, unique-permission sprawl, M365 Group disconnection, guest redemption audit |
 
 ## Common entry points
 
@@ -25,6 +31,8 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 - "OneDrive storage quota exceeded" → `Sync-Issues-B.md` Fix 4 (quota management)
 - "SharePoint sharing link stopped working" → `Permissions-B.md` Fix 2 (link policy)
 - "Site collection not showing in admin centre" → `Permissions-B.md` — check deleted sites or misrouted hub
+- "Audit permission sprawl / broken inheritance across sites" → `Scripts/Get-SharePointPermissionAudit.ps1`
+- "Migrating content into SharePoint" → `Migration-B.md` (hotfix) or `Migration-A.md` (architecture)
 
 ## Key diagnostic commands
 
