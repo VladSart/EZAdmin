@@ -1536,12 +1536,27 @@
 
 ---
 
+## macOS — Script Coverage Gap Fill (10 Troubleshooting topics had zero topic-specific scripts — only 2 generic device-status/repair scripts existed)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Scripts/Get-FileVaultStatus.sh` | ✅ | auto-build |
+| `macOS/Scripts/Get-ADEEnrollmentStatus.sh` | ✅ | auto-build |
+
+---
+
+## Windows — Script Coverage Gap Fill (continued)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Get-RDPDiagnostics.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 320
-- Completed: 320
+- Total files: 323
+- Completed: 323
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: manifest queue was empty, so this run continued the script-coverage gap-check from the prior run. After fixing Windows (13→10 gap topics remaining), re-surveyed all domains: Intune stood out with 21 Troubleshooting topics but only 3 generic Scripts (device status, sync, assignment report) — none topic-specific, versus DFS/EntraID/Security/M365 each having 1-4 topic-specific scripts per folder. Picked the three highest-frequency MSP ticket patterns with existing B+A runbook pairs but no script: LAPS (password rotation/retrieval failures), Certificates (SCEP/PKCS delivery failures), and Security Baselines (Error/Conflict/Pending drift). Built `Get-LAPSPasswordStatus.ps1` (Graph-based LAPS retrieval + rotation status + optional legacy-LAPS-CSE remote registry check, password hidden by default behind -RevealPassword), `Get-CertificateProfileStatus.ps1` (Graph deviceConfigurationStates filtered to cert-profile display names, flags Failed/Conflict/stale-Pending against a configurable threshold), and `Get-SecurityBaselineDrift.ps1` (Graph beta deviceManagement/intents + per-intent deviceStates, fleet-wide Error/Conflict/Pending report). All three are read-only against Graph, follow the established script format (comment-based help, Write-Status logging, Preflight→Detect→Execute→Validate→Report, CSV export), and cross-reference the specific Fix numbers in their matching `-B.md` runbooks. Updated `Intune/_AGENT.md` folder contents and common entry points. No git lock issues this run.)
+- Last updated: 2026-07-06 (auto-build: manifest queue was empty again, continued the script-coverage gap-check pattern from the prior two runs. Surveyed remaining domains for the same ratio problem — many B+A runbook pairs, few or no topic-specific scripts: macOS stood out hardest, with 10 Troubleshooting topics (ADE-Enrollment, FileVault, PPPC, Platform-SSO, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures) but only 2 generic shell scripts (Get-MacIntuneStatus.sh, Repair-MacMDMEnrollment.sh) in Scripts/, zero topic-specific. Windows still had a residual gap too (10 topics without companion scripts after the prior run's 3 additions). Picked the two highest-frequency macOS MSP ticket patterns with existing B+A pairs and clear client-side diagnostic value — FileVault (encryption/escrow/Secure Token/Bootstrap Token state) and ADE-Enrollment (DEP supervision, Bootstrap Token eligibility, Apple/Intune endpoint reachability, ManagedClient log errors) — both read-only, both cross-reference the exact Fix numbers in their `-B.md` runbooks, and FileVault script never prints/exports the actual recovery key. Also picked the highest-frequency remaining Windows gap: RDP (fDenyTSConnections, TermService+dependencies, port/firewall/NLA state, Remote Desktop Users membership, session event log, local-or-remote via PSRemoting) — follows the same comment-based-help + Write-Status + Preflight→Detect→Execute→Validate→Report + CSV pattern as the existing Kerberos/SMB/Firewall scripts. Updated `macOS/_AGENT.md` and `Windows/_AGENT.md` common entry points for all three. No git lock issues this run; ~8 Windows topics and 8 macOS topics remain script-less for a future pass (AppLocker, CredentialManager, DeliveryOptimization, DNS-Client, EventLog, NTLM, UserProfile, WMI, CertificateServices on Windows; PPPC, Platform-SSO, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures on macOS).
 
 ---
 
