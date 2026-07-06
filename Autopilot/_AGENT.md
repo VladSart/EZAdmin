@@ -45,12 +45,27 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 
 ## Common entry points
 
-- "Device not picking up Autopilot profile during OOBE" → `Troubleshooting/Profile-Not-Assigned-B.md`
-- "Stuck on Enrollment Status Page" → `Troubleshooting/ESP-Stuck-B.md`
-- "Hybrid join Autopilot failing" → `Troubleshooting/HybridJoin-Autopilot-B.md`
-- "TPM attestation error" → `Troubleshooting/TPM-Attestation-B.md`
+- "Device not picking up Autopilot profile during OOBE" → `Troubleshooting/Profile-Not-Assigned-B.md` + `Scripts/Get-AutopilotProfileAssignmentAudit.ps1`
+- "Stuck on Enrollment Status Page" → `Troubleshooting/ESP-Stuck-B.md` + `Scripts/Get-ESPDeploymentStatus.ps1`
+- "Hybrid join Autopilot failing" → `Troubleshooting/HybridJoin-Autopilot-B.md` (cross-ref `EntraID/Scripts/Get-HybridJoinDiagnostics.ps1`)
+- "TPM attestation error" → `Troubleshooting/TPM-Attestation-B.md` + `Scripts/Get-TPMAttestationStatus.ps1`
 - "Need to upload hardware hash and enroll" → `Scripts/Upload-Hash-Enroll2Autopilot.ps1`
 - "Network test before Autopilot deployment" → `Scripts/Test-AutopilotNetworkRequirements.ps1`
+
+---
+
+## Folder contents
+
+| File | What it covers |
+|------|-----------------|
+| `Scripts/Get-AutopilotDeviceStatus.ps1` | Comprehensive Autopilot device status from Intune via Graph |
+| `Scripts/Get-AutopilotProfileAssignmentAudit.ps1` | Single-device or tenant-wide audit of profile assignment breakdown — hash registration, Entra device object, dynamic group membership, Group Tag rule matching, duplicate registrations |
+| `Scripts/Get-ESPDeploymentStatus.ps1` | Device-local ESP diagnostic — event logs, IME app-install log, ESP/DeviceContext registry state, Win32 app tracking, Hybrid Join check, ESP endpoint connectivity |
+| `Scripts/Get-EnrollmentLogs.ps1` | Collects Autopilot/Intune enrollment event log entries to a transcript |
+| `Scripts/Get-TPMAttestationStatus.ps1` | Device-local TPM attestation diagnostic — TPM state/spec version, clock accuracy, attestation endpoint reachability, dsregcmd join state, TPM-WMI event log |
+| `Scripts/Upload-AutopilotDiagnostics.ps1` | Uploads Autopilot diagnostic data for support cases |
+| `Scripts/Upload-Hash-Enroll2Autopilot.ps1` | Captures hardware hash and enrolls device into Autopilot |
+| `Troubleshooting/Test-AutopilotNetworkRequirements.ps1` | Tests reachability of required Autopilot network endpoints |
 
 ---
 
