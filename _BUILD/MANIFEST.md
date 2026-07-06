@@ -1725,7 +1725,23 @@
 
 ---
 
+## M365 — Exchange Script Coverage Gap Fill (round 2 — MessageEncryption, PublicFolders, RoomMailbox)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/Scripts/Get-OMEConfigurationAudit.ps1` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-PublicFolderHealthReport.ps1` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-RoomMailboxAudit.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
+- Total files: 382
+- Completed: 382
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-07-06 (auto-build, night run 21: manifest queue still empty. Followed run 20's explicit recommendation — closed 3 of the 4 remaining M365/Exchange script-coverage gaps: `Get-OMEConfigurationAudit.ps1` (single-pass audit of IRM config, OME config/OTP, the optional Test-IRMConfiguration end-to-end check, and transport-rule targeting — flags IRM_NOT_ENABLED, OTP_DISABLED, NO_OME_TRANSPORT_RULE and OME_RULE_DISABLED per MessageEncryption-B.md's Triage/Fix 1-3, plus an optional per-user RMS/AIP license check via Get-MgUserLicenseDetail that surfaces the "OME succeeds silently without encrypting" licensing gap called out in the runbook's Learning Pointers), `Get-PublicFolderHealthReport.ps1` (audits org-level PublicFoldersEnabled, confirms a root PF mailbox exists, and flags STALE_HIERARCHY_SYNC per mailbox against a configurable threshold — automating PublicFolders-B.md's Diagnosis Steps 1-2 across every PF mailbox instead of one at a time — with an optional -FolderPath check for the NO_DEFAULT_PERMISSION case from Diagnosis Step 4), and `Get-RoomMailboxAudit.ps1` (fleet-wide room audit flagging WRONG_MAILBOX_TYPE, NO_BOOKING_PATH — AllBookInPolicy false with an empty BookInPolicy, the runbook's most common root cause for blanket booking declines — NOT_AUTO_ACCEPT, CALENDAR_PERMISSION_NONE, and an optional -CheckEntraSignIn switch that flags SIGNIN_NOT_BLOCKED per RoomMailbox-B.md's standing security Learning Pointer that every room's Entra account should have sign-in blocked). All three are read-only. **M365/Exchange script coverage is now 8/9** (topic count corrected from run 20's "8" to the actual 9: ArchiveRetention, DMARC-DKIM, EOP-AntiSpam, Hybrid-Coexistence, Mail-Flow, MessageEncryption, PublicFolders, RoomMailbox, SharedMailbox); only SharedMailbox remains script-less. Suggest next run closes SharedMailbox, then moves to SharePoint-OneDrive (1/3 — Permissions and Migration need scripts) and Teams (1/4 — Device-Policies, Meeting-Policies, Teams-Rooms need scripts), the two remaining tracked script-coverage gaps repo-wide. Checked for stale `.git/index.lock`/`HEAD.lock` per the standing environment note before committing; none blocking found this run.
+
+## Build Progress (previous)
 - Total files: 379
 - Completed: 379
 - In progress: 0
