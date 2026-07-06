@@ -1734,7 +1734,25 @@
 
 ---
 
+## Security — Purview / M365 Teams Script Coverage Gap Fill (round 4 — Insider-Risk, eDiscovery, Meeting-Policies — closes the 3 gaps flagged by name in run 22's note)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Purview/Scripts/Get-InsiderRiskPolicyStatus.ps1` | ✅ | auto-build |
+| `Security/Purview/Scripts/Get-eDiscoveryHoldAudit.ps1` | ✅ | auto-build |
+| `M365/Teams/Scripts/Get-TeamsMeetingPolicyAudit.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
+- Total files: 388
+- Completed: 388
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-07-06 (auto-build, night run 23: manifest queue still empty. Verified via `ls` against the actual filesystem (not manifest self-reporting, per the standing drift warning) that run 22's three named gaps were real: Security/Purview/Scripts had only DLP + Sensitivity-Labels (Insider-Risk and eDiscovery script-less), M365/Teams/Scripts had only Get-TeamsCallQuality.ps1 + Get-TeamsRoomDeviceHealth.ps1 (Meeting-Policies and Device-Policies script-less), and M365/SharePoint-OneDrive/Scripts had only Get-SharePointSiteReport.ps1 (Permissions and Migration script-less). Closed the Purview + Teams gaps this run: `Get-InsiderRiskPolicyStatus.ps1` (checks UAL ingestion — the foundation signal per Insider-Risk-A.md's Learning Pointers — lists IRM policies, flags NOISY_POLICY when a policy's open-alert severity distribution is mostly High per Phase 2 guidance that this usually means indicator weights are misconfigured rather than a true-positive storm, checks E5/E5-Compliance licence coverage, and optionally cross-references Adaptive Protection CA policies against current risk levels), `Get-eDiscoveryHoldAudit.ps1` (automates eDiscovery-A.md Playbook 2 tenant-wide and adds HOLD_ERROR for location exceptions, HOLD_PENDING_STALE past a configurable hour threshold beyond normal 1-24h propagation, and EXPORT_EXPIRING/EXPORT_EXPIRED tracking against the 30-day Azure Blob staging limit called out in the runbook's Export Mechanics), and `Get-TeamsMeetingPolicyAudit.ps1` (flags PERMISSIVE_LOBBY policies where AutoAdmittedUsers=Everyone per the runbook's lobby-hardening Learning Pointer, detects RANK_CONFLICT when group policy assignments share a tied rank — an ambiguous-priority condition that produces the same symptom as Phase 5's assignment-conflict troubleshooting — and optionally resolves per-user effective policy plus Audio Conferencing and Teams Premium licence status for a batch of UPNs). All three read-only. **M365/Teams script coverage is now 2/4** (Calling and Device-Policies remain script-less); **Security/Purview script coverage is now 4/4, fully closed.** Remaining confirmed gaps for next run: M365/Teams (Calling, Device-Policies), M365/SharePoint-OneDrive (Permissions, Migration — 1/3 scripted), Security/ConditionalAccess (CA-Filters — 2 scripts cover 4 topics, unclear if CA-Filters itself has a dedicated script; verify directly before building to avoid a duplicate). Checked for stale `.git/index.lock`/`HEAD.lock` per the standing environment note before committing.
+
+---
+
+## Build Progress (previous)
 - Total files: 385
 - Completed: 385
 - In progress: 0
