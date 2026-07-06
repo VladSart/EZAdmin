@@ -28,6 +28,7 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `AVD/FSLogix-A.md` | FSLogix deep dive — storage backend (Azure Files/ANF), Cloud Cache, redirection rules |
 | `AVD/AppAttach-B.md` | MSIX App Attach hotfix — app not available in session, package not mounting |
 | `AVD/Scripts/Get-AVDSessionHealth.ps1` | Reports session host availability, drain mode, session counts across host pools |
+| `AVD/Scripts/Test-AVDConnectivity.ps1` | Tests connectivity to required AVD/Entra/licensing/CRL endpoints; optional RDP Shortpath and FSLogix share checks |
 
 ---
 
@@ -40,6 +41,7 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"AVD performance issues / high latency"** → `AVD/AVD-Connectivity-A.md` (RDP Shortpath section)
 - **"FSLogix profile disk growing too large"** → `AVD/FSLogix-A.md` (redirection and exclusion rules)
 - **"Collect host pool health for a ticket"** → `AVD/Scripts/Get-AVDSessionHealth.ps1`
+- **"Rule out network as the cause before escalating"** → `AVD/Scripts/Test-AVDConnectivity.ps1`
 
 ---
 

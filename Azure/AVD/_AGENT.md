@@ -25,6 +25,8 @@ Azure Virtual Desktop (AVD) troubleshooting runbooks and diagnostic scripts for 
 | `AVD-B.md` | Hotfix runbook — diagnose and resolve AVD session/connectivity issues in under 10 minutes |
 | `AVD-A.md` | Deep-dive reference — host pool architecture, session brokering, FSLogix, image lifecycle |
 | `Scripts/Get-AVDSessionHealth.ps1` | Reports session host health, active sessions, drain mode, and FSLogix VHD status |
+| `Scripts/Test-AVDConnectivity.ps1` | Tests required AVD/Entra/licensing/CRL endpoint connectivity; optional RDP Shortpath and FSLogix share checks |
+| `Scripts/Test-AVDConnectivity.ps1` | Tests connectivity to all required AVD/Entra/licensing/CRL endpoints; optional RDP Shortpath and FSLogix share checks |
 
 ---
 

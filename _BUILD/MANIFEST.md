@@ -1499,17 +1499,36 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `macOS/Troubleshooting/ABM-Token-Renewal-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/ABM-Token-Renewal-A.md` | ✅ | auto-build |
+
+---
+
+## Entra ID — Continuous Access Evaluation (new topic: CAE critical-event revocation + strict location enforcement)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/CAE-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/CAE-A.md` | ✅ | auto-build |
+
+---
+
+## Azure/AVD — Connectivity Test Script (gap fill: only 1 script existed vs. 2-4 in comparable folders)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/AVD/Scripts/Test-AVDConnectivity.ps1` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 309
-- Completed: 309
+- Total files: 314
+- Completed: 314
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: identified that Windows/Troubleshooting had a DNS-Client pair but no DHCP-Client runbook despite DHCP failures — APIPA, scope exhaustion, relay/IP-helper misconfiguration, rogue DHCP servers — being one of the most common "no network" ticket categories in MSP environments; built `DHCP-Client-B.md`/`DHCP-Client-A.md` covering the DORA handshake, T1/T2 lease renewal timing, multi-VLAN relay dependency, and scope option precedence, plus `Get-DHCPClientDiagnostics.ps1` as a first-response triage script. Also identified that macOS's `MDM-Certificate-Renewal-B.md` only covers the APNs push certificate / device MDM identity cert, while the Apple Business Manager/ASM server token (which drives ADE device sync and VPP app licensing) is a separate annually-expiring credential with no dedicated runbook and a real risk of being confused with the push cert during an incident; built `ABM-Token-Renewal-B.md` with an explicit comparison table against the push-cert runbook to prevent that exact confusion. Updated `Windows/_AGENT.md` and `macOS/_AGENT.md` entry points for all four new files.)
+- Last updated: 2026-07-06 (auto-build: recovered and pushed 7 files left uncommitted by the prior run — `DHCP-Client-B/A.md`, `Get-DHCPClientDiagnostics.ps1`, `ABM-Token-Renewal-B.md` — after clearing stale git lock files from an earlier crashed process (see note below). Then closed the `ABM-Token-Renewal-A.md` gap explicitly flagged by the prior run's notes: a deep-dive companion to the existing hotfix runbook, covering the token's dual role (ADE device sync + VPP licensing), the "Renew vs Add" distinction, and a Graph-based expiry/parity evidence script. Built a new topic pair, `EntraID/Troubleshooting/CAE-B.md` + `CAE-A.md`, covering Continuous Access Evaluation — critical-event revocation, claims challenges, and strict location enforcement — a real and increasingly common MSP ticket pattern ("user randomly signed out mid-session") that had no existing coverage despite extensive PRT/token-adjacent content already in the repo. Also added `Azure/AVD/Scripts/Test-AVDConnectivity.ps1`, since Azure/AVD only had one script (`Get-AVDSessionHealth.ps1`) versus 2-4 scripts in every comparable domain folder — the new script sweeps all documented AVD/Entra/licensing/CRL endpoints plus optional RDP Shortpath and FSLogix share checks, directly supporting the existing `AVD-Connectivity-B/A.md` runbooks. Updated `EntraID/_AGENT.md`, `macOS/_AGENT.md`, `Azure/_AGENT.md`, and `Azure/AVD/_AGENT.md` entry points for all new files.)
 
 ---
+
+## ⚠️ Environment Note — Git Lock File Accumulation
+- The bash sandbox mount backing this repo's working directory is a FUSE bridge to the user's real filesystem. This bridge silently blocks `unlink()`/`rm` on existing files (create and same-directory overwrite-rename both work, but plain delete does not), which causes git to occasionally strand `.lock` files (`index.lock`, `HEAD.lock`, `objects/*/tmp_obj_*`) when a prior process is interrupted mid-operation. This run found and had to work around a stale `index.lock` and `HEAD.lock` from a previous crashed run by renaming them out of the way (rename-to-new-name succeeds even though delete does not) and using `GIT_INDEX_FILE` to bypass the stranded index lock. Dozens of harmless orphaned `*.lock*`/`*.stale*` files have accumulated in `.git/` over many runs from this same root cause — they do not affect repo integrity (git ignores exact-named lock files with different names) but are visual clutter in `.git/`. Future runs should check for and clear `.git/index.lock` and `.git/HEAD.lock` (via rename, not delete) before committing if a commit fails with "Unable to create ... File exists."
 
 ## ⚠️ Skipped Items
 - Azure/AVD folder (5 topics, _AGENT.md, Scripts) exists in the repo but was never backfilled into this manifest by earlier runs — content is complete, this is a bookkeeping gap only, not a missing-content gap. Left as-is since instructions say not to overwrite existing content; flagging for future manifest hygiene pass.

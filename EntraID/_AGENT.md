@@ -56,6 +56,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/DynamicGroups-B.md` | Hotfix: dynamic group membership rule not evaluating, paused processing, sync lag |
 | `Troubleshooting/DynamicGroups-A.md` | Deep dive: dynamic group evaluation pipeline, rule syntax engine, downstream consumer lag |
 | `Troubleshooting/PasswordProtection-B.md` | Hotfix: Smart Lockout, banned password rejections, hybrid writeback/on-prem agent issues |
+| `Troubleshooting/CAE-B.md` | Hotfix: Continuous Access Evaluation — unexpected sign-outs, strict location enforcement |
+| `Troubleshooting/CAE-A.md` | Deep dive: CAE architecture, critical event revocation, claims challenges, strict location enforcement |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
@@ -73,6 +75,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Guest user can't access SharePoint" → `EntraID/` B2B guest redemption + `M365/SharePoint-OneDrive/`
 - "Dynamic group not picking up new members / license not assigning" → `Troubleshooting/DynamicGroups-B.md`
 - "User locked out repeatedly / new password keeps getting rejected" → `Troubleshooting/PasswordProtection-B.md`
+- "User randomly signed out mid-session" / "session ended after password reset or VPN change" → `Troubleshooting/CAE-B.md`
 
 ---
 
