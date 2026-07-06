@@ -26,7 +26,9 @@ Azure Virtual Desktop (AVD) troubleshooting runbooks and diagnostic scripts for 
 | `AVD-A.md` | Deep-dive reference — host pool architecture, session brokering, FSLogix, image lifecycle |
 | `Scripts/Get-AVDSessionHealth.ps1` | Reports session host health, active sessions, drain mode, and FSLogix VHD status |
 | `Scripts/Test-AVDConnectivity.ps1` | Tests required AVD/Entra/licensing/CRL endpoint connectivity; optional RDP Shortpath and FSLogix share checks |
-| `Scripts/Test-AVDConnectivity.ps1` | Tests connectivity to all required AVD/Entra/licensing/CRL endpoints; optional RDP Shortpath and FSLogix share checks |
+| `Scripts/Get-AVDAppAttachHealth.ps1` | Audits MSIX App Attach on a session host — mount state, AppX registration, AppXSVC/CimFS driver, optional package share connectivity |
+| `Scripts/Get-FSLogixProfileHealth.ps1` | Audits FSLogix profile containers on a session host — service/driver, registry config, SMB/Kerberos auth, locked VHD(X) detection |
+| `Scripts/Get-AVDScalingPlanAudit.ps1` | Fleet audit of Scaling Plans — RBAC prerequisite, host pool assignment, drain/active-session conflicts, zero-floor Personal pools, diagnostic settings |
 
 ---
 
