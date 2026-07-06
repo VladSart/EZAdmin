@@ -1470,12 +1470,28 @@
 
 ---
 
+## DFS — Site Costing / Referral Ordering (new topic, gap fill vs. Namespace-A.md passing mentions)
+| File | Status | Assigned |
+|------|--------|---------|
+| `DFS/Troubleshooting/SiteCosting/DFS-SiteCosting-B.md` | ✅ | auto-build |
+| `DFS/Troubleshooting/SiteCosting/DFS-SiteCosting-A.md` | ✅ | auto-build |
+
+---
+
+## Power Automate — Flow Ownership Transfer (new topic, offboarding gap)
+| File | Status | Assigned |
+|------|--------|---------|
+| `PowerAutomate/Troubleshooting/Flow-Ownership-Transfer-B.md` | ✅ | auto-build |
+| `PowerAutomate/Troubleshooting/Flow-Ownership-Transfer-A.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 301
-- Completed: 301
+- Total files: 305
+- Completed: 305
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: closed the last three known A/B gaps in the two user-designated HIGH PRIORITY domains, DFS and Power Automate. Built `DFS-ABE-A.md` (deep dive companion to the existing ABE hotfix runbook — full two-layer architecture explanation of namespace-root vs. per-share ABE flags, DFSR non-replication of share settings, effective-access nuance), `Groups-Teams-Provisioning-A.md` (deep dive on the async Entra ID/Exchange/SharePoint/Teams provisioning race condition, naming policy enforcement, owner-vs-member Graph relationships, and group-based licensing lag), and `Approval-Workflows-A.md` (deep dive on the Approvals service architecture, fixed-at-creation assignee lists, First-to-respond vs Everyone-must-approve semantics, notification delivery vs. approval-record distinction, and the 30-day platform run ceiling). No manifest items remained queued going into this run; all previously flagged gaps were confirmed via a fresh file-system scan of the entire repo (not just the manifest, which is known to lag actual repo state per prior run's notes) before selecting these three as the highest-value remaining gaps.)
+- Last updated: 2026-07-06 (auto-build: a subagent grep confirmed DFS site-costing/referral-ordering misconfiguration was only ever mentioned in passing across existing DFS docs, never as a dedicated topic — built `DFS-SiteCosting-B.md`/`DFS-SiteCosting-A.md` covering the AD subnet→site→site-link-cost dependency chain, manual referral priority overrides, and client-side referral caching (a classic "branch users routed to the wrong/slow file server" pain point). Also identified Power Automate had no runbook for the very common MSP offboarding scenario of flows breaking when their owner's account is disabled — built `Flow-Ownership-Transfer-B.md`/`Flow-Ownership-Transfer-A.md` covering the ownership-vs-connection-identity model (root cause of "we transferred it and it's still broken" tickets), bulk discovery/transfer sweeps, and the service-account pattern for prevention. Updated `DFS/_AGENT.md` and `PowerAutomate/_AGENT.md` folder tables and entry points for all four new files, and closed the previously-flagged bookkeeping gap where `DFS-ABE-A.md` existed on disk but was missing from `DFS/_AGENT.md`'s table.)
 
 ---
 

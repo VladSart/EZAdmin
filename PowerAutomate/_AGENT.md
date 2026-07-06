@@ -34,6 +34,8 @@ This module focuses on what MSPs actually use Power Automate for:
 | `Troubleshooting/Throttling-Limits-B.md` | Hotfix: 429 throttling, flow run quotas |
 | `Troubleshooting/Approval-Workflows-B.md` | Hotfix: stuck approvals, departed approvers, 30-day run ceiling |
 | `Groups-Teams/Groups-Teams-Provisioning-B.md` | Hotfix: M365 Group/Teams self-service provisioning flows — async race conditions, naming policy, owner assignment, guest access, group-based licensing lag |
+| `Troubleshooting/Flow-Ownership-Transfer-B.md` | Hotfix: flows breaking during offboarding — finding flows owned by a departing user and transferring ownership |
+| `Troubleshooting/Flow-Ownership-Transfer-A.md` | Deep dive: ownership vs. connection-identity model, why reassigning ownership alone doesn't fix runtime auth, bulk sweep and service-account patterns |
 | `Scripts/New-SharePointSiteViaGraph.ps1` | PS equivalent: create SP site via Graph (for when Flow won't do it) |
 | `Scripts/Set-SharePointSitePermissions.ps1` | PS: assign/remove site permissions at scale |
 
@@ -50,6 +52,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - "DLP policy blocking connector" → `EntraID/` (environment admin controls DLP)
 - "Approval flow stuck / approver never responds" → `Troubleshooting/Approval-Workflows-B.md`
 - "Self-service Team/Group provisioning flow fails or is inconsistent" → `Groups-Teams/Groups-Teams-Provisioning-B.md`
+- "An employee is leaving, what happens to their flows?" / "Flow stopped working after we disabled someone's account" → `Troubleshooting/Flow-Ownership-Transfer-B.md`
 
 ---
 

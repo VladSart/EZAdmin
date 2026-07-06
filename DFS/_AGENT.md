@@ -29,6 +29,9 @@ This module covers setup, health validation, access failures, replication backlo
 | `Troubleshooting/FRS-Migration/FRS-to-DFSR-Migration-B.md` | Hotfix: stuck/failed SYSVOL migration from legacy FRS to DFSR |
 | `Troubleshooting/FRS-Migration/FRS-to-DFSR-Migration-A.md` | Deep dive: the 4-state migration model, AD dependency, irreversibility of Eliminated state |
 | `Troubleshooting/ABE/DFS-ABE-B.md` | Hotfix: Access-Based Enumeration hiding/showing wrong folders |
+| `Troubleshooting/ABE/DFS-ABE-A.md` | Deep dive: namespace-root vs. per-share ABE flags, DFSR non-replication of share settings |
+| `Troubleshooting/SiteCosting/DFS-SiteCosting-B.md` | Hotfix: users routed to wrong/slow folder target — referral ordering & AD site-costing misconfiguration |
+| `Troubleshooting/SiteCosting/DFS-SiteCosting-A.md` | Deep dive: referral ordering algorithm, AD site/subnet/site-link cost dependency chain, priority overrides |
 | `Scripts/Test-DFSHealth.ps1` | Full health check: namespace targets, replication backlog, event errors |
 | `Scripts/Get-DFSRBacklog.ps1` | Backlog size per replication group/connection |
 | `Scripts/Get-DFSRMigrationState.ps1` | Cross-references dfsrmig state against live DC inventory, flags orphaned DCs and unshared SYSVOL |
@@ -47,6 +50,8 @@ This module covers setup, health validation, access failures, replication backlo
 - "Planning a FRS-to-DFSR SYSVOL migration project" → `FRS-Migration/FRS-to-DFSR-Migration-A.md`
 - "Health check before/after migration" → `Scripts/Test-DFSHealth.ps1`, `Scripts/Get-DFSRMigrationState.ps1`
 - "Users see folders they shouldn't (or can't see ones they should)" → `Troubleshooting/ABE/DFS-ABE-B.md`
+- "Branch users are being routed to a slow/remote file server instead of their local one" → `Troubleshooting/SiteCosting/DFS-SiteCosting-B.md`
+- "DFS referral order looks random / not respecting site topology" → `Troubleshooting/SiteCosting/DFS-SiteCosting-A.md`
 
 ---
 
