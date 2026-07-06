@@ -1716,7 +1716,23 @@
 
 ---
 
+## M365 — Exchange Script Coverage Gap Fill (round 1 — DMARC-DKIM, EOP-AntiSpam, ArchiveRetention)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/Scripts/Get-DKIMDMARCReport.ps1` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-EOPQuarantineReport.ps1` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-ArchiveRetentionAudit.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
+- Total files: 379
+- Completed: 379
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-07-06 (auto-build, night run 20: manifest queue still empty. Followed run 19's explicit recommendation to move off the now-complete Intune script coverage (22/22) and onto the largest remaining script-coverage gap: **M365/Exchange (8 topics, only 3 scripts before this run).** Closed the 3 highest-value gaps: `Get-DKIMDMARCReport.ps1` (per-domain SPF/DKIM/DMARC audit — cross-references `Get-DkimSigningConfig`'s expected CNAME targets against actual published DNS to catch the "DNS never updated" case, counts SPF lookup mechanisms to flag the >10 PermError risk from DMARC-DKIM-B.md Fix 2, and classifies each domain HEALTHY/MINOR_GAPS/AT_RISK), `Get-EOPQuarantineReport.ps1` (quarantine summary by QuarantineTypes with a specific callout for unreleased HighConfidencePhish per EOP-AntiSpam-B.md's note that these require Global/Security Admin, Tenant Allow/Block List audit flagging Allow entries with no expiration per Fix 2's "never allow indefinitely" guidance, plus Hosted Content Filter Policy/Rule inventory), and `Get-ArchiveRetentionAudit.ps1` (fleet-wide mailbox audit flagging NO_ARCHIVE, RETENTION_HOLD_STUCK — called out in both ArchiveRetention runbooks' Learning Pointers as "the most commonly missed check" — NO_MOVE_TO_ARCHIVE_TAG via cached per-policy tag lookups, ARCHIVE_QUOTA_RISK at a configurable threshold, and the highest-priority LIT_HOLD_NO_ARCHIVE combination that both runbooks identify as the real driver behind "mailbox always full" tickets). All three are read-only and follow the established local-plus-fleet audit pattern. **M365/Exchange script coverage is now 6/8**; remaining gaps: Hybrid-Coexistence has a script (Get-ExchangeHybridHealth.ps1) but MessageEncryption, PublicFolders, RoomMailbox, and SharedMailbox remain script-less (Mail-Flow is covered by Get-MessageTrace.ps1). Suggest next run closes these 4, then moves to SharePoint-OneDrive (1/3 — Permissions and Migration need scripts) and Teams (1/4 — Device-Policies, Meeting-Policies, Teams-Rooms need scripts), the two remaining tracked script-coverage gaps repo-wide. Checked for stale `.git/index.lock`/`HEAD.lock` per the standing environment note before committing — found dozens of pre-existing stale lock files (consistent with the known FUSE unlink-blocking issue); none were live/blocking, left in place per the standing note (renaming out of the way only needed if a commit actually fails).
+
+## Build Progress (previous)
 - Total files: 376
 - Completed: 376
 - In progress: 0
