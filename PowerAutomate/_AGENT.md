@@ -38,6 +38,12 @@ This module focuses on what MSPs actually use Power Automate for:
 | `Troubleshooting/Flow-Ownership-Transfer-A.md` | Deep dive: ownership vs. connection-identity model, why reassigning ownership alone doesn't fix runtime auth, bulk sweep and service-account patterns |
 | `Scripts/New-SharePointSiteViaGraph.ps1` | PS equivalent: create SP site via Graph (for when Flow won't do it) |
 | `Scripts/Set-SharePointSitePermissions.ps1` | PS: assign/remove site permissions at scale |
+| `Scripts/Get-ConnectorAuthHealth.ps1` | PS: flags connections owned by disabled/deleted accounts, stale tokens, orphaned refs |
+| `Scripts/Get-DLPPolicyImpactReport.ps1` | PS: cross-policy connector classification matrix + effective-classification resolver |
+| `Scripts/Get-FlowRunHistory.ps1` | PS: pulls recent run history/status for a flow |
+| `Scripts/Get-GroupsTeamsProvisioningHealth.ps1` | PS: flags async-race, no-owner, and license-pending conditions on self-service Group/Team provisioning |
+| `Scripts/Get-ApprovalApproverEligibilityAudit.ps1` | PS: checks approver account/license eligibility for a stuck approval, resolves manager for escalation |
+| `Scripts/Get-FlowOwnershipSweep.ps1` | PS: tenant-wide discovery of flows owned by a departing user — no-co-owner and premium-connector risk flags |
 
 ---
 
