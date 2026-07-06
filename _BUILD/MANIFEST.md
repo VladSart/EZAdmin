@@ -1611,12 +1611,22 @@
 
 ---
 
+## Azure Files (new topic — direct SMB/NFS shares + Azure File Sync, complements existing AVD/FSLogix coverage)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Azure/Files/AzureFiles-B.md` | ✅ | auto-build |
+| `Azure/Files/AzureFiles-A.md` | ✅ | auto-build |
+| `Azure/Files/Scripts/Get-AzureFileShareHealth.ps1` | ✅ | auto-build |
+| `Azure/Files/_AGENT.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 341
-- Completed: 341
+- Total files: 345
+- Completed: 345
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build, night run 8: manifest queue still empty. Surveyed script-coverage across all domains, not just Windows/macOS (the focus of runs 5-7) — found EntraID (14 topics / 5 scripts), Security/Defender (9 topics / 2 scripts), Intune (20 topics / 6 scripts), M365 Exchange (8 topics / 3 scripts), SharePoint-OneDrive (3 topics / 1 script), and Teams (4 topics / 1 script) all have significant gaps, with EntraID and Defender being the largest. Built three scripts this run, prioritizing high-frequency MSP break-fix scenarios: `Get-ASRRuleStatus.ps1` (rule GUID→friendly-name map for all 13 documented ASR rules, current Action per rule, Intune-MDM-vs-GPO-vs-local policy source precedence check, event 1121/1122/1123 counts and recent detail, AV run mode, existing exclusions — cross-references Fix 1-5 in `ASR-Rules-B.md`), `Get-TamperProtectionStatus.ps1` (IsTamperProtected + TamperProtectionSource, MDE onboarding state, event 5013 block count with offending process, legacy DisableAntiSpyware/DisableRealtimeMonitoring key detection, and a non-destructive Set-MpPreference write-test that immediately reverts via try/catch to empirically confirm enforcement — cross-references Fix 1-5 in `Tamper-Protection-B.md`), and `Get-MFAMethodsReport.ps1` (Graph-based: registered auth methods per user excluding password, legacy per-user MFA state, CA policy MFA coverage with include/exclude group-membership resolution and result caching, sign-in MFA error codes 50074/50076/50158/53004/500121 in a configurable lookback window — supports single UPNs or -All with -Top cap, cross-references Diagnosis Steps 1-5 and Fix 1-4 in `MFA-B.md`). All three follow the established `record()`/CSV-export/summary pattern, are read-only (the Tamper Protection write-test reverts itself), and are safe to run against production tenants/fleets. Checked for stale `.git/HEAD.lock`/`index.lock` per the standing environment note before committing.
+- Last updated: 2026-07-06 (auto-build, night run 9: manifest queue still empty. Confirmed via full-repo `find` survey that nearly every domain now has complete A/B pairs plus at least one script — the manifest itself is significantly behind actual repo state (see prior "Skipped Items" bookkeeping note, still true). Azure was the thinnest domain (only 14 files, 100% AVD-focused) despite Azure Files being a common adjacent MSP topic (it's the storage backend for FSLogix, and Azure File Sync is a frequent on-prem-file-server/DFS replacement conversation with clients). Built a new `Azure/Files/` sub-domain: `AzureFiles-B.md` (hotfix — can't mount share, access denied, quota exhausted, slow performance, stale cached creds; 6 fix paths), `AzureFiles-A.md` (deep dive — direct-mount vs Azure File Sync architecture, three identity-auth models (key/Entra Kerberos/AD DS), the RBAC-vs-NTFS two-gate model that causes most access-denied tickets, tiering/quota mechanics, cloud-tiering behavior, 3 remediation playbooks including a full AFS deployment sequence), `Scripts/Get-AzureFileShareHealth.ps1` (reports per-share quota/usage with 75%/90% warning thresholds, identity-auth model, network firewall/Private-Endpoint config, RBAC role assignments, optional live SMB-445 connectivity + DNS resolution test — read-only, CSV export), and `_AGENT.md` (cross-references FSLogix-B/A since Azure Files is FSLogix's storage backend, and DFS since Azure File Sync is the natural cloud-migration conversation). Updated `Azure/_AGENT.md` folder-contents table and scope description to reflect the new sub-domain. Checked for stale `.git/HEAD.lock`/`index.lock` per the standing environment note before committing.
 
 ---
 

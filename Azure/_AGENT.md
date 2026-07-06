@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Currently focused on **Azure Virtual Desktop (AVD)** including session host management, FSLogix profile containers, MSIX App Attach, and network connectivity.
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity) and **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync).
 
 ---
 
@@ -29,6 +29,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `AVD/AppAttach-B.md` | MSIX App Attach hotfix — app not available in session, package not mounting |
 | `AVD/Scripts/Get-AVDSessionHealth.ps1` | Reports session host availability, drain mode, session counts across host pools |
 | `AVD/Scripts/Test-AVDConnectivity.ps1` | Tests connectivity to required AVD/Entra/licensing/CRL endpoints; optional RDP Shortpath and FSLogix share checks |
+| `Files/AzureFiles-B.md` | Azure Files hotfix runbook — can't mount share, access denied, quota exhausted |
+| `Files/AzureFiles-A.md` | Azure Files deep dive — direct mount vs Azure File Sync, identity auth models, RBAC vs NTFS |
+| `Files/Scripts/Get-AzureFileShareHealth.ps1` | Reports share quota/usage, identity auth config, network rules, RBAC assignments |
 
 ---
 
