@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity) and **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync).
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), and **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision).
 
 ---
 
@@ -32,6 +32,8 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `Files/AzureFiles-B.md` | Azure Files hotfix runbook — can't mount share, access denied, quota exhausted |
 | `Files/AzureFiles-A.md` | Azure Files deep dive — direct mount vs Azure File Sync, identity auth models, RBAC vs NTFS |
 | `Files/Scripts/Get-AzureFileShareHealth.ps1` | Reports share quota/usage, identity auth config, network rules, RBAC assignments |
+| `Windows365/Windows365-B.md` | Windows 365 hotfix runbook — provisioning failures, ANC issues, resize/reprovision, client connectivity |
+| `Windows365/Windows365-A.md` | Windows 365 deep dive — provisioning policy pipeline, ANC architecture, licensing model, Frontline shared pools |
 
 ---
 
@@ -45,6 +47,8 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"FSLogix profile disk growing too large"** → `AVD/FSLogix-A.md` (redirection and exclusion rules)
 - **"Collect host pool health for a ticket"** → `AVD/Scripts/Get-AVDSessionHealth.ps1`
 - **"Rule out network as the cause before escalating"** → `AVD/Scripts/Test-AVDConnectivity.ps1`
+- **"Cloud PC stuck provisioning / failed"** → `Windows365/Windows365-B.md`
+- **"Windows 365 vs AVD — which do I use for this issue"** → `Windows365/Windows365-A.md` (comparison table)
 
 ---
 
