@@ -1706,7 +1706,24 @@
 
 ---
 
+## Intune — Script Coverage Gap Fill (round 5 — Filters, Kiosk, Platform-Scripts, ScopeTags — closes out Intune script coverage 22/22)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Scripts/Get-AssignmentFilterAudit.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-KioskDeviceHealthReport.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-PlatformScriptRunStatus.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-ScopeTagRBACAudit.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
+- Total files: 376
+- Completed: 376
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-07-06 (auto-build, night run 19: manifest queue still empty. Followed run 18's explicit recommendation — closed the final 4 script-less Intune topics: `Get-AssignmentFilterAudit.ps1` (Graph-only tenant audit — lists all assignment filters and flags which ones reference the three highest-risk properties called out in Filters-A.md Fix 1/Fix 4 and Filters-B.md Fix 2 (enrollmentProfileName, category, deviceOwnership), then cross-references the device fleet for STALE_CHECKIN past a configurable hour threshold, NO_ENROLLMENT_PROFILE, and NO_CATEGORY — the upstream data-quality gaps both runbooks identify as the real cause behind most "filter isn't matching" tickets, before anyone wastes time on rule syntax), `Get-KioskDeviceHealthReport.ps1` (fully local, on-device — automates the entire Kiosk-B.md Triage/Kiosk-A.md Validation Steps checklist in one pass: Windows SKU, MDM enrollment, AssignedAccess CSP registry state, kiosk account state, AssignedAccess event log for ID 31000 vs 31001/31002, Winlogon auto-logon keys, and Shell Launcher feature/WMI state — each with an inline GOOD/BAD verdict matching the runbooks' own expected-vs-bad output pairs), `Get-PlatformScriptRunStatus.ps1` (dual-mode following the established pattern — local mode checks IME service/version/enrollment/execution-policy/WDAC-blocks per Platform-Scripts-A.md Validation Steps 1-4 and Phase 4; fleet mode pulls per-device RunState for a script ID and flags PENDING_STALE by cross-referencing each device's LastSyncDateTime against a configurable threshold, distinguishing "device hasn't checked in" from "script genuinely failed" per Platform-Scripts-B.md Fix 2), and `Get-ScopeTagRBACAudit.ps1` (Graph-only tenant audit — always produces ScopeTags-All/RoleAssignments-All/UntaggedObjects reports, the last of which finds config profiles and compliance policies carrying only the Default tag per ScopeTags-A.md Playbook 4; optional `-AdminUpn`/`-TargetObjectName` params resolve a specific admin's role-assignment scope tags and check overlap against a named object — automating the exact "at least one matching tag" diagnosis from ScopeTags-A.md Validation Steps 1-2 and ScopeTags-B.md Learning Pointers in one call instead of the runbook's multi-step manual walkthrough). All four are read-only. **Intune script coverage is now fully complete at 22/22 — every Intune Troubleshooting topic has a companion script.** No other domain has a known script-coverage gap remaining (EntraID 14/14, Security/Defender 9/9, Intune 22/22 — Exchange 3/8, SharePoint-OneDrive 1/3, and Teams 1/4 remain the only tracked gaps repo-wide; suggested priority for the next run). Checked for stale `.git/index.lock`/`HEAD.lock` per the standing environment note before committing; none found this run.
+
+## Build Progress (previous)
 - Total files: 372
 - Completed: 372
 - In progress: 0
