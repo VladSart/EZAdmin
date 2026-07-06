@@ -1450,6 +1450,7 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `DFS/Troubleshooting/ABE/DFS-ABE-B.md` | ✅ | auto-build |
+| `DFS/Troubleshooting/ABE/DFS-ABE-A.md` | ✅ | auto-build |
 
 ---
 
@@ -1457,6 +1458,7 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `PowerAutomate/Groups-Teams/Groups-Teams-Provisioning-B.md` | ✅ | auto-build |
+| `PowerAutomate/Groups-Teams/Groups-Teams-Provisioning-A.md` | ✅ | auto-build |
 
 ---
 
@@ -1464,15 +1466,16 @@
 | File | Status | Assigned |
 |------|--------|---------|
 | `PowerAutomate/Troubleshooting/Approval-Workflows-B.md` | ✅ | auto-build |
+| `PowerAutomate/Troubleshooting/Approval-Workflows-A.md` | ✅ | auto-build |
 
 ---
 
 ## Build Progress
-- Total files: 298
-- Completed: 298
+- Total files: 301
+- Completed: 301
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: DFS/PowerAutomate priority pass. Built DFS-ABE-B.md — Access-Based Enumeration, a distinct real-world pain point not covered by the existing Namespace/Replication/FRS-Migration topics. Built two Power Automate files closing gaps explicitly named in PowerAutomate/_AGENT.md's own scope description but never built: M365 Group/Teams self-service provisioning (async provisioning race conditions, naming policy, owner vs. member assignment, guest access, group-based licensing lag) and Approval workflow troubleshooting (stuck approvals, approver departure, 30-day run ceiling, Teams Adaptive Card failures). Chose these because DFS and Power Automate are user-designated top build priorities and both had documented scope gaps rather than needing invented topics.)
+- Last updated: 2026-07-06 (auto-build: closed the last three known A/B gaps in the two user-designated HIGH PRIORITY domains, DFS and Power Automate. Built `DFS-ABE-A.md` (deep dive companion to the existing ABE hotfix runbook — full two-layer architecture explanation of namespace-root vs. per-share ABE flags, DFSR non-replication of share settings, effective-access nuance), `Groups-Teams-Provisioning-A.md` (deep dive on the async Entra ID/Exchange/SharePoint/Teams provisioning race condition, naming policy enforcement, owner-vs-member Graph relationships, and group-based licensing lag), and `Approval-Workflows-A.md` (deep dive on the Approvals service architecture, fixed-at-creation assignee lists, First-to-respond vs Everyone-must-approve semantics, notification delivery vs. approval-record distinction, and the 30-day platform run ceiling). No manifest items remained queued going into this run; all previously flagged gaps were confirmed via a fresh file-system scan of the entire repo (not just the manifest, which is known to lag actual repo state per prior run's notes) before selecting these three as the highest-value remaining gaps.)
 
 ---
 
