@@ -1735,6 +1735,15 @@
 ---
 
 ## Build Progress
+- Total files: 385
+- Completed: 385
+- In progress: 0
+- Queued: 0
+- Last updated: 2026-07-06 (auto-build, night run 22: manifest queue still empty. Verified script-coverage gaps directly against the filesystem rather than trusting run 21's self-reported counts (manifest bookkeeping has repeatedly drifted from actual repo state per the standing note below). Confirmed via `find` that virtually every topic in the repo now has a matching A+B doc pair — the doc-pair gap is effectively closed tenant-wide. Confirmed `Windows/Scripts/Test-VPNConnectivity.ps1` already covers Always On VPN end-to-end (Device/User Tunnel, IKE event log, cert expiry, split-tunnel route detection) despite its generic filename — avoided building a duplicate. Closed 3 real, filesystem-verified script gaps instead: `M365/Teams/Scripts/Get-TeamsRoomDeviceHealth.ps1` (Teams-Rooms had zero dedicated scripts — targets the two failure modes Teams-Rooms-A.md flags as most common: password-expiration policy not disabled on resource accounts, and license-assignment errors via `licenseAssignmentStates`; also checks sign-in failure volume, staleness via `signInActivity`, and optional CA exclusion group membership — this was run 21's own explicit next-priority item), `Security/ConditionalAccess/Scripts/Get-NamedLocationAudit.ps1` (Named-Locations had zero dedicated scripts — CA/Scripts only had `Get-CASignInAnalysis.ps1` covering 1 of 4 CA topics; new script does CIDR-overlap detection via IP-to-uint32 range math, flags near-2000 CIDR ceiling, flags `includeUnknownCountriesAndRegions` per Named-Locations-A.md's "easy-to-miss" warning, flags orphaned locations with zero CA policy references, and flags CA policies referencing a deleted Named Location ID), and `Security/Purview/Scripts/Get-SensitivityLabelCoverage.ps1` (Purview/Scripts only had DLP — new script cross-references Label Policies to flag labels published but unreachable to end users, flags auto-labeling policies stuck in TestWithoutNotifications/TestWithNotifications mode per Sensitivity-Labels-A.md's guidance that test mode never touches production content, and optionally checks SPO tenant `EnableAIPIntegration`). All three read-only. **Remaining script gaps confirmed by direct filesystem check for next run: Security/Purview eDiscovery and Insider-Risk (2/4 topics now scripted); M365/Teams Calling and Meeting-Policies (2/4 topics now scripted); M365/SharePoint-OneDrive Permissions and Migration (1/3 topics scripted); Security/ConditionalAccess CA-Filters (2 scripts now cover 4 topics).** Also flagged: manifest bookkeeping is still far behind actual repo state — the file-count history below should be treated as directional, not authoritative; a dedicated reconciliation pass (diffing `find` output against tracked rows) would be higher value than another run of undocumented-row appends.
+
+---
+
+## Build Progress (previous)
 - Total files: 382
 - Completed: 382
 - In progress: 0
