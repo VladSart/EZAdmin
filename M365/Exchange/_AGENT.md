@@ -30,7 +30,18 @@ Covers:
 | `Mail-Flow-B.md` | Hotfix: email not arriving, bouncing, stuck, going to spam, NDR codes |
 | `Mail-Flow-A.md` | Deep dive: mail flow architecture, transport rules, connectors, DMARC |
 | `SharedMailbox-B.md` | Hotfix: can't access shared mailbox, Send As failing, AutoMapping, calendar permissions |
+| `SharedMailbox-A.md` | Deep dive: shared mailbox object model, delegation mechanics, licensing rules, hybrid mastering |
 | `Hybrid-Coexistence-B.md` | Hotfix: on-prem to EXO routing, hybrid connector failures, certificate expiry |
+| `Scripts/Get-MessageTrace.ps1` | Mail flow trace wrapper for stuck/bounced messages |
+| `Scripts/Get-ExchangeHybridHealth.ps1` | Hybrid connector/certificate health check |
+| `Scripts/Get-MailboxAuditReport.ps1` | General mailbox permissions/forwarding/audit-log report |
+| `Scripts/Get-DKIMDMARCReport.ps1` | Per-domain SPF/DKIM/DMARC audit |
+| `Scripts/Get-EOPQuarantineReport.ps1` | Quarantine + Tenant Allow/Block List audit |
+| `Scripts/Get-ArchiveRetentionAudit.ps1` | Fleet-wide archive/retention/litigation hold audit |
+| `Scripts/Get-OMEConfigurationAudit.ps1` | Message encryption (IRM/OME) configuration audit |
+| `Scripts/Get-PublicFolderHealthReport.ps1` | Public folder hierarchy sync/permission audit |
+| `Scripts/Get-RoomMailboxAudit.ps1` | Room mailbox booking/calendar/sign-in audit |
+| `Scripts/Get-SharedMailboxAudit.ps1` | Fleet-wide shared mailbox type/delegation/licensing/quota/sign-in audit |
 
 ---
 
@@ -43,6 +54,7 @@ Covers:
 - "Shared mailbox not showing in Outlook left-pane" → `SharedMailbox-B.md` (AutoMapping)
 - "Send As / Send On Behalf not working from shared mailbox" → `SharedMailbox-B.md`
 - "Shared mailbox calendar permissions broken" → `SharedMailbox-B.md` (calendar delegate section)
+- "Fleet audit of all shared mailboxes for hygiene issues" → `Scripts/Get-SharedMailboxAudit.ps1`
 - "On-prem users can't email cloud users or vice versa" → `Hybrid-Coexistence-B.md`
 - "Hybrid connector certificate expired" → `Hybrid-Coexistence-B.md`
 - "SPF / DKIM / DMARC failing, email rejected by recipient" → `Mail-Flow-B.md`

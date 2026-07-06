@@ -36,6 +36,7 @@ Covers:
 | `Scripts/Get-LAPSPasswordStatus.ps1` | Audit LAPS rotation/retrieval status + legacy LAPS conflict check |
 | `Scripts/Get-CertificateProfileStatus.ps1` | Flag Failed/Conflict/stale-Pending SCEP/PKCS cert profiles |
 | `Scripts/Get-SecurityBaselineDrift.ps1` | Fleet-wide baseline Error/Conflict/Pending report across assigned baselines |
+| `Scripts/Get-FeatureUpdateDeploymentStatus.ps1` | Local TargetReleaseVersion/safeguard-hold/GPO-conflict check + fleet-wide Feature Update Profile deployment status |
 
 ---
 
@@ -51,6 +52,7 @@ Covers:
 - "LAPS password not showing / rotation not happening" → `Troubleshooting/LAPS-B.md` + `Scripts/Get-LAPSPasswordStatus.ps1`
 - "Cert profile stuck Pending/Failed for a device or fleet" → `Troubleshooting/Certificates-B.md` + `Scripts/Get-CertificateProfileStatus.ps1`
 - "Security baseline shows Error/Conflict" → `Troubleshooting/Security-Baselines-B.md` + `Scripts/Get-SecurityBaselineDrift.ps1`
+- "Device stuck on old Windows version / feature update not installing" → `Troubleshooting/FeatureUpdates-B.md` + `Scripts/Get-FeatureUpdateDeploymentStatus.ps1`
 
 ---
 

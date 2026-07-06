@@ -54,7 +54,12 @@ Result: ALL matching policies' controls must be satisfied
 | `CA-Troubleshooting-B.md` | Hotfix: CA blocking access, identifying the policy |
 | `CA-Design-A.md` | Deep dive: CA architecture, design principles, common patterns |
 | `CA-Design-B.md` | Hotfix: new/edited policy rollout gone wrong — rollback, pilot scoping, break-glass, overlap conflicts |
+| `CA-Filters-B.md` | Hotfix: device filter unexpected include/exclude behaviour |
+| `CA-Filters-A.md` | Deep dive: filter query language, physicalIds/extensionAttribute targeting, evaluation engine |
+| `Named-Locations-B.md` | Hotfix: named location / IP-based CA condition issues |
 | `Scripts/Get-CASignInAnalysis.ps1` | Analyse sign-in logs for CA failures across users |
+| `Scripts/Get-NamedLocationAudit.ps1` | Named Location CIDR overlap/orphan/reference audit |
+| `Scripts/Get-CADeviceFilterAudit.ps1` | Device filter mode/expression risk, orphaned extensionAttribute, Autopilot coverage audit |
 
 ---
 
@@ -67,6 +72,7 @@ Result: ALL matching policies' controls must be satisfied
 - "Need break-glass accounts / emergency access" → `CA-Design-A.md`
 - "Designing CA policy for a new client" → `CA-Design-A.md`
 - "Just deployed/edited a policy and now users are locked out" → `CA-Design-B.md`
+- "Device filter applying to wrong/no devices" → `CA-Filters-B.md` + `Scripts/Get-CADeviceFilterAudit.ps1`
 
 ---
 
