@@ -1688,12 +1688,21 @@
 
 ---
 
+## Intune — Script Coverage Gap Fill (round 3 — EPM, DriverManagement, WUfB)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Scripts/Get-EPMElevationReport.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-DriverManagementStatus.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-WUfBDeploymentStatus.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 366
-- Completed: 366
+- Total files: 369
+- Completed: 369
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build, night run 16: manifest queue still empty. Followed run 15's explicit recommendation — 14 Intune topics remained script-less (AppProtection, CoManagement, CustomCompliance, DriverManagement, EPM, FeatureUpdates, Filters, GP-to-CSP, Kiosk, Managed-Apps, Platform-Scripts, Remediations, ScopeTags, WUfB). Closed 3 of those 14: `Get-CoManagementStatus.ps1` (device-local — consolidates CoManagement-A.md's ~8 separate Validation Steps/Evidence Pack commands into one pass: dsregcmd hybrid-join parsing, CcmExec service+version, CoManagementFlags raw bitmask, the authoritative CCM_CoManagementWorkload WMI class for per-workload ConfigMgr-vs-Intune authority rather than hand-decoding the undocumented flags bitmask, MDM enrollment registry, and CoManagementHandler.log error tail; optional `-CheckGraphDuplicates` switch operationalizes CoManagement-A.md Phase 4's duplicate-device-object detection via Graph), `Get-RemediationRunHistory.ps1` (the first **fleet-scale** complement to Remediations-A/B.md's device-local AgentExecutor.log reading — uses Graph deviceHealthScripts/deviceRunStates to classify every device+package pair against the Reporting States table in Remediations-A.md, ranks packages by failure rate so engineers know which package to open first, and separately flags high "No status" counts as assignment/licensing-gap candidates per Remediations-A.md's "licensing is the silent gotcha" Learning Pointer rather than script bugs), and `Get-GPtoCSPCoverageReport.ps1` (fleet-scale via Graph groupPolicyMigrationReports/groupPolicySettingMappings — automates GP-to-CSP-A.md Phase 1's manual per-GPO portal review into a tenant-wide migration-readiness percentage per GPO, plus a cross-GPO aggregation of recurring unmapped settings so the same unsupported setting reused across many GPOs surfaces once as a shared Remediation-script candidate per Playbook 2, instead of being rediscovered per-GPO). All three read-only. **Intune script coverage is now 15/22** (12 pre-existing + 3 this run; remaining script-less: AppProtection, CustomCompliance, DriverManagement, EPM, FeatureUpdates, Filters, Kiosk, Managed-Apps, Platform-Scripts, ScopeTags, WUfB). Checked for stale `.git/index.lock`/`HEAD.lock` per the standing environment note before committing; none found this run.
+- Last updated: 2026-07-06 (auto-build, night run 17: manifest queue still empty. Followed run 16's explicit recommendation — closed 3 more of the remaining 11 script-less Intune topics: `Get-EPMElevationReport.ps1` (combines a local LsmsService/policy-file/IME-log check with a Graph-side per-device Elevation Settings/Elevation Rules deployment-state check, and explicitly checks the tenant for an INTUNE_SUITE/EPM SKU since EPM-B.md's Fix 4 calls out missing licence as a common silent failure mode), `Get-DriverManagementStatus.ps1` (checks for the WSUS-remnant registry conflict that DriverManagement-A.md flags as the most common WDfB blocker — WUServer/WUStatusServer/UseWUServer — alongside PnP/WU-client event log signal, then reports Graph-side windowsDriverUpdateProfiles device statuses plus a separate pending/declined driverInventories export so an engineer can see at a glance which specific drivers are stuck in the approval queue), and `Get-WUfBDeploymentStatus.ps1` (mirrors the same WSUS-conflict-detection pattern for update rings — checks PolicyManager ring values, GPO WindowsUpdate policy overlap, MDM enrollment state, and safeguard-hold/BLOCKED_BY_POLICY signals in the WU client log locally, then reports Graph-side windowsUpdateForBusinessConfiguration deviceStatuses per ring). All three follow the established local-check-plus-Graph-fleet-check pattern from round 2 and are fully read-only. **Intune script coverage is now 18/22** (15 pre-existing + 3 this run; remaining script-less: AppProtection, CustomCompliance, Filters, Kiosk, Managed-Apps, Platform-Scripts, ScopeTags — 7 remain). Checked for stale `.git/index.lock`/`HEAD.lock` per the standing environment note before committing.
 
 ---
 
