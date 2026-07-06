@@ -62,6 +62,8 @@ Get-WinEvent -LogName System |
 - "Can't RDP / RDP connection refused or times out" → `Troubleshooting/RDP-B.md` + `Scripts/Get-RDPDiagnostics.ps1`
 - "Events missing / log full / log corrupted" → `Troubleshooting/EventLog-B.md` + `Scripts/Get-EventLogDiagnostics.ps1`
 - "App blocked, need to know which AppLocker rule / AppIDSvc stopped" → `Troubleshooting/AppLocker-B.md` + `Scripts/Get-AppLockerDiagnostics.ps1`
+- "Name won't resolve / internal names fail but public works / DNS cache stale" → `Troubleshooting/DNS-Client-B.md` (hotfix) / `DNS-Client-A.md` (deep dive — resolver chain, NRPT, DoH) + `Scripts/Get-DNSClientDiagnostics.ps1`
+- "NTLM auth failing / trust relationship broken / 0x80070005 Access Denied" → `Troubleshooting/NTLM-B.md` (hotfix) / `NTLM-A.md` (deep dive — NTLM protocol, secure channel, LM level hardening) + `Scripts/Get-NTLMDiagnostics.ps1`
 
 ---
 

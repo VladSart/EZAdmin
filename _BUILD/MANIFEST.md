@@ -1560,12 +1560,21 @@
 
 ---
 
+## Windows / macOS — Script Coverage Gap Fill (continued, round 4)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Scripts/Get-DNSClientDiagnostics.ps1` | ✅ | auto-build |
+| `Windows/Scripts/Get-NTLMDiagnostics.ps1` | ✅ | auto-build |
+| `macOS/Scripts/Get-SoftwareUpdateStatus.sh` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 326
-- Completed: 326
+- Total files: 329
+- Completed: 329
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build, night run: manifest queue empty again; continued the script-coverage gap-check pattern for a third consecutive run. From the prior run's flagged remainder list (Windows: AppLocker, CredentialManager, DeliveryOptimization, DNS-Client, EventLog, NTLM, UserProfile, WMI, CertificateServices; macOS: PPPC, Platform-SSO, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures), verified all these B/A runbook pairs still exist on disk and confirmed none of them yet had a companion script. Picked the two highest-value Windows topics — EventLog (service+dependency chain, log mode/size, corruption Event ID 6, clear events 104/1102, disk space, retention policy, plus a synthetic write-and-verify test) and AppLocker (AppIDSvc health, effective enforcement mode per rule collection, recent block/audit events across all three AppLocker logs, optional Test-AppLockerPolicy + file-identity lookup for a specific file, WDAC cross-check to rule out the other control) — and the highest-value macOS gap, Platform SSO (macOS version gate, MDM enrollment, Extensible SSO profile presence, app-sso registration state + auth method, Company Portal version + extension responsiveness, Kerberos SSO extension as informational hybrid signal, recent unified-log errors). All three follow the established comment-based-help + Write-Status/record + Preflight→Detect→Execute→Validate→Report + CSV-export pattern and cross-reference exact Fix numbers from their `-B.md` runbooks. Updated `Windows/_AGENT.md` and `macOS/_AGENT.md` common entry points; corrected a stale macOS `_AGENT.md` line that pointed "Platform SSO not working" at `EntraID/` when the actual runbook lives in `macOS/Troubleshooting/Platform-SSO-B.md`/`-A.md`. No git lock issues encountered this run. Remaining script-less topics after this run: ~6 on Windows (CredentialManager, DeliveryOptimization, DNS-Client, NTLM, UserProfile, WMI, CertificateServices) and ~7 on macOS (PPPC, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures) — good material for the next pass.
+- Last updated: 2026-07-06 (auto-build, night run 4: manifest queue still empty; continued the script-coverage gap-check pattern for a fourth consecutive run. From the prior run's flagged remainder list (Windows: CredentialManager, DeliveryOptimization, DNS-Client, NTLM, UserProfile, WMI, CertificateServices; macOS: PPPC, Extensions, SoftwareUpdates, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures), verified all six remaining B/A runbook pairs still exist on disk and confirmed none yet had a companion script. Picked the two highest-value Windows topics — DNS-Client (Dnscache service state, DNS server assignment with public-resolver-on-domain-joined-machine detection, TCP 53 reachability, suffix search list, NRPT rules, DoH server list with internal-IP flagging, HOSTS file non-loopback entry detection, DNS cache NXDOMAIN flagging, and configurable resolution tests) and NTLM (LmCompatibilityLevel, NTLM restriction policy at all three granularities, NetLogon service, Test-ComputerSecureChannel + nltest /sc_query, DC discovery and port 445/135 reachability, optional NTLM operational log with NTLMv1/4001 flagging, and Event 4776 credential-validation lookup when run on/against a DC) — and the highest-value macOS gap, Software Updates (OS version, MDM enrollment + supervision status, DDM vs. legacy MDM payload detection, deferral/forceInstallDate managed-preference values, softwareupdate --list, Apple CDN reachability for swupd.apple.com and gdmf.apple.com, and an SSL-inspection detector that compares the swupd.apple.com certificate issuer against Apple's own chain). All three follow the established comment-based-help + Write-Status/record + Preflight→Detect→Execute→Validate→Report + CSV-export pattern and cross-reference exact Fix numbers from their `-B.md`/`-A.md` runbooks. Updated `Windows/_AGENT.md` and `macOS/_AGENT.md` common entry points with new script-backed entries. No git lock issues encountered this run. Remaining script-less topics after this run: ~5 on Windows (CredentialManager, DeliveryOptimization, UserProfile, WMI, CertificateServices) and ~6 on macOS (PPPC, Extensions, Compliance-Policies, MDM-Certificate-Renewal, ABM-Token-Renewal, Shell-Script-Failures) — good material for the next pass.
 
 ---
 
