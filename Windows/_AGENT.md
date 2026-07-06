@@ -9,7 +9,7 @@ Covers:
 - **BitLocker** — key escrow to Entra, recovery, policy enforcement, suspension
 - **VBS / Credential Guard / HVCI** — enabling, conflicts with legacy apps/hypervisors
 - **AppLocker / WDAC** — application control, policy audit mode, blocking legitimate apps
-- **Networking** — DNS, proxy, time sync, VPN coexistence
+- **Networking** — DNS, DHCP, proxy, time sync, VPN coexistence
 - **USB / Peripherals** — policy-driven control, driver management
 - **Performance** — boot times, CPU/memory issues, storage health
 - **Event log analysis** — systematic log collection and interpretation
@@ -53,6 +53,7 @@ Get-WinEvent -LogName System |
 - "BitLocker recovery key not in Entra" → check Intune BitLocker policy + device escrow
 - "App blocked after WDAC/AppLocker deployed" → audit logs, policy mode check
 - "Time sync failing" → `Troubleshooting/Time/`
+- "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture)
 - "USB device being blocked by policy" → Intune Device Control policy + Windows event log
 - "VBS breaking a VM or application" → `Scripts/Enable-VBS.ps1` context + registry check
 

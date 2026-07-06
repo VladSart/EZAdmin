@@ -1486,12 +1486,28 @@
 
 ---
 
+## Windows — DHCP Client (new topic, gap fill: DNS-Client existed, DHCP did not)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/DHCP-Client-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/DHCP-Client-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-DHCPClientDiagnostics.ps1` | ✅ | auto-build |
+
+---
+
+## macOS — Apple Business Manager Token Renewal (new topic, distinct from MDM push cert)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/ABM-Token-Renewal-B.md` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 305
-- Completed: 305
+- Total files: 309
+- Completed: 309
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: a subagent grep confirmed DFS site-costing/referral-ordering misconfiguration was only ever mentioned in passing across existing DFS docs, never as a dedicated topic — built `DFS-SiteCosting-B.md`/`DFS-SiteCosting-A.md` covering the AD subnet→site→site-link-cost dependency chain, manual referral priority overrides, and client-side referral caching (a classic "branch users routed to the wrong/slow file server" pain point). Also identified Power Automate had no runbook for the very common MSP offboarding scenario of flows breaking when their owner's account is disabled — built `Flow-Ownership-Transfer-B.md`/`Flow-Ownership-Transfer-A.md` covering the ownership-vs-connection-identity model (root cause of "we transferred it and it's still broken" tickets), bulk discovery/transfer sweeps, and the service-account pattern for prevention. Updated `DFS/_AGENT.md` and `PowerAutomate/_AGENT.md` folder tables and entry points for all four new files, and closed the previously-flagged bookkeeping gap where `DFS-ABE-A.md` existed on disk but was missing from `DFS/_AGENT.md`'s table.)
+- Last updated: 2026-07-06 (auto-build: identified that Windows/Troubleshooting had a DNS-Client pair but no DHCP-Client runbook despite DHCP failures — APIPA, scope exhaustion, relay/IP-helper misconfiguration, rogue DHCP servers — being one of the most common "no network" ticket categories in MSP environments; built `DHCP-Client-B.md`/`DHCP-Client-A.md` covering the DORA handshake, T1/T2 lease renewal timing, multi-VLAN relay dependency, and scope option precedence, plus `Get-DHCPClientDiagnostics.ps1` as a first-response triage script. Also identified that macOS's `MDM-Certificate-Renewal-B.md` only covers the APNs push certificate / device MDM identity cert, while the Apple Business Manager/ASM server token (which drives ADE device sync and VPP app licensing) is a separate annually-expiring credential with no dedicated runbook and a real risk of being confused with the push cert during an incident; built `ABM-Token-Renewal-B.md` with an explicit comparison table against the push-cert runbook to prevent that exact confusion. Updated `Windows/_AGENT.md` and `macOS/_AGENT.md` entry points for all four new files.)
 
 ---
 
