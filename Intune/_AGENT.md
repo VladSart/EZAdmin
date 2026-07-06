@@ -33,6 +33,9 @@ Covers:
 | `Scripts/Get-IntuneDeviceStatus.ps1` | Device compliance + enrollment state via Graph |
 | `Scripts/Invoke-IntuneSync.ps1` | Force policy sync on device or bulk |
 | `Reporting/Get-NonCompliantDevices.ps1` | Export all non-compliant devices with reasons |
+| `Scripts/Get-LAPSPasswordStatus.ps1` | Audit LAPS rotation/retrieval status + legacy LAPS conflict check |
+| `Scripts/Get-CertificateProfileStatus.ps1` | Flag Failed/Conflict/stale-Pending SCEP/PKCS cert profiles |
+| `Scripts/Get-SecurityBaselineDrift.ps1` | Fleet-wide baseline Error/Conflict/Pending report across assigned baselines |
 
 ---
 
@@ -45,6 +48,9 @@ Covers:
 - "User can't see available apps" → check MDM scope + Company Portal
 - "Settings applied by GPO are conflicting with Intune" → `Troubleshooting/Policy-Conflict-B.md`
 - "Bulk compliance report needed" → `Reporting/Get-NonCompliantDevices.ps1`
+- "LAPS password not showing / rotation not happening" → `Troubleshooting/LAPS-B.md` + `Scripts/Get-LAPSPasswordStatus.ps1`
+- "Cert profile stuck Pending/Failed for a device or fleet" → `Troubleshooting/Certificates-B.md` + `Scripts/Get-CertificateProfileStatus.ps1`
+- "Security baseline shows Error/Conflict" → `Troubleshooting/Security-Baselines-B.md` + `Scripts/Get-SecurityBaselineDrift.ps1`
 
 ---
 

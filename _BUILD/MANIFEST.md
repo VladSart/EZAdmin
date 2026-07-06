@@ -1527,12 +1527,21 @@
 
 ---
 
+## Intune — Script Coverage Gap Fill (LAPS, Certificates, Security Baselines had zero companion scripts despite having B+A runbooks)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Scripts/Get-LAPSPasswordStatus.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-CertificateProfileStatus.ps1` | ✅ | auto-build |
+| `Intune/Scripts/Get-SecurityBaselineDrift.ps1` | ✅ | auto-build |
+
+---
+
 ## Build Progress
-- Total files: 317
-- Completed: 317
+- Total files: 320
+- Completed: 320
 - In progress: 0
 - Queued: 0
-- Last updated: 2026-07-06 (auto-build: manifest queue was empty (314/314), so this run followed the EXPANSION RULES gap-check step. Surveyed every domain folder against its Scripts/ directory and found Windows was a clear outlier: 13 Troubleshooting topics (Kerberos, SMB, Firewall, NTLM, WMI, EventLog, CredentialManager, CertificateServices, UserProfile, NetworkAdapters, RDP, AppLocker, PrintSpooler) had zero dedicated companion scripts, versus every comparable domain (DFS, Intune, EntraID, Security, M365) having 1-4 topic-specific scripts per folder. Picked the three highest-frequency MSP ticket patterns from that list — Kerberos auth failures, SMB share access failures, and firewall app/port blocks — and built `Get-KerberosDiagnostics.ps1`, `Get-SMBDiagnostics.ps1`, and `Get-FirewallDiagnostics.ps1`, each directly automating the triage/diagnosis steps already documented in the matching `-B.md` hotfix runbook (ticket cache + time skew + DNS SRV + secure channel + SPN + event log for Kerberos; TCP445 + protocol/signing + share/ACL + service state for SMB; BFE/mpssvc + profile + port/program rule + RSOP override + drop-event audit for Firewall). All three follow the established script format: full comment-based help, Write-Status logging, per-check pass/fail rows, console summary, and CSV export shaped for the runbook's Escalation Evidence template. Updated `Windows/_AGENT.md` common entry points for all three. Also found and cleared a stale `.git/HEAD.lock` and `.git/myindex.lock` left by a prior interrupted run before committing (renamed out of the way per the environment note below, not deleted).)
+- Last updated: 2026-07-06 (auto-build: manifest queue was empty, so this run continued the script-coverage gap-check from the prior run. After fixing Windows (13→10 gap topics remaining), re-surveyed all domains: Intune stood out with 21 Troubleshooting topics but only 3 generic Scripts (device status, sync, assignment report) — none topic-specific, versus DFS/EntraID/Security/M365 each having 1-4 topic-specific scripts per folder. Picked the three highest-frequency MSP ticket patterns with existing B+A runbook pairs but no script: LAPS (password rotation/retrieval failures), Certificates (SCEP/PKCS delivery failures), and Security Baselines (Error/Conflict/Pending drift). Built `Get-LAPSPasswordStatus.ps1` (Graph-based LAPS retrieval + rotation status + optional legacy-LAPS-CSE remote registry check, password hidden by default behind -RevealPassword), `Get-CertificateProfileStatus.ps1` (Graph deviceConfigurationStates filtered to cert-profile display names, flags Failed/Conflict/stale-Pending against a configurable threshold), and `Get-SecurityBaselineDrift.ps1` (Graph beta deviceManagement/intents + per-intent deviceStates, fleet-wide Error/Conflict/Pending report). All three are read-only against Graph, follow the established script format (comment-based help, Write-Status logging, Preflight→Detect→Execute→Validate→Report, CSV export), and cross-reference the specific Fix numbers in their matching `-B.md` runbooks. Updated `Intune/_AGENT.md` folder contents and common entry points. No git lock issues this run.)
 
 ---
 
