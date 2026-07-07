@@ -35,6 +35,7 @@ This module covers setup, health validation, access failures, replication backlo
 | `Scripts/Test-DFSHealth.ps1` | Full health check: namespace targets, replication backlog, event errors |
 | `Scripts/Get-DFSRBacklog.ps1` | Backlog size per replication group/connection |
 | `Scripts/Get-DFSRMigrationState.ps1` | Cross-references dfsrmig state against live DC inventory, flags orphaned DCs and unshared SYSVOL |
+| `Scripts/Get-DFSNamespaceConfigAudit.ps1` | Namespace-wide config audit: covers both ABE state and AD site-costing/referral settings in one report |
 
 ---
 
@@ -52,6 +53,7 @@ This module covers setup, health validation, access failures, replication backlo
 - "Users see folders they shouldn't (or can't see ones they should)" → `Troubleshooting/ABE/DFS-ABE-B.md`
 - "Branch users are being routed to a slow/remote file server instead of their local one" → `Troubleshooting/SiteCosting/DFS-SiteCosting-B.md`
 - "DFS referral order looks random / not respecting site topology" → `Troubleshooting/SiteCosting/DFS-SiteCosting-A.md`
+- "One-shot audit of ABE + site-costing config across the whole namespace" → `Scripts/Get-DFSNamespaceConfigAudit.ps1`
 
 ---
 

@@ -71,8 +71,14 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 | `Scripts/Upload-AutopilotDiagnostics.ps1` | Uploads Autopilot diagnostic data for support cases |
 | `Scripts/Upload-Hash-Enroll2Autopilot.ps1` | Captures hardware hash and enrolls device into Autopilot |
 | `Troubleshooting/Test-AutopilotNetworkRequirements.ps1` | Tests reachability of required Autopilot network endpoints |
+| `Troubleshooting/Profile-Not-Assigned-B.md` / `-A.md` | Hotfix / deep dive: device not picking up an Autopilot profile at OOBE — hash registration, dynamic group membership timing, Group Tag matching |
+| `Troubleshooting/ESP-Stuck-B.md` / `-A.md` | Hotfix / deep dive: device stuck on Enrollment Status Page — app/policy tracking, timeout budget, Hybrid Join timing dependency |
+| `Troubleshooting/HybridJoin-Autopilot-B.md` / `-A.md` | Hotfix / deep dive: Hybrid Join Autopilot failures — on-prem AD + Entra Connect + Intune Connector dependency chain |
+| `Troubleshooting/TPM-Attestation-B.md` / `-A.md` | Hotfix / deep dive: TPM attestation failures at enrollment — spec version, firmware, clock accuracy |
 | `Troubleshooting/DevicePreparation-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot device preparation (APDP) — Enrollment Time Grouping, device group ownership/eligibility, classic-Autopilot precedence shadowing |
 | `Scripts/Get-DevicePreparationReadinessAudit.ps1` | Read-only audit of device-prep prerequisites — device group ownership/eligibility, Intune Provisioning Client SP presence, classic-Autopilot shadowing by serial |
+
+> ⚠️ Not listed above: `Troubleshooting/Autopilot-Troubleshooting2.ps1` and `Troubleshooting/Autopilot-Network-Connectivity.ps1` (misfiled `.ps1` scripts sitting under `Troubleshooting/` rather than `Scripts/`, one a near-duplicate of `Test-AutopilotNetworkRequirements.ps1`) are flagged since run 30 for interactive user review (rename/relocate/dedupe), not touched autonomously.
 
 ---
 

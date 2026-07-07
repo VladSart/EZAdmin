@@ -30,9 +30,12 @@ This module focuses on what MSPs actually use Power Automate for:
 | `SharePoint/SharePoint-Site-Provisioning-B.md` | Hotfix: site creation flows broken |
 | `SharePoint/SharePoint-Site-Provisioning-A.md` | Deep dive: site provisioning architecture, permissions model |
 | `SharePoint/Permission-Management-B.md` | Hotfix: permission flows failing |
+| `SharePoint/Permission-Management-A.md` | Deep dive: SharePoint permission model via flow — role definitions, group vs. item-level breaks, batching/throttling behaviour of the SharePoint connector's permission actions |
 | `Troubleshooting/Connector-Auth-B.md` | Hotfix: connector auth failures, token expiry |
 | `Troubleshooting/Throttling-Limits-B.md` | Hotfix: 429 throttling, flow run quotas |
 | `Troubleshooting/Approval-Workflows-B.md` | Hotfix: stuck approvals, departed approvers, 30-day run ceiling |
+| `Troubleshooting/DLP-Policies-B.md` | Hotfix: flow broken/blocked by a DLP policy — connector classification conflict, newly-applied tenant policy |
+| `Troubleshooting/DLP-Policies-A.md` | Deep dive: DLP policy architecture — Business/Non-Business/Blocked connector groups, policy scope precedence (environment vs. tenant-wide), classification conflict resolution |
 | `Groups-Teams/Groups-Teams-Provisioning-B.md` | Hotfix: M365 Group/Teams self-service provisioning flows — async race conditions, naming policy, owner assignment, guest access, group-based licensing lag |
 | `Troubleshooting/Flow-Ownership-Transfer-B.md` | Hotfix: flows breaking during offboarding — finding flows owned by a departing user and transferring ownership |
 | `Troubleshooting/Flow-Ownership-Transfer-A.md` | Deep dive: ownership vs. connection-identity model, why reassigning ownership alone doesn't fix runtime auth, bulk sweep and service-account patterns |
@@ -56,7 +59,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - "Flow runs but SharePoint site wasn't created" → `SharePoint/SharePoint-Site-Provisioning-A.md` (timing/async issues)
 - "Getting 429 errors or flow suspended" → `Troubleshooting/Throttling-Limits-B.md`
 - "Need to build a site creation flow from scratch" → `SharePoint/SharePoint-Site-Provisioning-A.md`
-- "DLP policy blocking connector" → `EntraID/` (environment admin controls DLP)
+- "DLP policy blocking connector" → `Troubleshooting/DLP-Policies-B.md`; use `Scripts/Get-DLPPolicyImpactReport.ps1` to resolve effective classification across overlapping policies
 - "Approval flow stuck / approver never responds" → `Troubleshooting/Approval-Workflows-B.md`
 - "Self-service Team/Group provisioning flow fails or is inconsistent" → `Groups-Teams/Groups-Teams-Provisioning-B.md`
 - "An employee is leaving, what happens to their flows?" / "Flow stopped working after we disabled someone's account" → `Troubleshooting/Flow-Ownership-Transfer-B.md`

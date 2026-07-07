@@ -52,6 +52,11 @@ sudo profiles -e /tmp/MDMProfile.plist
 - "Company Portal shows no apps" → check app assignment + device group membership
 - "Platform SSO not registering / user stuck at sign-in / SSO not working" → `Troubleshooting/Platform-SSO-B.md` + `Troubleshooting/Platform-SSO-A.md` + `Scripts/Get-PlatformSSOStatus.sh`
 - "macOS update not offered / stuck on old version / update deadline questions" → `Troubleshooting/SoftwareUpdates-B.md` + `Troubleshooting/SoftwareUpdates-A.md` + `Scripts/Get-SoftwareUpdateStatus.sh`
+- "Compliance policy shows non-compliant / device not reporting correctly" → `Troubleshooting/Compliance-Policies-B.md` + `Troubleshooting/Compliance-Policies-A.md` + `Scripts/Get-ComplianceStatus.sh`
+- "System extension blocked / kernel extension not approved / PPPC prompt appearing when it shouldn't" → `Troubleshooting/Extensions-B.md` + `Troubleshooting/Extensions-A.md` + `Scripts/Get-SystemExtensionStatus.sh`
+- "Privacy Preferences Policy Control (PPPC/TCC) permission not being granted silently" → `Troubleshooting/PPPC-B.md` + `Troubleshooting/PPPC-A.md` + `Scripts/Get-PPPCStatus.sh`
+- "MDM push certificate expiring or expired / device dropped MDM management" → `Troubleshooting/MDM-Certificate-Renewal-B.md` + `Troubleshooting/MDM-Certificate-Renewal-A.md` + `Scripts/Get-MDMCertificateStatus.sh` + `Scripts/Repair-MacMDMEnrollment.sh`
+- "General Mac/Intune status check before deeper triage" → `Scripts/Get-MacIntuneStatus.sh`
 
 ---
 
