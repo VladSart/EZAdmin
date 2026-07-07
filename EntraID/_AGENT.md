@@ -51,24 +51,43 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 
 | File | What it covers |
 |------|---------------|
-| `Troubleshooting/HybridJoin-B.md` | Hotfix: HAADJ failures, Entra Connect sync |
-| `Troubleshooting/PRT-Issues-B.md` | Hotfix: PRT missing, SSO broken, CA failing |
-| `Troubleshooting/DynamicGroups-B.md` | Hotfix: dynamic group membership rule not evaluating, paused processing, sync lag |
-| `Troubleshooting/DynamicGroups-A.md` | Deep dive: dynamic group evaluation pipeline, rule syntax engine, downstream consumer lag |
-| `Troubleshooting/PasswordProtection-B.md` | Hotfix: Smart Lockout, banned password rejections, hybrid writeback/on-prem agent issues |
-| `Troubleshooting/CAE-B.md` | Hotfix: Continuous Access Evaluation — unexpected sign-outs, strict location enforcement |
-| `Troubleshooting/CAE-A.md` | Deep dive: CAE architecture, critical event revocation, claims challenges, strict location enforcement |
-| `Troubleshooting/GlobalSecureAccess-B.md` | Hotfix: Global Secure Access (Internet Access/Private Access) client not tunneling, connector down, CA network compliance |
-| `Troubleshooting/GlobalSecureAccess-A.md` | Deep dive: GSA architecture, traffic forwarding profiles, Private Access connector topology |
-| `Troubleshooting/CrossTenant-A.md` / `-B.md` | Deep dive + hotfix: XTAS default/partner policies, B2B Direct Connect, cross-tenant sync |
-| `Troubleshooting/HybridJoin-A.md` | Deep dive: HAADJ two-phase registration model, SCP, Entra Connect sync timing |
-| `Troubleshooting/EntraDomainServices-B.md` | Hotfix: managed domain (Entra DS) health alerts, password hash sync gaps, flat OU sync limits, LDAPS, VNet peering/DNS for domain-joined VMs |
-| `Troubleshooting/EntraDomainServices-A.md` | Deep dive: Entra DS one-way sync architecture, password hash projection mechanics, flat OU model, VNet peering/DNS dependency chain, LDAPS cert lifecycle |
+| `Troubleshooting/HybridJoin-B.md` / `-A.md` | Hotfix + deep dive: HAADJ two-phase registration, SCP, Entra Connect sync timing |
+| `Troubleshooting/PRT-Issues-B.md` / `-A.md` | Hotfix + deep dive: PRT missing, SSO broken, CA failing |
+| `Troubleshooting/DynamicGroups-B.md` / `-A.md` | Hotfix + deep dive: dynamic group membership rule not evaluating, paused processing, evaluation pipeline, sync lag |
+| `Troubleshooting/PasswordProtection-B.md` / `-A.md` | Hotfix + deep dive: Smart Lockout, banned password rejections, hybrid writeback/on-prem agent issues |
+| `Troubleshooting/CAE-B.md` / `-A.md` | Hotfix + deep dive: Continuous Access Evaluation — unexpected sign-outs, critical event revocation, claims challenges, strict location enforcement |
+| `Troubleshooting/GlobalSecureAccess-B.md` / `-A.md` | Hotfix + deep dive: Global Secure Access (Internet Access/Private Access) client not tunneling, connector down, traffic forwarding profiles, connector topology |
+| `Troubleshooting/CrossTenant-B.md` / `-A.md` | Hotfix + deep dive: XTAS default/partner policies, B2B Direct Connect, cross-tenant sync |
+| `Troubleshooting/EntraDomainServices-B.md` / `-A.md` | Hotfix + deep dive: managed domain (Entra DS) health, one-way sync architecture, password hash projection, flat OU model, LDAPS, VNet peering/DNS |
+| `Troubleshooting/AccessPackages-B.md` / `-A.md` | Hotfix + deep dive: entitlement management access package assignment/delivery failures, approval workflow, connected org sync |
+| `Troubleshooting/AppProxy-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Application Proxy connector health, pre-authentication failures, backend connectivity |
+| `Troubleshooting/Connect-Sync-B.md` / `-A.md` | Hotfix + deep dive: Entra Connect / Cloud Sync sync errors, attribute conflicts, staging mode |
+| `Troubleshooting/ExternalIdentities-B.md` / `-A.md` | Hotfix + deep dive: B2B guest invitation/redemption failures, external collaboration settings |
+| `Troubleshooting/IdentityProtection-B.md` / `-A.md` | Hotfix + deep dive: risk-based Conditional Access, user/sign-in risk detections, risk remediation |
+| `Troubleshooting/MFA-B.md` / `-A.md` | Hotfix + deep dive: MFA registration/challenge failures, method management, CA integration, token claims |
+| `Troubleshooting/PIM-B.md` / `-A.md` | Hotfix + deep dive: Privileged Identity Management role activation failures, access reviews, eligible vs. active assignments |
+| `Troubleshooting/SSPR-B.md` / `-A.md` | Hotfix + deep dive: Self-Service Password Reset registration/reset failures, authentication method gaps |
+| `Troubleshooting/WHfB-B.md` / `-A.md` | Hotfix + deep dive: Windows Hello for Business provisioning failures, key trust/cert trust, TPM issues |
+| `Troubleshooting/GDAP-B.md` / `-A.md` | Hotfix + deep dive: Granular Delegated Admin Privileges (CSP/partner relationships) — relationship lifecycle, Access Assignment/security group mapping, guest-account contamination, Conditional Access "Service provider users" interaction |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
 | `Scripts/Get-GlobalSecureAccessHealth.ps1` | Traffic forwarding profile state, Private Access connector/group health, app-to-connector mapping |
 | `Scripts/Get-HybridJoinDiagnostics.ps1` | Device-local HAADJ chain check: domain join, SCP, DRS reachability, scheduled task, device cert |
+| `Scripts/Get-AccessPackageAssignmentHealth.ps1` | Entitlement management access package assignment status/expiry audit |
+| `Scripts/Get-AppProxyConnectorHealth.ps1` | Application Proxy connector group health, connector version/reachability audit |
+| `Scripts/Get-CAESessionEvents.ps1` | Continuous Access Evaluation critical event and session revocation audit |
+| `Scripts/Get-DynamicGroupAudit.ps1` | Dynamic group rule validation, processing status, membership drift |
+| `Scripts/Get-EntraB2BGuestReport.ps1` | Guest account inventory, redemption status, external collaboration audit |
+| `Scripts/Get-GDAPRelationshipAudit.ps1` | GDAP relationship lifecycle audit, Auto Extend/expiry flags, Access Assignment health, guest-in-security-group detection |
+| `Scripts/Get-IdentityProtectionRiskReport.ps1` | User/sign-in risk detections export, risk-level summary |
+| `Scripts/Get-MFAMethodsReport.ps1` | Per-user MFA method registration coverage audit |
+| `Scripts/Get-PIMReport.ps1` | PIM eligible/active role assignment and activation history audit |
+| `Scripts/Get-PasswordProtectionCoverage.ps1` | Smart Lockout / banned password list policy coverage audit |
+| `Scripts/Get-PRTFleetRisk.ps1` | Fleet-wide PRT health and risk flagging |
+| `Scripts/Get-SSPRCoverageReport.ps1` | SSPR registration coverage and authentication method gap audit |
+| `Scripts/Get-WHfBRegistrationStatus.ps1` | Windows Hello for Business registration/provisioning status across fleet |
+| `Scripts/Invoke-GraphBatchQuery.ps1` | Generic Graph API batch query helper for large-object-set reporting |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
 ---
@@ -79,9 +98,9 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Hybrid join not completing" → `Troubleshooting/HybridJoin-B.md`
 - "Device in Entra but Intune shows not enrolled" → `Intune/Troubleshooting/Enrollment-B.md`
 - "Conditional Access blocking access incorrectly" → `Security/ConditionalAccess/`
-- "Entra Connect attribute conflict / user not syncing" → `Troubleshooting/HybridJoin-B.md`
+- "Entra Connect attribute conflict / user not syncing" → `Troubleshooting/Connect-Sync-B.md`
 - "Service principal client secret expired (flow/app broken)" → `Scripts/` + rotate secret in Entra App Registrations
-- "Guest user can't access SharePoint" → `EntraID/` B2B guest redemption + `M365/SharePoint-OneDrive/`
+- "Guest user can't access SharePoint / B2B invite won't redeem" → `Troubleshooting/ExternalIdentities-B.md` + `M365/SharePoint-OneDrive/`
 - "Dynamic group not picking up new members / license not assigning" → `Troubleshooting/DynamicGroups-B.md`
 - "User locked out repeatedly / new password keeps getting rejected" → `Troubleshooting/PasswordProtection-B.md`
 - "User randomly signed out mid-session" / "session ended after password reset or VPN change" → `Troubleshooting/CAE-B.md`
@@ -89,6 +108,14 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Guest from partner org keeps getting MFA prompts / Teams Shared Channel not available to external member" → `Troubleshooting/CrossTenant-B.md`
 - "Device domain-joined but stuck in Entra as Pending / dsregcmd shows AzureAdJoined: NO" → `Troubleshooting/HybridJoin-B.md` + `Scripts/Get-HybridJoinDiagnostics.ps1`
 - "Can't domain-join a VM to our managed domain / LDAPS broken / new cloud-only user can't log into the domain-joined server" → `Troubleshooting/EntraDomainServices-B.md` + `Troubleshooting/EntraDomainServices-A.md` (architecture: one-way sync, flat OU model, VNet peering)
+- "Access package request stuck / approval not delivering the group membership" → `Troubleshooting/AccessPackages-B.md`
+- "On-prem app published via App Proxy unreachable / pre-auth failing" → `Troubleshooting/AppProxy-B.md`
+- "Risky sign-in blocking a user who says it's legitimate" → `Troubleshooting/IdentityProtection-B.md`
+- "User can't register for MFA / stuck in method-registration loop" → `Troubleshooting/MFA-B.md`
+- "PIM role activation failing / approval never arrives" → `Troubleshooting/PIM-B.md`
+- "User can't reset their own password / SSPR registration incomplete" → `Troubleshooting/SSPR-B.md`
+- "Windows Hello for Business won't provision / stuck on TPM or cert enrollment" → `Troubleshooting/WHfB-B.md`
+- "Our MSP/partner suddenly can't get into a customer tenant / GDAP relationship expired" → `Troubleshooting/GDAP-B.md` + `Scripts/Get-GDAPRelationshipAudit.ps1`
 
 ---
 
