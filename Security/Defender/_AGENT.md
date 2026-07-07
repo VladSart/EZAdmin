@@ -1,7 +1,7 @@
 # Microsoft Defender — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), and Attack Simulation Training troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, and incident response workflows across the Defender XDR suite plus the Defender for Office 365 phishing-simulation product.
+Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Secure Score, posture, multicloud/hybrid connectors), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), and Attack Simulation Training troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, and incident response workflows across the Defender XDR suite plus the Defender for Office 365 phishing-simulation product.
 
 ## Before responding, also check
 - `Security/ConditionalAccess/` — CA policies often interact with MDE compliance signals
@@ -10,6 +10,8 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - `Windows/Troubleshooting/` — OS-level issues (WMI, services) can break MDE sensor
 - `M365/Exchange/` — mail-flow/transport-rule interactions with Attack Simulation Training and reported-phish routing
 - `Security/Purview/` — Insider Risk and Communication Compliance are adjacent but separate Purview workloads, not part of this folder
+- `Azure/Arc/` — Defender for Cloud (CSPM) posture data for on-prem/hybrid servers depends on the machine being Arc-connected first; Arc agent health itself is out of scope for this folder
+- `Security/Sentinel/` — Defender for Cloud alerts/recommendations feed into Sentinel via a data connector, distinct from Defender XDR's own alert queue
 
 ## Folder contents
 
@@ -26,6 +28,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `NetworkProtection-B.md` | Network Protection blocking legitimate connections, indicator/exclusion issues |
 | `WDAC-B.md` / `-A.md` | Windows Defender Application Control policy conflicts and blocked binaries |
 | `AttackSimulationTraining-B.md` / `-A.md` | Phishing simulation delivery, reporting, and training-assignment issues (Defender for Office 365 Plan 2) |
+| `DefenderForCloud-B.md` / `-A.md` | Defender for Cloud (CSPM) — Secure Score, unhealthy recommendations, multicloud (AWS/GCP) connector onboarding, agentless scanning, regulatory compliance dashboard |
 | `Scripts/Get-MDEDeviceStatus.ps1` | Graph-based MDE device health/risk/sensor report |
 | `Scripts/Get-TamperProtectionStatus.ps1` | Tamper Protection state audit |
 | `Scripts/Get-ASRRuleStatus.ps1` | ASR rule state/mode audit |
@@ -36,6 +39,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `Scripts/Get-NetworkProtectionStatus.ps1` | Network Protection state/exclusion audit |
 | `Scripts/Get-WDACPolicyStatus.ps1` | WDAC policy deployment/enforcement audit |
 | `Scripts/Get-AttackSimulationCampaignAudit.ps1` | Graph-based Attack Simulation Training campaign health audit — stuck/stale simulations, audit-logging gate, transport-rule interference, per-user licensing gaps |
+| `Scripts/Get-DefenderForCloudPostureAudit.ps1` | Fleet-wide CSPM audit — plan tiers, Secure Score, unhealthy assessments, multicloud connector coverage, connector resource locks |
 
 ## Common entry points
 
@@ -48,6 +52,10 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "WDAC / Application Control blocking a signed app" → `WDAC-B.md` — Policy conflict and audit-mode triage
 - "Phishing simulation didn't reach all users" / "training assigned incorrectly" / "reports are empty" → `AttackSimulationTraining-B.md` — Licensing, audit-log, target-group hygiene, and reporting-mailbox triage
 - "Reported phishing email never shows in simulation reports" → `AttackSimulationTraining-B.md` Fix 6 — transport rule interference with submission addresses
+- "Secure Score dropped / recommendation shows unhealthy" → `DefenderForCloud-B.md` — Secure Score/assessment triage
+- "AWS/GCP account shows no data in Defender for Cloud" / connector onboarding failed → `DefenderForCloud-B.md` Fix 3
+- "Attack path analysis / agentless scanning / regulatory compliance is missing" → `DefenderForCloud-B.md` Fix 1 — check plan tier (Foundational vs. Defender CSPM) first
+- "GCP agentless VM scan results empty" → `DefenderForCloud-B.md` Fix 4 — check the disk-scanning org policy
 
 ## Key diagnostic commands
 
@@ -66,6 +74,15 @@ Get-MpComputerStatus | Select-Object TamperProtectionSource, IsTamperProtected
 
 # Run MDE health check
 & "C:\Program Files\Windows Defender Advanced Threat Protection\MsSense.exe" -health 2>&1
+
+# Check Defender for Cloud (CSPM) plan tiers
+Get-AzSecurityPricing | Select-Object Name, PricingTier
+
+# Pull Secure Score
+Get-AzSecuritySecureScore | Select-Object DisplayName, @{N="Current";E={$_.Score.Current}}, @{N="Max";E={$_.Score.Max}}
+
+# Find multicloud (AWS/GCP) connectors tenant-wide
+Search-AzGraph -Query "resources | where type =~ 'microsoft.security/securityconnectors'"
 ```
 
 ## Key dependency chain
@@ -78,6 +95,14 @@ Azure AD / Entra ID (device identity)
                             ├── MDE Portal (cloud telemetry)
                             ├── ASR Engine (kernel-level rules)
                             └── Tamper Protection (self-defence layer)
+
+Defender for Cloud (CSPM) — separate chain, resource/subscription-scoped, not device-scoped:
+Entra ID tenant + Azure subscription
+    └── Azure Policy (MCSB assignment) ── Foundational CSPM (free, always on)
+            └── Defender CSPM (paid, opt-in) ── agentless scanning, attack path,
+                    governance rules, regulatory compliance
+    └── Multicloud connectors: AWS (CloudFormation/IAM role) | GCP (Workload
+            Identity Federation) | on-prem/hybrid (Azure Arc agent — see Azure/Arc/)
 ```
 
 ## Response format reminder

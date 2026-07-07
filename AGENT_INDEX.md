@@ -90,6 +90,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Microsoft Sentinel Logic Apps playbooks / SOAR execution (automation rule → playbook handoff, permission/trigger-type model, connector auth, 3-layer throttling) | `Security/Sentinel/` | `Security/Sentinel/` AnalyticsRules topic (an incident/alert must exist before an automation rule can fire), `Security/Sentinel/` DataConnectors topic |
 | On-prem AD DS replication (FSMO, repadmin/dcdiag, KCC/topology, lingering objects) | `ActiveDirectory/` | `DFS/` (SYSVOL is a separate replication system on the same DCs), `EntraID/` (Entra Connect sync depends on healthy on-prem AD) |
 | Azure Arc-enabled servers (Connected Machine agent onboarding, connectivity/heartbeat, 45-90 day identity expiry) | `Azure/Arc/` | `Security/Sentinel/` (Arc is a prerequisite for non-Azure server data connectors), `Security/Defender/` (CSPM/MDE on non-Azure servers), `EntraID/` (at-scale onboarding service principal credentials) |
+| Microsoft Defender for Cloud (CSPM — Secure Score, recommendations, multicloud AWS/GCP connectors, agentless scanning, attack path analysis, regulatory compliance) | `Security/Defender/` | `Azure/Arc/` (on-prem/hybrid servers must be Arc-connected first), `Security/Sentinel/` (Defender for Cloud alerts feed Sentinel via data connector), `EntraID/` (subscription/tenant-scoped RBAC for Security Admin/Reader roles) |
 
 ---
 
