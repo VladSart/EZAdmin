@@ -93,6 +93,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Azure Arc-enabled servers (Connected Machine agent onboarding, connectivity/heartbeat, 45-90 day identity expiry) | `Azure/Arc/` | `Security/Sentinel/` (Arc is a prerequisite for non-Azure server data connectors), `Security/Defender/` (CSPM/MDE on non-Azure servers), `EntraID/` (at-scale onboarding service principal credentials) |
 | Microsoft Defender for Cloud (CSPM — Secure Score, recommendations, multicloud AWS/GCP connectors, agentless scanning, attack path analysis, regulatory compliance) | `Security/Defender/` | `Azure/Arc/` (on-prem/hybrid servers must be Arc-connected first), `Security/Sentinel/` (Defender for Cloud alerts feed Sentinel via data connector), `EntraID/` (subscription/tenant-scoped RBAC for Security Admin/Reader roles) |
 | Azure Backup (Recovery Services Vault — Azure VM disk backup, recovery points, soft delete, immutability) | `Azure/Backup/` | `M365/Backup/` (distinct — SaaS data, not VM disks), `Azure/AVD/` (session hosts are VMs and use this same service) |
+| Workload identity federation (GitHub Actions/Azure DevOps/Kubernetes OIDC trust, secretless CI/CD auth) + Conditional Access for workload identities (direct service-principal targeting, risk-based blocking, Workload Identities Premium) | `EntraID/` | `Security/ConditionalAccess/` (same policy engine, workload-identity-specific constraints), `EntraID/` AppRegistrations topic (secret/cert-based auth this migrates away from) |
 
 ---
 

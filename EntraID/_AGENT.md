@@ -9,6 +9,7 @@ Covers:
 - **User identity** — UPN conflicts, sync issues, guest accounts, B2B
 - **Conditional Access** — policy design, break-glass, legacy auth, named locations
 - **App registrations + service principals** — OAuth flows, client secrets, API permissions
+- **Workload identity federation + Conditional Access for workload identities** — federated credentials (GitHub Actions/Azure DevOps/Kubernetes OIDC trust), CA policies scoped to service principals, workload identity risk (leaked credentials/anomalous token)
 - **Entra Connect / Sync** — attribute conflicts, password hash sync, staging mode
 - **Privileged Identity Management (PIM)** — role activation, access reviews
 - **Graph API** — scripting against Entra, batch queries, permissions model
@@ -72,6 +73,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/GDAP-B.md` / `-A.md` | Hotfix + deep dive: Granular Delegated Admin Privileges (CSP/partner relationships) — relationship lifecycle, Access Assignment/security group mapping, guest-account contamination, Conditional Access "Service provider users" interaction |
 | `Troubleshooting/VerifiedID-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Verified ID — issuer/holder/verifier architecture, DID/DID document, did:web vs. deprecated did:ion, Key Vault signing key lifecycle, domain linkage (.well-known DID configuration), Admin API + Request Service API |
 | `Troubleshooting/AppRegistrations-B.md` / `-A.md` | Hotfix + deep dive: App Registration + Service Principal architecture, client secret/certificate expiry, AADSTS7000215/7000222/700027/500011/65001 error mapping, zero-owner notification gap, multi-tenant consent provisioning, federated credential migration |
+| `Troubleshooting/WorkloadIdentity-B.md` / `-A.md` | Hotfix + deep dive: workload identity federation (OIDC subject/issuer/audience matching for GitHub Actions/Azure DevOps/Kubernetes), AADSTS700211/700213/70021/700223/700238/70025 error mapping, Conditional Access for workload identities (direct-SP targeting only, no group enforcement, Workload Identities Premium licensing), risky workload identity remediation |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
@@ -95,6 +97,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-PasskeyRegistrationAudit.ps1` | Passkey (FIDO2) tenant policy state, per-user registration/AAGUID inventory, CA bootstrap-lockout risk scan |
 | `Scripts/Invoke-GraphBatchQuery.ps1` | Generic Graph API batch query helper for large-object-set reporting |
 | `Scripts/Get-AppRegistrationCredentialAudit.ps1` | Tenant-wide App Registration secret/cert expiry audit, zero-owner detection, Service Principal existence/enablement cross-check, per-app risk scoring |
+| `Scripts/Get-WorkloadIdentityAudit.ps1` | Tenant-wide federated credential inventory, non-standard audience detection, Conditional Access workload-identity targeting cross-check, Workload Identities Premium license consumption |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
 ---
@@ -108,6 +111,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Entra Connect attribute conflict / user not syncing" → `Troubleshooting/Connect-Sync-B.md`
 - "Service principal client secret expired (flow/app broken)" / "AADSTS7000215 or AADSTS7000222" / "automation stopped authenticating overnight" → `Troubleshooting/AppRegistrations-B.md` + `Scripts/Get-AppRegistrationCredentialAudit.ps1`
 - "Multi-tenant app works in one customer tenant but fails with AADSTS500011 in another" / "AADSTS700027 certificate auth failing" → `Troubleshooting/AppRegistrations-B.md` Fix 3 / Fix 4
+- "GitHub Actions / Azure DevOps pipeline suddenly can't get a token, no secret involved" / "AADSTS700211, 700213, 70021, 700223, 700238, or 70025" → `Troubleshooting/WorkloadIdentity-B.md` + `Scripts/Get-WorkloadIdentityAudit.ps1`
+- "Service principal blocked with no federation error" / "want to add Conditional Access to a CI/CD automation account" / "Workload Identities Premium license question" → `Troubleshooting/WorkloadIdentity-B.md` Fix 4 / `Troubleshooting/WorkloadIdentity-A.md` Playbook 2
 - "Guest user can't access SharePoint / B2B invite won't redeem" → `Troubleshooting/ExternalIdentities-B.md` + `M365/SharePoint-OneDrive/`
 - "Dynamic group not picking up new members / license not assigning" → `Troubleshooting/DynamicGroups-B.md`
 - "User locked out repeatedly / new password keeps getting rejected" → `Troubleshooting/PasswordProtection-B.md`
