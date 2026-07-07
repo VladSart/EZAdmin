@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, and Insider Risk Management in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, and Communication Compliance in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -33,11 +33,14 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `eDiscovery-B.md` | Hotfix runbook for case holds, failed searches, and failed exports |
 | `RetentionLabels-A.md` | Deep dive — retention label vs. retention policy architecture, conflict resolution, disposition review |
 | `RetentionLabels-B.md` | Hotfix runbook for unpublished labels, distribution errors, and retention/policy conflicts |
+| `CommunicationCompliance-A.md` | Deep dive — policy templates, scoping/reviewer rules, role groups, channel prerequisites (no PowerShell for policy CRUD) |
+| `CommunicationCompliance-B.md` | Hotfix runbook for zero-admin lockout, reviewer eligibility, under-reviewing templates, licensing gaps |
 | `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
 | `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
 | `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
 | `Scripts/Get-eDiscoveryHoldAudit.ps1` | Tenant-wide case hold + export expiry audit |
 | `Scripts/Get-RetentionPolicyAudit.ps1` | Tenant-wide retention label + policy distribution audit |
+| `Scripts/Get-CommunicationComplianceReadinessAudit.ps1` | Audit log, role group (zero-admin risk), reviewer eligibility, licence, and Teams reporting-policy readiness check (adjacent-signal audit only — no policy CRUD API exists) |
 
 ---
 
@@ -58,6 +61,10 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "Disposition review never triggers" | `RetentionLabels-B.md` → Fix 6 |
 | "Difference between retention labels and retention policies" | `RetentionLabels-A.md` → How It Works |
 | "eDiscovery case hold stuck in Error/Pending" | `eDiscovery-B.md` → Fix 2 |
+| "Global Admin can't see Communication Compliance in the portal" | `CommunicationCompliance-A.md` → Reviewer role groups section; `CommunicationCompliance-B.md` → Fix 2 |
+| "Communication Compliance policy isn't catching everything" | `CommunicationCompliance-B.md` → Fix 5 (check review percentage — two templates default to 10%) |
+| "Reviewer added to a Communication Compliance policy but sees nothing" | `CommunicationCompliance-B.md` → Fix 3 |
+| "Can I manage Communication Compliance policies with PowerShell/Graph?" | `CommunicationCompliance-A.md` → How It Works (no — portal only) |
 
 ---
 
@@ -87,6 +94,11 @@ Get-Label | Select-Object DisplayName, Priority, IsActive | Format-Table -AutoSi
 # Check endpoint DLP onboarding status (via Defender for Endpoint)
 # Run in MDE portal / Advanced Hunting — or via Graph:
 # GET https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$filter=operatingSystem eq 'Windows'
+
+# Communication Compliance has NO cmdlets for policy CRUD — only these adjacent checks:
+Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
+Get-RoleGroupMember -Identity "Communication Compliance Admins"
+Get-EXOMailbox -Identity <reviewer@tenant.com> | Select-Object RecipientTypeDetails
 ```
 
 ---

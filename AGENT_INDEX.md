@@ -66,6 +66,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Defender: Cloud Apps (MDA), Identity (MDI), Vuln Mgmt, Network Protection, WDAC | `Security/Defender/` | `Intune/`, `EntraID/` |
 | Attack Simulation Training (phishing simulations, training assignment, MDO Plan 2) | `Security/Defender/` | `M365/Exchange/`, `EntraID/` |
 | Purview DLP, sensitivity labels, insider risk, eDiscovery | `Security/Purview/` | `M365/Exchange/`, `M365/SharePoint-OneDrive/` |
+| Communication Compliance (message review policies — no PowerShell for policy CRUD) | `Security/Purview/` | `M365/Exchange/`, `M365/Teams/`, `EntraID/` |
 | Graph API queries, automation, reporting | `EntraID/Graph/` | Any domain using Graph |
 | macOS Intune enrollment, ADE, shell scripts | `macOS/` | `Intune/`, `EntraID/` |
 | Entra ID PIM, MFA methods, SSPR, Identity Protection risk | `EntraID/` | `Security/ConditionalAccess/` |
