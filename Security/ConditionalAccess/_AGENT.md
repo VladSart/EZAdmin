@@ -57,10 +57,13 @@ Result: ALL matching policies' controls must be satisfied
 | `CA-Filters-B.md` | Hotfix: device filter unexpected include/exclude behaviour |
 | `CA-Filters-A.md` | Deep dive: filter query language, physicalIds/extensionAttribute targeting, evaluation engine |
 | `Named-Locations-B.md` | Hotfix: named location / IP-based CA condition issues |
+| `TokenProtection-B.md` | Hotfix: token protection sign-in blocks — unsupported device/app/OS, statusCode triage |
+| `TokenProtection-A.md` | Deep dive: PoP token-binding architecture, supported platforms/apps/resources, unsupported combinations |
 | `Scripts/Get-CASignInAnalysis.ps1` | Analyse sign-in logs for CA failures across users |
 | `Scripts/Get-NamedLocationAudit.ps1` | Named Location CIDR overlap/orphan/reference audit |
 | `Scripts/Get-CADeviceFilterAudit.ps1` | Device filter mode/expression risk, orphaned extensionAttribute, Autopilot coverage audit |
 | `Scripts/Get-CAPolicyDesignAudit.ps1` | Break-glass exclusion, pilot-scoping, legacy-auth-gap, recently-enabled, and cross-policy grant-conflict audit |
+| `Scripts/Get-TokenProtectionCoverageAudit.ps1` | Token protection policy design audit — browser client-app risk, Office 365 app-group targeting, missing device filter exclusions, stale report-only, non-Windows platform gap |
 
 ---
 
@@ -74,6 +77,8 @@ Result: ALL matching policies' controls must be satisfied
 - "Designing CA policy for a new client" → `CA-Design-A.md`
 - "Just deployed/edited a policy and now users are locked out" → `CA-Design-B.md`
 - "Device filter applying to wrong/no devices" → `CA-Filters-B.md` + `Scripts/Get-CADeviceFilterAudit.ps1`
+- "User/app suddenly blocked after a token protection policy rollout, AVD/Cloud PC users blocked" → `TokenProtection-B.md` + `Scripts/Get-TokenProtectionCoverageAudit.ps1`
+- "Designing/piloting token protection against token theft (AiTM phishing)" → `TokenProtection-A.md`
 
 ---
 
