@@ -83,6 +83,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | DFS Access-Based Enumeration, referral ordering / site costing | `DFS/` | `EntraID/`, `Windows/` |
 | Windows Always On VPN, AppLocker, Credential Guard/VBS, Kerberos/NTLM | `Windows/` | `EntraID/`, `Security/ConditionalAccess/` |
 | Microsoft 365 Backup (SharePoint/OneDrive/Exchange protection policies, restore points, coverage gaps) | `M365/Backup/` | `Security/Purview/`, `M365/SharePoint-OneDrive/`, `M365/Exchange/`, `EntraID/` |
+| Entra Verified ID (verifiable credentials — issuance/verification, DID/domain linkage, Admin API) | `EntraID/` | N/A (own Admin API, not Microsoft Graph) |
 
 ---
 

@@ -69,6 +69,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/SSPR-B.md` / `-A.md` | Hotfix + deep dive: Self-Service Password Reset registration/reset failures, authentication method gaps |
 | `Troubleshooting/WHfB-B.md` / `-A.md` | Hotfix + deep dive: Windows Hello for Business provisioning failures, key trust/cert trust, TPM issues |
 | `Troubleshooting/GDAP-B.md` / `-A.md` | Hotfix + deep dive: Granular Delegated Admin Privileges (CSP/partner relationships) — relationship lifecycle, Access Assignment/security group mapping, guest-account contamination, Conditional Access "Service provider users" interaction |
+| `Troubleshooting/VerifiedID-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Verified ID — issuer/holder/verifier architecture, DID/DID document, did:web vs. deprecated did:ion, Key Vault signing key lifecycle, domain linkage (.well-known DID configuration), Admin API + Request Service API |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
@@ -81,6 +82,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-DynamicGroupAudit.ps1` | Dynamic group rule validation, processing status, membership drift |
 | `Scripts/Get-EntraB2BGuestReport.ps1` | Guest account inventory, redemption status, external collaboration audit |
 | `Scripts/Get-GDAPRelationshipAudit.ps1` | GDAP relationship lifecycle audit, Auto Extend/expiry flags, Access Assignment health, guest-in-security-group detection |
+| `Scripts/Get-VerifiedIDConfigAudit.ps1` | Entra Verified ID authority/contract audit — DID sync state, legacy did:ion detection, domain linkage validation, manifest reachability, indexed-claim contract misconfiguration |
 | `Scripts/Get-IdentityProtectionRiskReport.ps1` | User/sign-in risk detections export, risk-level summary |
 | `Scripts/Get-MFAMethodsReport.ps1` | Per-user MFA method registration coverage audit |
 | `Scripts/Get-PIMReport.ps1` | PIM eligible/active role assignment and activation history audit |
@@ -117,6 +119,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "User can't reset their own password / SSPR registration incomplete" → `Troubleshooting/SSPR-B.md`
 - "Windows Hello for Business won't provision / stuck on TPM or cert enrollment" → `Troubleshooting/WHfB-B.md`
 - "Our MSP/partner suddenly can't get into a customer tenant / GDAP relationship expired" → `Troubleshooting/GDAP-B.md` + `Scripts/Get-GDAPRelationshipAudit.ps1`
+- "Verified ID / verifiable credential won't issue or verify / Authenticator shows unverified warning" → `Troubleshooting/VerifiedID-B.md` + `Scripts/Get-VerifiedIDConfigAudit.ps1`
 
 ---
 
