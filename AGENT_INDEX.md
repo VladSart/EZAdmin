@@ -89,6 +89,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Microsoft Sentinel analytics rules & incident tuning (rule kinds, AUTO DISABLED, entity mapping, incident grouping, automation rules, false-positive tuning, Azure-vs-Defender-portal divergence) | `Security/Sentinel/` | `Security/Sentinel/` DataConnectors topic (data must be flowing before a rule can fire), `Security/Defender/` (Microsoft security rule kind sources) |
 | Microsoft Sentinel Logic Apps playbooks / SOAR execution (automation rule → playbook handoff, permission/trigger-type model, connector auth, 3-layer throttling) | `Security/Sentinel/` | `Security/Sentinel/` AnalyticsRules topic (an incident/alert must exist before an automation rule can fire), `Security/Sentinel/` DataConnectors topic |
 | On-prem AD DS replication (FSMO, repadmin/dcdiag, KCC/topology, lingering objects) | `ActiveDirectory/` | `DFS/` (SYSVOL is a separate replication system on the same DCs), `EntraID/` (Entra Connect sync depends on healthy on-prem AD) |
+| Azure Arc-enabled servers (Connected Machine agent onboarding, connectivity/heartbeat, 45-90 day identity expiry) | `Azure/Arc/` | `Security/Sentinel/` (Arc is a prerequisite for non-Azure server data connectors), `Security/Defender/` (CSPM/MDE on non-Azure servers), `EntraID/` (at-scale onboarding service principal credentials) |
 
 ---
 

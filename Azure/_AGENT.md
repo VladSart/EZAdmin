@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), and **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision).
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), and **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers).
 
 ---
 
@@ -35,6 +35,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `Windows365/Windows365-B.md` | Windows 365 hotfix runbook — provisioning failures, ANC issues, resize/reprovision, client connectivity |
 | `Windows365/Windows365-A.md` | Windows 365 deep dive — provisioning policy pipeline, ANC architecture, licensing model, Frontline shared pools |
 | `Windows365/Scripts/Get-CloudPcFleetStatus.ps1` | Fleet-wide Cloud PC provisioning status, ANC health, and license consumption report |
+| `Arc/AzureArc-B.md` | Azure Arc hotfix runbook — agent disconnected, onboarding fails, HIMDS crash-looping, expired identity |
+| `Arc/AzureArc-A.md` | Azure Arc deep dive — onboarding architecture, identity model, AZCM error code map, MSP fleet playbooks |
+| `Arc/Scripts/Get-AzureArcAgentHealth.ps1` | Local agent health report — connection status, service state, recent AZCM errors, days-since-heartbeat vs expiry |
 
 ---
 
@@ -51,6 +54,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"Cloud PC stuck provisioning / failed"** → `Windows365/Windows365-B.md`
 - **"Windows 365 vs AVD — which do I use for this issue"** → `Windows365/Windows365-A.md` (comparison table)
 - **"Fleet-wide Cloud PC health for a ticket/report"** → `Windows365/Scripts/Get-CloudPcFleetStatus.ps1`
+- **"Server shows Disconnected in Azure Arc"** → `Arc/AzureArc-B.md`
+- **"Can't reconnect a server that's been offline for weeks"** → `Arc/AzureArc-A.md` (Playbook 2 — 45-90 day expiry cliff)
+- **"Onboarding a batch of servers to Arc across client tenants"** → `Arc/AzureArc-A.md` (Playbook 1)
 
 ---
 
