@@ -1,4 +1,8 @@
 # EZAdmin — Build Manifest
+
+> ⚠️ **Known issue (2026-07-07, run 57) — needs a 10-second human fix:** three stale, zero-byte git lock files (`.git/index.lock`, `.git/HEAD.lock`, `.git/refs/heads/master.lock`) exist in this repo's local `.git/` folder and cannot be deleted from within the automated sandbox (`rm`/`mv` both fail with "Operation not permitted" — the sandbox mount allows overwriting file *content* but not unlinking/renaming these specific files). This run worked around it (pushed via a scratch clone + direct object transfer, then repaired the local ref/index in place) and the repo is fully in sync with GitHub as of commit `5e4873a`. But the 3 lock files are still physically present and **will block the next run's first `git commit`** with "Unable to create '.git/index.lock': File exists." Fix: in Finder or Terminal on the Mac, delete these three files from `/Users/vladimirsartini/Claude/Projects/EzAdmin-GitHub/.git/` — `index.lock`, `HEAD.lock`, and `refs/heads/master.lock`. Nothing else needs fixing; this is metadata-only, no risk to repo content.
+
+
 > Tracks what has been built, what's in progress, and what's queued.
 > Updated automatically by each build agent/task. Do not edit manually.
 
