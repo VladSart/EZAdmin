@@ -23,7 +23,21 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | File | What it covers |
 |------|---------------|
 | `_AGENT.md` | This file — routing and orientation |
+| `DLP-Policy-A.md` | Deep dive — DLP policy evaluation engine, SITs, EDM, endpoint DLP architecture |
 | `DLP-Policy-B.md` | Hotfix runbook for DLP policy misconfiguration, false positives, over-blocking, and alert storms |
+| `Sensitivity-Labels-A.md` | Deep dive — sensitivity label architecture, encryption, label inheritance |
+| `Sensitivity-Labels-B.md` | Hotfix runbook for label publishing, encryption, and co-authoring issues |
+| `Insider-Risk-A.md` | Deep dive — Insider Risk Management policy engine, indicators, Adaptive Protection |
+| `Insider-Risk-B.md` | Hotfix runbook for IRM alert noise, missing signals, licensing gaps |
+| `eDiscovery-A.md` | Deep dive — eDiscovery case/hold/search/export architecture |
+| `eDiscovery-B.md` | Hotfix runbook for case holds, failed searches, and failed exports |
+| `RetentionLabels-A.md` | Deep dive — retention label vs. retention policy architecture, conflict resolution, disposition review |
+| `RetentionLabels-B.md` | Hotfix runbook for unpublished labels, distribution errors, and retention/policy conflicts |
+| `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
+| `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
+| `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
+| `Scripts/Get-eDiscoveryHoldAudit.ps1` | Tenant-wide case hold + export expiry audit |
+| `Scripts/Get-RetentionPolicyAudit.ps1` | Tenant-wide retention label + policy distribution audit |
 
 ---
 
@@ -36,8 +50,14 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "DLP alert storm — hundreds of alerts in the compliance portal" | `DLP-Policy-B.md` → Triage + Fix 3 |
 | "Endpoint DLP not enforcing on devices" | `DLP-Policy-B.md` → Fix 4 (endpoint prerequisites) |
 | "How do I put a DLP policy in test mode before going live?" | `DLP-Policy-B.md` → Common Fix Paths → Test Mode |
-| "DLP policy order — which policy applies when there are multiple?" | `DLP-Policy-B.md` → Mode A reference (coming) |
+| "DLP policy order — which policy applies when there are multiple?" | `DLP-Policy-A.md` → Policy Priority and Rule Order |
 | "Sensitivity label not triggering DLP rule" | `DLP-Policy-B.md` → Diagnosis step 4 (label sync) |
+| "Retention label doesn't show up for users" | `RetentionLabels-B.md` → Fix 2 (publishing scope) |
+| "Item was retained when it should have deleted (or vice versa)" | `RetentionLabels-B.md` → Fix 3 (conflict resolution) |
+| "Retention policy distribution stuck in Error/Pending" | `RetentionLabels-B.md` → Fix 1 (retry distribution) |
+| "Disposition review never triggers" | `RetentionLabels-B.md` → Fix 6 |
+| "Difference between retention labels and retention policies" | `RetentionLabels-A.md` → How It Works |
+| "eDiscovery case hold stuck in Error/Pending" | `eDiscovery-B.md` → Fix 2 |
 
 ---
 
