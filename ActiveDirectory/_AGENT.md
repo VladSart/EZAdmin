@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology) and **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication) — not SYSVOL (see `DFS/`) and not cloud/hybrid sync (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), and **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin) — not SYSVOL (see `DFS/`) and not cloud/hybrid sync (see `EntraID/`).
 
 ---
 
@@ -25,6 +25,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/Trusts/AD-Trusts-B.md` | Hotfix: trust secure channel failures, SID filtering/selective auth denial patterns, common fix paths |
 | `Troubleshooting/Trusts/AD-Trusts-A.md` | Deep dive: trust types, Kerberos referral path, SID filtering/selective auth internals, trust-password-reset and migration playbooks |
 | `Scripts/Get-ADTrustHealth.ps1` | One-shot trust health check: attribute summary, secure channel verify, DNS SRV resolution, port reachability to trusted-domain DCs |
+| `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` | Hotfix: USN rollback triage, DSRM password reset, authoritative restore of deleted objects, stale-backup decision gate |
+| `Troubleshooting/BackupRestore/AD-BackupRestore-A.md` | Deep dive: System State backup internals, authoritative vs. non-authoritative restore, USN rollback mechanics, DSRM, AD Recycle Bin, demote/rebuild and scoped-restore playbooks |
+| `Scripts/Get-ADBackupRestoreHealth.ps1` | One-shot backup/restore posture check: backup age vs. tombstone lifetime, NTDS VSS writer state, USN rollback/lingering-object event scan, replication isolation flags, Recycle Bin status |
 
 ---
 
@@ -42,6 +45,12 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Access broke for migrated users after a domain migration" → `Troubleshooting/Trusts/AD-Trusts-A.md` (SID filtering / Playbook 2)
 - "Setting up a new cross-forest trust with selective authentication" → `Troubleshooting/Trusts/AD-Trusts-A.md` (Playbook 3)
 - "Quick trust health snapshot" → `Scripts/Get-ADTrustHealth.ps1`
+- "Event ID 2095 / USN rollback detected" → `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` (Fix 1 — urgent, isolate the DC)
+- "Accidentally deleted an OU/users/group memberships, need them back" → `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` (check Recycle Bin first, Fix 2)
+- "DSRM password unknown, need to boot into Directory Services Restore Mode" → `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` (Fix 3)
+- "Is this backup even still restorable?" / backup age vs. tombstone lifetime → `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` (Fix 4) or `Scripts/Get-ADBackupRestoreHealth.ps1`
+- "Difference between authoritative and non-authoritative restore" → `Troubleshooting/BackupRestore/AD-BackupRestore-A.md`
+- "Quick backup/restore posture check" → `Scripts/Get-ADBackupRestoreHealth.ps1`
 
 ---
 
@@ -80,6 +89,18 @@ DNS resolution between the two domains (conditional forwarder/delegation)
                     └── Kerberos referral chain across the trust
                           └── SID filtering (quarantine) + selective authentication evaluated
                                 └── Normal resource ACL evaluation in the target domain
+```
+
+**Backup/restore dependency chain** (separate again — see `Troubleshooting/BackupRestore/`):
+
+```
+VSS-aware System State backup (not raw disk/VM snapshot of a live DC)
+  └── Backup age within tombstone lifetime (default 180 days — hard usability ceiling)
+        └── DSRM local admin password known/resettable
+              └── (authoritative restore only) DC booted into DSRM
+                    └── ntdsutil restore executed (authoritative or non-authoritative)
+                          └── (authoritative only) version numbers incremented on restored objects
+                                └── Normal replication propagates the restored state outward
 ```
 
 ---
