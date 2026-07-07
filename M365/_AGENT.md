@@ -15,6 +15,8 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 | `Teams/` | Calling plans, device policies, federation, meeting policies, guest access |
 | `Licensing/` | Group-based licensing, service plan conflicts, assignment automation |
 | `Copilot/` | Microsoft 365 Copilot licensing, policy, Conditional Access, and grounding/permission troubleshooting |
+| `UniversalPrint/` | Printer connector, printer shares, driverless print job diagnostics |
+| `Backup/` | Microsoft 365 Backup — protection policies/units, restore points, restore sessions, coverage-gap detection for SharePoint/OneDrive/Exchange |
 
 ---
 
@@ -55,6 +57,8 @@ Get-MgUserLicenseDetail -UserId <UPN> | Select SkuPartNumber
 - "OneDrive sync errors" → `SharePoint-OneDrive/Sync-Issues-B.md`
 - "Teams calling not working" → `Teams/Calling-B.md`
 - "User missing a feature (Teams, SharePoint)" → `Licensing/` — check service plan assignment
+- "Can't restore a deleted/overwritten site, OneDrive, or mailbox" → `Backup/M365-Backup-B.md`
+- "Are we missing backup coverage anywhere" → `Backup/Scripts/Get-M365BackupCoverageAudit.ps1`
 
 ---
 
