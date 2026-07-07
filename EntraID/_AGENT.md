@@ -71,6 +71,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/Passkeys-B.md` / `-A.md` | Hotfix + deep dive: Passkey (FIDO2) — passkey profiles, device-bound vs. synced, attestation, TAP-based registration bootstrap/lockout loop, AAGUID key restrictions |
 | `Troubleshooting/GDAP-B.md` / `-A.md` | Hotfix + deep dive: Granular Delegated Admin Privileges (CSP/partner relationships) — relationship lifecycle, Access Assignment/security group mapping, guest-account contamination, Conditional Access "Service provider users" interaction |
 | `Troubleshooting/VerifiedID-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Verified ID — issuer/holder/verifier architecture, DID/DID document, did:web vs. deprecated did:ion, Key Vault signing key lifecycle, domain linkage (.well-known DID configuration), Admin API + Request Service API |
+| `Troubleshooting/AppRegistrations-B.md` / `-A.md` | Hotfix + deep dive: App Registration + Service Principal architecture, client secret/certificate expiry, AADSTS7000215/7000222/700027/500011/65001 error mapping, zero-owner notification gap, multi-tenant consent provisioning, federated credential migration |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
@@ -93,6 +94,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-WHfBRegistrationStatus.ps1` | Windows Hello for Business registration/provisioning status across fleet |
 | `Scripts/Get-PasskeyRegistrationAudit.ps1` | Passkey (FIDO2) tenant policy state, per-user registration/AAGUID inventory, CA bootstrap-lockout risk scan |
 | `Scripts/Invoke-GraphBatchQuery.ps1` | Generic Graph API batch query helper for large-object-set reporting |
+| `Scripts/Get-AppRegistrationCredentialAudit.ps1` | Tenant-wide App Registration secret/cert expiry audit, zero-owner detection, Service Principal existence/enablement cross-check, per-app risk scoring |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
 ---
@@ -104,7 +106,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Device in Entra but Intune shows not enrolled" → `Intune/Troubleshooting/Enrollment-B.md`
 - "Conditional Access blocking access incorrectly" → `Security/ConditionalAccess/`
 - "Entra Connect attribute conflict / user not syncing" → `Troubleshooting/Connect-Sync-B.md`
-- "Service principal client secret expired (flow/app broken)" → `Scripts/` + rotate secret in Entra App Registrations
+- "Service principal client secret expired (flow/app broken)" / "AADSTS7000215 or AADSTS7000222" / "automation stopped authenticating overnight" → `Troubleshooting/AppRegistrations-B.md` + `Scripts/Get-AppRegistrationCredentialAudit.ps1`
+- "Multi-tenant app works in one customer tenant but fails with AADSTS500011 in another" / "AADSTS700027 certificate auth failing" → `Troubleshooting/AppRegistrations-B.md` Fix 3 / Fix 4
 - "Guest user can't access SharePoint / B2B invite won't redeem" → `Troubleshooting/ExternalIdentities-B.md` + `M365/SharePoint-OneDrive/`
 - "Dynamic group not picking up new members / license not assigning" → `Troubleshooting/DynamicGroups-B.md`
 - "User locked out repeatedly / new password keeps getting rejected" → `Troubleshooting/PasswordProtection-B.md`
