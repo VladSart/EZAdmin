@@ -32,6 +32,9 @@ Covers:
 | `SharedMailbox-B.md` | Hotfix: can't access shared mailbox, Send As failing, AutoMapping, calendar permissions |
 | `SharedMailbox-A.md` | Deep dive: shared mailbox object model, delegation mechanics, licensing rules, hybrid mastering |
 | `Hybrid-Coexistence-B.md` | Hotfix: on-prem to EXO routing, hybrid connector failures, certificate expiry |
+| `Hybrid-Coexistence-A.md` | Deep dive: hybrid topology, centralised vs decentralised routing, HCW internals |
+| `TransportRules-B.md` | Hotfix: rule doesn't fire, wrong rule fires, priority/StopRuleProcessing conflicts, DLP overlap |
+| `TransportRules-A.md` | Deep dive: ETR evaluation order, condition/exception AND/OR logic, multi-rule action stacking, DLP boundary |
 | `Scripts/Get-MessageTrace.ps1` | Mail flow trace wrapper for stuck/bounced messages |
 | `Scripts/Get-ExchangeHybridHealth.ps1` | Hybrid connector/certificate health check |
 | `Scripts/Get-MailboxAuditReport.ps1` | General mailbox permissions/forwarding/audit-log report |
@@ -42,6 +45,7 @@ Covers:
 | `Scripts/Get-PublicFolderHealthReport.ps1` | Public folder hierarchy sync/permission audit |
 | `Scripts/Get-RoomMailboxAudit.ps1` | Room mailbox booking/calendar/sign-in audit |
 | `Scripts/Get-SharedMailboxAudit.ps1` | Fleet-wide shared mailbox type/delegation/licensing/quota/sign-in audit |
+| `Scripts/Get-TransportRuleConflictAudit.ps1` | Tenant-wide ETR conflict audit — stuck test mode, priority short-circuits, broad conditions, unscoped high-impact actions, DLP overlap review |
 
 ---
 
@@ -59,6 +63,10 @@ Covers:
 - "Hybrid connector certificate expired" → `Hybrid-Coexistence-B.md`
 - "SPF / DKIM / DMARC failing, email rejected by recipient" → `Mail-Flow-B.md`
 - "Transport rule blocking legitimate email" → `Mail-Flow-B.md` (transport rules section)
+- "Transport rule doesn't seem to do anything" / "rule stuck in test mode" → `TransportRules-B.md` (Fix 1)
+- "Two transport rules conflicting / wrong one firing / priority order" → `TransportRules-B.md` (Fix 3/4)
+- "Transport rule and DLP policy both acting on same message" → `TransportRules-B.md` (Fix 6)
+- "Fleet audit of all transport rules for conflict risks" → `Scripts/Get-TransportRuleConflictAudit.ps1`
 
 ---
 
