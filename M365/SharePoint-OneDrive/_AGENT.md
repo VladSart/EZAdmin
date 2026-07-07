@@ -22,10 +22,11 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Scripts/Get-SharePointSiteReport.ps1` | Tenant-wide site inventory — storage, quota, sharing, orphaned-owner report |
 | `Scripts/Get-SharePointPermissionAudit.ps1` | Site sharing-capability alignment, unique-permission sprawl, M365 Group disconnection, guest redemption audit |
 | `Scripts/Get-SharePointMigrationStatus.ps1` | Dual-mode: local SPMT agent/connectivity/log check + destination SPO quota/site-admin check + source pre-scan (oversized files, long paths, bad characters) |
+| `Scripts/Get-OneDriveSyncClientHealth.ps1` | Local ODC diagnostic: process/version, Entra join + PRT state, multi-account conflict detection, event log errors, path-length compliance, KFM registry/redirection check |
 
 ## Common entry points
 
-- "OneDrive isn't syncing" → `Sync-Issues-B.md` — check error code first, then Fix 1 (reset sync) or Fix 2 (account mismatch)
+- "OneDrive isn't syncing" → `Sync-Issues-B.md` — check error code first, then Fix 1 (reset sync) or Fix 2 (account mismatch); run `Scripts/Get-OneDriveSyncClientHealth.ps1` on the endpoint for a full local diagnostic
 - "User can't access a SharePoint site" → `Permissions-B.md` — check if they're in the right group, whether inheritance is broken
 - "Sync shows red X / error 0x..." → `Sync-Issues-B.md` — Triage section maps error codes
 - "External user got an email but can't access" → `Permissions-B.md` Fix 3 (external sharing)

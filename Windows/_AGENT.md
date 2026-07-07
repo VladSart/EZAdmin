@@ -63,7 +63,8 @@ Covers:
 | `Scripts/Get-PrinterDiagnostics.ps1` | Companion script to PrintSpooler |
 | `Scripts/Get-DeliveryOptimizationDiagnostics.ps1` | Companion script to DeliveryOptimization |
 | `Scripts/Get-BitLockerStatus.ps1` | Companion script to BitLocker |
-| `Scripts/Enable-VBS.ps1` | Companion script to VBS-CredentialGuard |
+| `Scripts/Enable-VBS.ps1` | Legacy remediation-only snippet for VBS-CredentialGuard (enables VBS/Credential Guard via registry, no diagnostics) |
+| `Scripts/Get-VBSCredentialGuardStatus.ps1` | Diagnostic companion script to VBS-CredentialGuard — hardware prerequisites, Win32_DeviceGuard WMI status, lsaiso.exe check, MDM/registry policy state, CodeIntegrity/Operational HVCI block-event scan |
 | `Scripts/Test-VPNConnectivity.ps1` | Companion script to AlwaysOnVPN |
 | `Scripts/WindowsUpdateModule.ps1` / `Update-AllWindows.ps1` / `WindowsUpdateTool-25h2-A.ps1` | Companion scripts to Windows Update topics |
 | `Scripts/Setup-Apps.ps1` / `USB-Diagnostics.ps1` | General utility scripts (not tied to a single topic) |
@@ -110,7 +111,7 @@ Get-WinEvent -LogName System |
 - "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture)
 - "NIC disabled/missing, adapter shows Limited Connectivity, VPN eating all traffic, MTU/jumbo frame issue" → `Troubleshooting/NetworkAdapters-B.md` (hotfix) / `NetworkAdapters-A.md` (deep dive — NDIS stack, LBFO teaming) + `Scripts/Get-NetworkAdapterDiagnostics.ps1`
 - "USB device being blocked by policy" → Intune Device Control policy + Windows event log
-- "VBS breaking a VM or application" → `Scripts/Enable-VBS.ps1` context + registry check
+- "VBS/Credential Guard not running, BSOD after enabling VBS, HVCI driver conflict" → `Troubleshooting/VBS-CredentialGuard-B.md` (hotfix) / `VBS-CredentialGuard-A.md` (deep dive) + `Scripts/Get-VBSCredentialGuardStatus.ps1` (diagnostic) / `Scripts/Enable-VBS.ps1` (legacy remediation-only registry snippet)
 - "Kerberos auth failing / NTLM fallback" → `Troubleshooting/Kerberos-B.md` + `Scripts/Get-KerberosDiagnostics.ps1`
 - "Can't access a file share / SMB errors" → `Troubleshooting/SMB-B.md` + `Scripts/Get-SMBDiagnostics.ps1`
 - "App or port blocked by firewall" → `Troubleshooting/Firewall-B.md` + `Scripts/Get-FirewallDiagnostics.ps1`

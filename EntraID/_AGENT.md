@@ -74,6 +74,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
 | `Scripts/Get-GlobalSecureAccessHealth.ps1` | Traffic forwarding profile state, Private Access connector/group health, app-to-connector mapping |
 | `Scripts/Get-HybridJoinDiagnostics.ps1` | Device-local HAADJ chain check: domain join, SCP, DRS reachability, scheduled task, device cert |
+| `Scripts/Get-EntraDomainServicesHealth.ps1` | Entra DS managed domain health: replica set status, LDAPS cert expiry, VNet peering reciprocity, DNS config, optional per-user password-hash-sync readiness |
 | `Scripts/Get-AccessPackageAssignmentHealth.ps1` | Entitlement management access package assignment status/expiry audit |
 | `Scripts/Get-AppProxyConnectorHealth.ps1` | Application Proxy connector group health, connector version/reachability audit |
 | `Scripts/Get-CAESessionEvents.ps1` | Continuous Access Evaluation critical event and session revocation audit |
@@ -107,7 +108,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Traffic not tunneling / Private Access app unreachable / GSA client won't connect" → `Troubleshooting/GlobalSecureAccess-B.md`
 - "Guest from partner org keeps getting MFA prompts / Teams Shared Channel not available to external member" → `Troubleshooting/CrossTenant-B.md`
 - "Device domain-joined but stuck in Entra as Pending / dsregcmd shows AzureAdJoined: NO" → `Troubleshooting/HybridJoin-B.md` + `Scripts/Get-HybridJoinDiagnostics.ps1`
-- "Can't domain-join a VM to our managed domain / LDAPS broken / new cloud-only user can't log into the domain-joined server" → `Troubleshooting/EntraDomainServices-B.md` + `Troubleshooting/EntraDomainServices-A.md` (architecture: one-way sync, flat OU model, VNet peering)
+- "Can't domain-join a VM to our managed domain / LDAPS broken / new cloud-only user can't log into the domain-joined server" → `Troubleshooting/EntraDomainServices-B.md` + `Troubleshooting/EntraDomainServices-A.md` (architecture: one-way sync, flat OU model, VNet peering) + `Scripts/Get-EntraDomainServicesHealth.ps1`
 - "Access package request stuck / approval not delivering the group membership" → `Troubleshooting/AccessPackages-B.md`
 - "On-prem app published via App Proxy unreachable / pre-auth failing" → `Troubleshooting/AppProxy-B.md`
 - "Risky sign-in blocking a user who says it's legitimate" → `Troubleshooting/IdentityProtection-B.md`
