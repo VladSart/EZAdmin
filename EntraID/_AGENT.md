@@ -68,6 +68,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/PIM-B.md` / `-A.md` | Hotfix + deep dive: Privileged Identity Management role activation failures, access reviews, eligible vs. active assignments |
 | `Troubleshooting/SSPR-B.md` / `-A.md` | Hotfix + deep dive: Self-Service Password Reset registration/reset failures, authentication method gaps |
 | `Troubleshooting/WHfB-B.md` / `-A.md` | Hotfix + deep dive: Windows Hello for Business provisioning failures, key trust/cert trust, TPM issues |
+| `Troubleshooting/Passkeys-B.md` / `-A.md` | Hotfix + deep dive: Passkey (FIDO2) — passkey profiles, device-bound vs. synced, attestation, TAP-based registration bootstrap/lockout loop, AAGUID key restrictions |
 | `Troubleshooting/GDAP-B.md` / `-A.md` | Hotfix + deep dive: Granular Delegated Admin Privileges (CSP/partner relationships) — relationship lifecycle, Access Assignment/security group mapping, guest-account contamination, Conditional Access "Service provider users" interaction |
 | `Troubleshooting/VerifiedID-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Verified ID — issuer/holder/verifier architecture, DID/DID document, did:web vs. deprecated did:ion, Key Vault signing key lifecycle, domain linkage (.well-known DID configuration), Admin API + Request Service API |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
@@ -90,6 +91,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-PRTFleetRisk.ps1` | Fleet-wide PRT health and risk flagging |
 | `Scripts/Get-SSPRCoverageReport.ps1` | SSPR registration coverage and authentication method gap audit |
 | `Scripts/Get-WHfBRegistrationStatus.ps1` | Windows Hello for Business registration/provisioning status across fleet |
+| `Scripts/Get-PasskeyRegistrationAudit.ps1` | Passkey (FIDO2) tenant policy state, per-user registration/AAGUID inventory, CA bootstrap-lockout risk scan |
 | `Scripts/Invoke-GraphBatchQuery.ps1` | Generic Graph API batch query helper for large-object-set reporting |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
@@ -118,6 +120,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "PIM role activation failing / approval never arrives" → `Troubleshooting/PIM-B.md`
 - "User can't reset their own password / SSPR registration incomplete" → `Troubleshooting/SSPR-B.md`
 - "Windows Hello for Business won't provision / stuck on TPM or cert enrollment" → `Troubleshooting/WHfB-B.md`
+- "User can't register a passkey / TAP rejected / locked out of Security info trying to add a passkey" → `Troubleshooting/Passkeys-B.md` + `Scripts/Get-PasskeyRegistrationAudit.ps1`
 - "Our MSP/partner suddenly can't get into a customer tenant / GDAP relationship expired" → `Troubleshooting/GDAP-B.md` + `Scripts/Get-GDAPRelationshipAudit.ps1`
 - "Verified ID / verifiable credential won't issue or verify / Authenticator shows unverified warning" → `Troubleshooting/VerifiedID-B.md` + `Scripts/Get-VerifiedIDConfigAudit.ps1`
 
