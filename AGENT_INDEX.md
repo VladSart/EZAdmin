@@ -64,6 +64,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | M365 licensing, group-based, service plans | `M365/Licensing/` | `EntraID/` |
 | Defender for Endpoint onboarding, ASR, alerts | `Security/Defender/` | `Intune/`, `EntraID/` |
 | Defender: Cloud Apps (MDA), Identity (MDI), Vuln Mgmt, Network Protection, WDAC | `Security/Defender/` | `Intune/`, `EntraID/` |
+| Attack Simulation Training (phishing simulations, training assignment, MDO Plan 2) | `Security/Defender/` | `M365/Exchange/`, `EntraID/` |
 | Purview DLP, sensitivity labels, insider risk, eDiscovery | `Security/Purview/` | `M365/Exchange/`, `M365/SharePoint-OneDrive/` |
 | Graph API queries, automation, reporting | `EntraID/Graph/` | Any domain using Graph |
 | macOS Intune enrollment, ADE, shell scripts | `macOS/` | `Intune/`, `EntraID/` |
