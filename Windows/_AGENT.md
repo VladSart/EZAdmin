@@ -16,6 +16,60 @@ Covers:
 
 ---
 
+## Folder contents
+
+| File | What it covers |
+|------|-----------------|
+| `Troubleshooting/Windows Update/Update to Latest A.md` / `B.md` | Feature update deployment, stuck upgrades |
+| `Troubleshooting/Windows Update/WSUS to WfUB A.md` / `B.md` | WSUS-to-Windows Update for Business migration, dual-scan conflicts |
+| `Troubleshooting/BitLocker/BitLocker-A.md` / `B.md` | Recovery key escrow, policy enforcement, suspension |
+| `Troubleshooting/VBS-CredentialGuard-A.md` / `B.md` | VBS/Credential Guard/HVCI enabling and app compatibility conflicts |
+| `Troubleshooting/AppLocker-A.md` / `B.md` | Application control policy, audit mode, blocked-app diagnosis |
+| `Troubleshooting/DNS-Client-A.md` / `B.md` | Resolver chain, NRPT, DoH, cache/HOSTS issues |
+| `Troubleshooting/DHCP-Client-A.md` / `B.md` | DHCP lease failure, APIPA, relay/scope architecture |
+| `Troubleshooting/NetworkAdapters-A.md` / `B.md` | NIC/driver/NDIS stack, routing conflicts, LBFO teaming, MTU issues |
+| `Troubleshooting/AlwaysOnVPN-A.md` / `B.md` | Always On VPN device/user tunnel, IKEv2/SSTP negotiation |
+| `Troubleshooting/RDP-A.md` / `B.md` | Remote Desktop connection failures |
+| `Troubleshooting/SMB-A.md` / `B.md` | File share access, SMB protocol issues |
+| `Troubleshooting/GPO-A.md` / `B.md` | Group Policy application and conflict diagnosis |
+| `Troubleshooting/Kerberos-A.md` / `B.md` | Kerberos auth failures, NTLM fallback |
+| `Troubleshooting/NTLM-A.md` / `B.md` | NTLM auth failures, secure channel, LM level hardening |
+| `Troubleshooting/Firewall-A.md` / `B.md` | Windows Firewall rule/profile diagnosis |
+| `Troubleshooting/WMI-A.md` / `B.md` | WMI repository/service diagnosis |
+| `Troubleshooting/EventLog-A.md` / `B.md` | Event log collection, corruption, sizing |
+| `Troubleshooting/CredentialManager-A.md` / `B.md` | Stored credential issues |
+| `Troubleshooting/CertificateServices-A.md` / `B.md` | Certificate enrollment/renewal issues |
+| `Troubleshooting/UserProfile-A.md` / `B.md` | Profile corruption, load failures |
+| `Troubleshooting/PrintSpooler-A.md` / `B.md` | Print spooler crashes, queue issues |
+| `Troubleshooting/DeliveryOptimization-A.md` / `B.md` | Peer-to-peer update distribution issues |
+| `Troubleshooting/Time/TimeSync A.md` / `TimeSync B.md` | AADJ time sync — Local CMOS Clock, policy/network edge cases |
+| `Troubleshooting/Time/Can't sync time.windows.com.md` | Specific "ping works, NTP doesn't" scenario walkthrough |
+| `Scripts/Get-NetworkAdapterDiagnostics.ps1` | Companion script to NetworkAdapters — adapter/driver/routing/NLA sweep, CSV export |
+| `Scripts/Get-TimeSyncDiagnostics.ps1` | Companion script to Time/TimeSync — W32Time/policy/NTP reachability sweep, CSV export |
+| `Scripts/Get-DNSClientDiagnostics.ps1` | Companion script to DNS-Client |
+| `Scripts/Get-DHCPClientDiagnostics.ps1` | Companion script to DHCP-Client |
+| `Scripts/Get-RDPDiagnostics.ps1` | Companion script to RDP |
+| `Scripts/Get-SMBDiagnostics.ps1` | Companion script to SMB |
+| `Scripts/Get-FirewallDiagnostics.ps1` | Companion script to Firewall |
+| `Scripts/Get-GPOReport.ps1` | Companion script to GPO |
+| `Scripts/Get-KerberosDiagnostics.ps1` | Companion script to Kerberos |
+| `Scripts/Get-NTLMDiagnostics.ps1` | Companion script to NTLM |
+| `Scripts/Get-AppLockerDiagnostics.ps1` | Companion script to AppLocker |
+| `Scripts/Get-WMIDiagnostics.ps1` | Companion script to WMI |
+| `Scripts/Get-EventLogDiagnostics.ps1` | Companion script to EventLog |
+| `Scripts/Get-CredentialManagerDiagnostics.ps1` | Companion script to CredentialManager |
+| `Scripts/Get-CertificateServicesDiagnostics.ps1` | Companion script to CertificateServices |
+| `Scripts/Get-UserProfileDiagnostics.ps1` | Companion script to UserProfile |
+| `Scripts/Get-PrinterDiagnostics.ps1` | Companion script to PrintSpooler |
+| `Scripts/Get-DeliveryOptimizationDiagnostics.ps1` | Companion script to DeliveryOptimization |
+| `Scripts/Get-BitLockerStatus.ps1` | Companion script to BitLocker |
+| `Scripts/Enable-VBS.ps1` | Companion script to VBS-CredentialGuard |
+| `Scripts/Test-VPNConnectivity.ps1` | Companion script to AlwaysOnVPN |
+| `Scripts/WindowsUpdateModule.ps1` / `Update-AllWindows.ps1` / `WindowsUpdateTool-25h2-A.ps1` | Companion scripts to Windows Update topics |
+| `Scripts/Setup-Apps.ps1` / `USB-Diagnostics.ps1` | General utility scripts (not tied to a single topic) |
+
+---
+
 ## Before responding, also check
 
 - `Intune/` — if the Windows setting is being managed via MDM policy
@@ -52,8 +106,9 @@ Get-WinEvent -LogName System |
 - "WSUS conflict after moving to WfUB / Intune" → `Troubleshooting/Windows Update/WSUS to WfUB B.md`
 - "BitLocker recovery key not in Entra" → check Intune BitLocker policy + device escrow
 - "App blocked after WDAC/AppLocker deployed" → audit logs, policy mode check
-- "Time sync failing" → `Troubleshooting/Time/`
+- "Time sync failing / source shows Local CMOS Clock / ping works but NTP doesn't" → `Troubleshooting/Time/TimeSync B.md` (hotfix) / `TimeSync A.md` (deep dive — W32Time architecture, policy layer, STS) + `Scripts/Get-TimeSyncDiagnostics.ps1`
 - "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture)
+- "NIC disabled/missing, adapter shows Limited Connectivity, VPN eating all traffic, MTU/jumbo frame issue" → `Troubleshooting/NetworkAdapters-B.md` (hotfix) / `NetworkAdapters-A.md` (deep dive — NDIS stack, LBFO teaming) + `Scripts/Get-NetworkAdapterDiagnostics.ps1`
 - "USB device being blocked by policy" → Intune Device Control policy + Windows event log
 - "VBS breaking a VM or application" → `Scripts/Enable-VBS.ps1` context + registry check
 - "Kerberos auth failing / NTLM fallback" → `Troubleshooting/Kerberos-B.md` + `Scripts/Get-KerberosDiagnostics.ps1`
