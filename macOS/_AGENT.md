@@ -45,7 +45,7 @@ sudo profiles -e /tmp/MDMProfile.plist
 ## Common entry points
 
 - "Mac not enrolling via ADE" → check ABM token in Intune + DEP profile assignment
-- "New Macs stopped appearing for ADE sync" or "VPP app licenses failing" (existing Macs check in fine) → `Troubleshooting/ABM-Token-Renewal-B.md` (hotfix) / `Troubleshooting/ABM-Token-Renewal-A.md` (deep dive — token architecture, VPP vs. device sync split) — do not confuse with MDM push cert expiry, see comparison table in that file
+- "New Macs stopped appearing for ADE sync" or "VPP app licenses failing" (existing Macs check in fine) → `Troubleshooting/ABM-Token-Renewal-B.md` (hotfix) / `Troubleshooting/ABM-Token-Renewal-A.md` (deep dive — token architecture, VPP vs. device sync split) + `Scripts/Get-ABMTokenStatus.ps1` (admin-side Graph check — tenant-wide token expiry, sync error, and stale-sync report; not device-local since ABM token health isn't observable from a Mac) — do not confuse with MDM push cert expiry, see comparison table in that file
 - "Shell script not running / showing as failed" → check script output in Intune + macOS log
 - "FileVault not being reported to Intune" → compliance profile + FileVault escrow settings → `Troubleshooting/FileVault-B.md` + `Scripts/Get-FileVaultStatus.sh`
 - "Mac not enrolling / stuck at Setup Assistant" → `Troubleshooting/ADE-Enrollment-B.md` + `Scripts/Get-ADEEnrollmentStatus.sh`

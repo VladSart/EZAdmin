@@ -63,8 +63,21 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Teams calling, policies, devices | `M365/Teams/` | `EntraID/` |
 | M365 licensing, group-based, service plans | `M365/Licensing/` | `EntraID/` |
 | Defender for Endpoint onboarding, ASR, alerts | `Security/Defender/` | `Intune/`, `EntraID/` |
+| Defender: Cloud Apps (MDA), Identity (MDI), Vuln Mgmt, Network Protection, WDAC | `Security/Defender/` | `Intune/`, `EntraID/` |
+| Purview DLP, sensitivity labels, insider risk, eDiscovery | `Security/Purview/` | `M365/Exchange/`, `M365/SharePoint-OneDrive/` |
 | Graph API queries, automation, reporting | `EntraID/Graph/` | Any domain using Graph |
 | macOS Intune enrollment, ADE, shell scripts | `macOS/` | `Intune/`, `EntraID/` |
+| Entra ID PIM, MFA methods, SSPR, Identity Protection risk | `EntraID/` | `Security/ConditionalAccess/` |
+| Entra Domain Services (managed domain), App Proxy, Access Packages | `EntraID/` | `Azure/`, `Security/ConditionalAccess/` |
+| Windows Hello for Business, LAPS, Endpoint Privilege Mgmt (EPM) | `EntraID/` (WHfB) / `Intune/` (LAPS, EPM) | `Security/ConditionalAccess/` |
+| Azure Virtual Desktop (session hosts, FSLogix, App Attach) | `Azure/AVD/` | `Intune/`, `EntraID/`, `Windows/` |
+| Azure Files (SMB/NFS shares, identity auth, Azure File Sync) | `Azure/Files/` | `DFS/`, `EntraID/` |
+| Windows 365 Cloud PC (provisioning, ANC, resize/reprovision) | `Azure/Windows365/` | `Azure/AVD/`, `Intune/`, `M365/Licensing/` |
+| Copilot for Microsoft 365 (licensing, data access, plugins) | `M365/Copilot/` | `M365/Licensing/`, `Security/Purview/` |
+| Universal Print (queues, driverless printing) | `M365/UniversalPrint/` | `Intune/`, `EntraID/` |
+| Teams Rooms devices, calling, meeting policies | `M365/Teams/` | `Intune/`, `EntraID/` |
+| DFS Access-Based Enumeration, referral ordering / site costing | `DFS/` | `EntraID/`, `Windows/` |
+| Windows Always On VPN, AppLocker, Credential Guard/VBS, Kerberos/NTLM | `Windows/` | `EntraID/`, `Security/ConditionalAccess/` |
 
 ---
 

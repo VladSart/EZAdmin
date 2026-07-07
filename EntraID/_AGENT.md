@@ -62,6 +62,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/GlobalSecureAccess-A.md` | Deep dive: GSA architecture, traffic forwarding profiles, Private Access connector topology |
 | `Troubleshooting/CrossTenant-A.md` / `-B.md` | Deep dive + hotfix: XTAS default/partner policies, B2B Direct Connect, cross-tenant sync |
 | `Troubleshooting/HybridJoin-A.md` | Deep dive: HAADJ two-phase registration model, SCP, Entra Connect sync timing |
+| `Troubleshooting/EntraDomainServices-B.md` | Hotfix: managed domain (Entra DS) health alerts, password hash sync gaps, flat OU sync limits, LDAPS, VNet peering/DNS for domain-joined VMs |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
@@ -86,6 +87,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Traffic not tunneling / Private Access app unreachable / GSA client won't connect" → `Troubleshooting/GlobalSecureAccess-B.md`
 - "Guest from partner org keeps getting MFA prompts / Teams Shared Channel not available to external member" → `Troubleshooting/CrossTenant-B.md`
 - "Device domain-joined but stuck in Entra as Pending / dsregcmd shows AzureAdJoined: NO" → `Troubleshooting/HybridJoin-B.md` + `Scripts/Get-HybridJoinDiagnostics.ps1`
+- "Can't domain-join a VM to our managed domain / LDAPS broken / new cloud-only user can't log into the domain-joined server" → `Troubleshooting/EntraDomainServices-B.md`
 
 ---
 
