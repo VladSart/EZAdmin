@@ -85,6 +85,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Microsoft 365 Backup (SharePoint/OneDrive/Exchange protection policies, restore points, coverage gaps) | `M365/Backup/` | `Security/Purview/`, `M365/SharePoint-OneDrive/`, `M365/Exchange/`, `EntraID/` |
 | Entra Verified ID (verifiable credentials — issuance/verification, DID/domain linkage, Admin API) | `EntraID/` | N/A (own Admin API, not Microsoft Graph) |
 | SharePoint Advanced Management (SAM) — Restricted Access Control, Restricted Content Discovery, Site Lifecycle Management, Data Access Governance reports | `M365/SharePoint-OneDrive/` | `Security/Purview/` (sensitivity labels), `Security/ConditionalAccess/` (auth context, idle sign-out scoping) |
+| Microsoft Sentinel data connectors (AMA/DCR, API/service, diagnostic-settings), ingestion gaps, workspace quota | `Security/Sentinel/` | `Security/Defender/` (XDR alert sources), `EntraID/` (sign-in/audit log diagnostic settings), `M365/Exchange/` (Unified Audit Log for O365 connector) |
 
 ---
 
