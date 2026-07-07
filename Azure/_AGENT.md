@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), and **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers).
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), and **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability).
 
 ---
 
@@ -38,6 +38,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `Arc/AzureArc-B.md` | Azure Arc hotfix runbook — agent disconnected, onboarding fails, HIMDS crash-looping, expired identity |
 | `Arc/AzureArc-A.md` | Azure Arc deep dive — onboarding architecture, identity model, AZCM error code map, MSP fleet playbooks |
 | `Arc/Scripts/Get-AzureArcAgentHealth.ps1` | Local agent health report — connection status, service state, recent AZCM errors, days-since-heartbeat vs expiry |
+| `Backup/AzureBackup-B.md` | Azure Backup hotfix runbook — backup job failures (guest agent, extension, VSS, stuck jobs, protection stopped) |
+| `Backup/AzureBackup-A.md` | Azure Backup deep dive — recovery point tiers/consistency, soft delete, immutability, restore and bulk-remediation playbooks |
+| `Backup/Scripts/Get-AzureBackupJobStatus.ps1` | Vault-wide report — protection status, failed jobs, guest prerequisite health, soft-deleted items pending |
 
 ---
 
@@ -57,6 +60,10 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"Server shows Disconnected in Azure Arc"** → `Arc/AzureArc-B.md`
 - **"Can't reconnect a server that's been offline for weeks"** → `Arc/AzureArc-A.md` (Playbook 2 — 45-90 day expiry cliff)
 - **"Onboarding a batch of servers to Arc across client tenants"** → `Arc/AzureArc-A.md` (Playbook 1)
+- **"Backup job failed for a VM"** → `Backup/AzureBackup-B.md` (triage first — pull the actual error code)
+- **"How do I restore a VM from backup"** → `Backup/AzureBackup-A.md` Playbook 2
+- **"I deleted a backup item by mistake"** → `Backup/AzureBackup-A.md` Playbook 1 (soft delete, 14-day window)
+- **"Collect vault backup health for a ticket/report"** → `Backup/Scripts/Get-AzureBackupJobStatus.ps1`
 
 ---
 
