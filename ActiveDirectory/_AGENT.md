@@ -2,13 +2,14 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), and **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin) — not SYSVOL (see `DFS/`) and not cloud/hybrid sync (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), and **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing) — not the SYSVOL DFSR replication engine itself (see `DFS/`) and not cloud/hybrid sync (see `EntraID/`).
 
 ---
 
 ## Before responding, also check
 
-- `DFS/` — if the symptom is "GPOs not applying" or "files not syncing between sites," that's SYSVOL/DFSR, a separate replication system layered on top of AD
+- `DFS/` — if the symptom is a SYSVOL/DFSR replication backlog itself (not GPO processing behavior), that's a separate replication system layered on top of AD — `Troubleshooting/GroupPolicy/` here covers the GPO-processing side of that same dependency
+- `Intune/` — if the org has migrated or is migrating settings off Group Policy onto CSP/Intune configuration profiles (see `Intune/Troubleshooting/GP-to-CSP-B.md`)
 - `EntraID/` — if the symptom involves Entra Connect, hybrid join, or cloud-side identity; on-prem AD health is a prerequisite dependency for all of it
 - `Windows/` — if the issue is Kerberos/NTLM auth failures on a client (not between DCs), DNS client-side config, or time sync at the endpoint level
 - `Security/ConditionalAccess/` — if access is being blocked by policy rather than by a broken identity/replication chain
@@ -28,6 +29,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` | Hotfix: USN rollback triage, DSRM password reset, authoritative restore of deleted objects, stale-backup decision gate |
 | `Troubleshooting/BackupRestore/AD-BackupRestore-A.md` | Deep dive: System State backup internals, authoritative vs. non-authoritative restore, USN rollback mechanics, DSRM, AD Recycle Bin, demote/rebuild and scoped-restore playbooks |
 | `Scripts/Get-ADBackupRestoreHealth.ps1` | One-shot backup/restore posture check: backup age vs. tombstone lifetime, NTDS VSS writer state, USN rollback/lingering-object event scan, replication isolation flags, Recycle Bin status |
+| `Troubleshooting/GroupPolicy/AD-GroupPolicy-B.md` | Hotfix: Event 1058/1030/1096 triage, security/WMI filter denial, GPC/SYSVOL version mismatch, slow-link/loopback quirks |
+| `Troubleshooting/GroupPolicy/AD-GroupPolicy-A.md` | Deep dive: GPC/GPT two-part architecture, client-side processing pipeline internals, precedence model, DFSR-backlog and corrupt-GPO remediation playbooks |
+| `Scripts/Get-GroupPolicyHealth.ps1` | One-shot GPO health check: gpresult summary, GP Operational log critical events, DFS client state, DC locator, time sync, optional GPC/GPT version comparison and DFSR backlog check |
 
 ---
 
@@ -51,6 +55,12 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Is this backup even still restorable?" / backup age vs. tombstone lifetime → `Troubleshooting/BackupRestore/AD-BackupRestore-B.md` (Fix 4) or `Scripts/Get-ADBackupRestoreHealth.ps1`
 - "Difference between authoritative and non-authoritative restore" → `Troubleshooting/BackupRestore/AD-BackupRestore-A.md`
 - "Quick backup/restore posture check" → `Scripts/Get-ADBackupRestoreHealth.ps1`
+- "GPO isn't applying" / Event 1058, 1030, or 1096 → `Troubleshooting/GroupPolicy/AD-GroupPolicy-B.md`
+- "gpresult shows AD / SYSVOL Version Mismatch" → `Troubleshooting/GroupPolicy/AD-GroupPolicy-B.md` (Fix 6) — check `DFS/Troubleshooting/Replication/` if DFSR itself is backlogged
+- "GPO applies to some machines in an OU but not others" → `Troubleshooting/GroupPolicy/AD-GroupPolicy-B.md` (Fix 3/Fix 4, security/WMI filtering)
+- "How does GPO precedence/inheritance actually resolve?" / "why did the wrong setting win?" → `Troubleshooting/GroupPolicy/AD-GroupPolicy-A.md`
+- "Loopback processing giving inconsistent results on shared machines" → `Troubleshooting/GroupPolicy/AD-GroupPolicy-A.md` (Playbook 3)
+- "Quick GPO health snapshot" → `Scripts/Get-GroupPolicyHealth.ps1`
 
 ---
 
@@ -101,6 +111,19 @@ VSS-aware System State backup (not raw disk/VM snapshot of a live DC)
                     └── ntdsutil restore executed (authoritative or non-authoritative)
                           └── (authoritative only) version numbers incremented on restored objects
                                 └── Normal replication propagates the restored state outward
+```
+
+**Group Policy processing chain** (see `Troubleshooting/GroupPolicy/`):
+
+```
+Network stack up (NLA) + DC Locator resolves a reachable, correctly-sited DC
+  └── Kerberos auth succeeds (time sync dependency, same as above)
+        └── SYSVOL (GPT) reachable via SMB + AD (GPC) enumerable via LDAP
+              └── GPC (AD) version and GPT (SYSVOL/DFSR) version agree
+                    └── Security filtering + WMI filtering pass
+                          └── Loopback mode (if configured) resolves as expected
+                                └── Client-Side Extensions apply settings
+                                      └── Precedence resolves the final winning value
 ```
 
 ---
