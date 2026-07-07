@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology) — not SYSVOL (see `DFS/`) and not cloud/hybrid sync (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology) and **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication) — not SYSVOL (see `DFS/`) and not cloud/hybrid sync (see `EntraID/`).
 
 ---
 
@@ -22,6 +22,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/Replication/AD-Replication-B.md` | Hotfix: replication failures, error code lookup, common fix paths (network/DNS/time/topology/lingering objects) |
 | `Troubleshooting/Replication/AD-Replication-A.md` | Deep dive: multi-master replication model, FSMO roles, USN/topology internals, FSMO seizure and lingering-object remediation playbooks |
 | `Scripts/Get-ADReplicationHealth.ps1` | One-shot health check: replication summary, FSMO reachability, time sync offsets, tombstone/lingering-object risk, key DCDiag tests |
+| `Troubleshooting/Trusts/AD-Trusts-B.md` | Hotfix: trust secure channel failures, SID filtering/selective auth denial patterns, common fix paths |
+| `Troubleshooting/Trusts/AD-Trusts-A.md` | Deep dive: trust types, Kerberos referral path, SID filtering/selective auth internals, trust-password-reset and migration playbooks |
+| `Scripts/Get-ADTrustHealth.ps1` | One-shot trust health check: attribute summary, secure channel verify, DNS SRV resolution, port reachability to trusted-domain DCs |
 
 ---
 
@@ -34,6 +37,11 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Redesigned AD Sites/Subnets, replication looks wrong now" → `Troubleshooting/Replication/AD-Replication-A.md` (Playbook 2)
 - "Need a quick health snapshot before/after a change" → `Scripts/Get-ADReplicationHealth.ps1`
 - "GPOs aren't applying / files not syncing" → this is SYSVOL, go to `DFS/Troubleshooting/Replication/`
+- "Trust relationship failed" / "netdom trust /verify fails" → `Troubleshooting/Trusts/AD-Trusts-B.md`
+- "Trust looks healthy but users still get access denied cross-domain" → `Troubleshooting/Trusts/AD-Trusts-B.md` (SID filtering / selective auth, Fix 3/Fix 4)
+- "Access broke for migrated users after a domain migration" → `Troubleshooting/Trusts/AD-Trusts-A.md` (SID filtering / Playbook 2)
+- "Setting up a new cross-forest trust with selective authentication" → `Troubleshooting/Trusts/AD-Trusts-A.md` (Playbook 3)
+- "Quick trust health snapshot" → `Scripts/Get-ADTrustHealth.ps1`
 
 ---
 
@@ -60,6 +68,18 @@ Network/DNS reachability between DCs
                           └── KCC/manual topology (connection objects, site links)
                                 └── USN exchange → object/attribute replication
                                       └── (separate system) SYSVOL replicates via DFSR
+```
+
+**Trust dependency chain** (separate from intra-domain replication above — see `Troubleshooting/Trusts/`):
+
+```
+DNS resolution between the two domains (conditional forwarder/delegation)
+  └── Network reachability (88/389/636/445/135+dynamic RPC) to a trusted-domain DC
+        └── Trusted Domain Object (TDO) password in sync on both sides
+              └── Netlogon secure channel (netdom trust /verify)
+                    └── Kerberos referral chain across the trust
+                          └── SID filtering (quarantine) + selective authentication evaluated
+                                └── Normal resource ACL evaluation in the target domain
 ```
 
 ---
