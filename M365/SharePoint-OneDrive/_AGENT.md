@@ -19,10 +19,13 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Permissions-A.md` | Permission model deep dive — layered inheritance, sharing link types, M365 Group vs. SPO group sync |
 | `Migration-B.md` | Migration hotfix — failed migration jobs, throttling, mapping errors |
 | `Migration-A.md` | Migration deep dive — SharePoint Migration Tool/Mover architecture, throttling behaviour, permission remapping |
+| `Advanced-Management-B.md` | SharePoint Advanced Management (SAM) hotfix — licensing gate errors, RAC not enforcing, RCD not hiding content, site lifecycle notifications not sending, idle sign-out behaviour |
+| `Advanced-Management-A.md` | SAM deep dive — RAC/RCD/DAG/Site Lifecycle Management architecture, licensing fork (Copilot licence vs. SAM Plan 1 add-on), dependency stack, remediation playbooks |
 | `Scripts/Get-SharePointSiteReport.ps1` | Tenant-wide site inventory — storage, quota, sharing, orphaned-owner report |
 | `Scripts/Get-SharePointPermissionAudit.ps1` | Site sharing-capability alignment, unique-permission sprawl, M365 Group disconnection, guest redemption audit |
 | `Scripts/Get-SharePointMigrationStatus.ps1` | Dual-mode: local SPMT agent/connectivity/log check + destination SPO quota/site-admin check + source pre-scan (oversized files, long paths, bad characters) |
 | `Scripts/Get-OneDriveSyncClientHealth.ps1` | Local ODC diagnostic: process/version, Entra join + PRT state, multi-account conflict detection, event log errors, path-length compliance, KFM registry/redirection check |
+| `Scripts/Get-SPAdvancedManagementAudit.ps1` | Read-only SAM audit: tenant RAC/RCD delegation flags, per-site RAC group count/enforceability, RCD-on-OneDrive misconfiguration, site lock state, optional DAG report status / idle sign-out / restricted-site-creation checks |
 
 ## Common entry points
 
@@ -35,6 +38,10 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 - "Site collection not showing in admin centre" → `Permissions-B.md` — check deleted sites or misrouted hub
 - "Audit permission sprawl / broken inheritance across sites" → `Scripts/Get-SharePointPermissionAudit.ps1`
 - "Migrating content into SharePoint" → `Migration-B.md` (hotfix) or `Migration-A.md` (architecture)
+- "SharePoint Advanced Management license error / RAC or RCD not working" → `Advanced-Management-B.md` — check the exact error text first (licensing vs. propagation delay), then Fix 1-5; run `Scripts/Get-SPAdvancedManagementAudit.ps1` for a full tenant + site posture check
+- "Restrict a SharePoint site to specific groups" / "hide a site from Copilot search" → `Advanced-Management-A.md` Playbook 1 (RAC) or Playbook 2 (RCD)
+- "Inactive site policy / site went read-only or archived unexpectedly" → `Advanced-Management-A.md` Playbook 3, or `Advanced-Management-B.md` Fix 4
+- "Data access governance report stuck / oversharing review" → `Advanced-Management-A.md` Playbook 4
 
 ## Key diagnostic commands
 
