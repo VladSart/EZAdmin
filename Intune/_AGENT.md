@@ -6,20 +6,23 @@ Microsoft Intune / Endpoint Manager — device management, compliance, configura
 
 Covers:
 - **Enrollment** — Windows Autopilot, manual MDM enrollment, co-management, enrollment restrictions
-- **Policy** — configuration profiles, compliance policies, settings catalog, GPO conflicts
-- **Apps** — Win32 app deployment, MSIX, LOB, required vs available
-- **Updates** — Update rings, Windows Update for Business, driver updates, feature updates
-- **Reporting** — compliance dashboards, device inventory, Graph queries
-- **Remediation scripts** — proactive remediation, PowerShell scripts, platform scripts
+- **Policy** — configuration profiles, compliance policies, settings catalog, GPO conflicts, assignment filters, scope tags/RBAC
+- **Apps** — Win32 app deployment, managed apps (LOB/VPP), app protection (MAM)
+- **Updates** — Update rings (WUfB), feature updates, driver updates (WDfB), Autopatch
+- **Security & compliance controls** — LAPS, certificates (SCEP/PKCS), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
+- **Specialty device modes** — Kiosk / Assigned Access
+- **Automation** — Platform scripts, Proactive Remediations
+- **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries
 
 ---
 
 ## Before responding, also check
 
 - `Autopilot/` — if enrollment failure happens during Autopilot flow specifically
-- `EntraID/` — if device shows as non-compliant due to identity issues (Entra join state, PRT)
-- `Windows/` — if the underlying OS issue is causing compliance failure
+- `EntraID/` — if device shows as non-compliant due to identity issues (Entra join state, PRT), or for co-management hybrid join state
+- `Windows/` — if the underlying OS issue is causing compliance failure (GPO, VBS/Credential Guard, networking)
 - `Security/ConditionalAccess/` — if compliance status is blocking access to resources
+- `Security/Defender/` — for ASR/Tamper Protection/WDAC delivered via Intune but investigated as a Defender issue
 
 ---
 
@@ -27,32 +30,83 @@ Covers:
 
 | File | What it covers |
 |------|---------------|
-| `Troubleshooting/Enrollment-B.md` | Hotfix: device enrollment failures |
-| `Troubleshooting/Policy-Conflict-B.md` | Hotfix: policy not applying, compliance not resolving |
-| `Troubleshooting/App-Deployment-B.md` | Hotfix: Win32 app stuck in pending/failed |
+| `Troubleshooting/Enrollment-B.md` / `-A.md` | Hotfix / deep dive: device enrollment failures, MDM authority, enrollment restrictions |
+| `Troubleshooting/Policy-Conflict-B.md` / `-A.md` | Hotfix / deep dive: policy not applying, compliance not resolving, CSP/GPO conflict model |
+| `Troubleshooting/App-Deployment-B.md` / `-A.md` | Hotfix / deep dive: Win32 app stuck in pending/failed, IME/AgentExecutor pipeline |
+| `Troubleshooting/AppProtection-B.md` / `-A.md` | Hotfix / deep dive: MAM policy not applying, "Open in" blocked, data-at-rest PIN issues |
+| `Troubleshooting/Autopatch-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopatch ring assignment, readiness, deployment failures |
+| `Troubleshooting/Certificates-B.md` / `-A.md` | Hotfix / deep dive: SCEP/PKCS certificate profile delivery failures |
+| `Troubleshooting/CoManagement-B.md` / `-A.md` | Hotfix / deep dive: ConfigMgr/Intune co-management workload authority conflicts |
+| `Troubleshooting/CustomCompliance-B.md` / `-A.md` | Hotfix / deep dive: custom compliance discovery script failures |
+| `Troubleshooting/DriverManagement-B.md` / `-A.md` | Hotfix / deep dive: Windows Driver Update for Business (WDfB) issues |
+| `Troubleshooting/EPM-B.md` / `-A.md` | Hotfix / deep dive: Endpoint Privilege Management agent/elevation rule issues |
+| `Troubleshooting/FeatureUpdates-B.md` / `-A.md` | Hotfix / deep dive: device stuck on old Windows version, feature update deployment |
+| `Troubleshooting/Filters-B.md` / `-A.md` | Hotfix / deep dive: Assignment Filters not matching, stale device properties |
+| `Troubleshooting/GP-to-CSP-B.md` / `-A.md` | Hotfix / deep dive: Group Policy Analytics migration to CSP, coverage gaps |
+| `Troubleshooting/Kiosk-B.md` / `-A.md` | Hotfix / deep dive: Kiosk/Assigned Access configuration and lockdown issues |
+| `Troubleshooting/LAPS-B.md` / `-A.md` | Hotfix / deep dive: Windows LAPS rotation/retrieval failures, legacy LAPS conflicts |
+| `Troubleshooting/Managed-Apps-B.md` / `-A.md` | Hotfix / deep dive: managed app (Win32/LOB/VPP) deployment health |
+| `Troubleshooting/Platform-Scripts-B.md` / `-A.md` | Hotfix / deep dive: Platform Scripts not running, IME health |
+| `Troubleshooting/Policy-Conflict-B.md` / `-A.md` | Hotfix / deep dive: policy conflicts across profile types |
+| `Troubleshooting/Remediations-B.md` / `-A.md` | Hotfix / deep dive: Proactive Remediations not detecting/remediating |
+| `Troubleshooting/ScopeTags-B.md` / `-A.md` | Hotfix / deep dive: Scope Tags / RBAC visibility issues |
+| `Troubleshooting/Security-Baselines-B.md` / `-A.md` | Hotfix / deep dive: Endpoint Security Baseline Error/Conflict states |
+| `Troubleshooting/WUfB-B.md` / `-A.md` | Hotfix / deep dive: Windows Update for Business ring assignment, GPO conflicts |
 | `Scripts/Get-IntuneDeviceStatus.ps1` | Device compliance + enrollment state via Graph |
 | `Scripts/Invoke-IntuneSync.ps1` | Force policy sync on device or bulk |
-| `Reporting/Get-NonCompliantDevices.ps1` | Export all non-compliant devices with reasons |
+| `Scripts/Get-IntuneAssignmentReport.ps1` | Comprehensive assignment report — policies/apps/scripts with group targets + filters |
+| `Scripts/Get-EnrollmentDiagnostics.ps1` | Device-local enrollment diagnostic — join state, MDM URL, scheduled task, endpoint reachability |
+| `Scripts/Get-PolicyConflictScan.ps1` | Fleet-wide scan of every device+profile combination currently in Conflict/Error |
+| `Scripts/Get-AppDeploymentDiagnostics.ps1` | Device-local Win32 app diagnostic — IME/AgentExecutor logs, Delivery Optimization state |
+| `Scripts/Get-ManagedAppDeploymentStatus.ps1` | Device-local + fleet-wide managed app (Win32/LOB/VPP) deployment health incl. Apple VPP token |
+| `Scripts/Get-AppProtectionCoverageReport.ps1` | Fleet-wide App Protection Policy (MAM) coverage and health report |
+| `Scripts/Get-AutopatchReadiness.ps1` | Fleet-level Autopatch readiness and ring-assignment audit |
+| `Scripts/Get-CertificateProfileStatus.ps1` | Flags Failed/Conflict/stale-Pending SCEP/PKCS cert profiles |
+| `Scripts/Get-CoManagementStatus.ps1` | Device-local ConfigMgr client health, per-workload authority, hybrid join, MDM enrollment |
+| `Scripts/Get-CustomComplianceScriptValidator.ps1` | Validates a Custom Compliance discovery script locally + cross-references fleet compliance state |
+| `Scripts/Get-DriverManagementStatus.ps1` | WDfB policy state and local driver update conflicts |
+| `Scripts/Get-EPMElevationReport.ps1` | EPM agent health and elevation rule delivery audit |
+| `Scripts/Get-FeatureUpdateDeploymentStatus.ps1` | Local TargetReleaseVersion/safeguard-hold/GPO-conflict check + fleet-wide Feature Update Profile status |
+| `Scripts/Get-GPtoCSPCoverageReport.ps1` | Fleet-wide Group Policy Analytics coverage report via Graph |
+| `Scripts/Get-KioskDeviceHealthReport.ps1` | Device-local health snapshot for Kiosk/Assigned Access devices |
 | `Scripts/Get-LAPSPasswordStatus.ps1` | Audit LAPS rotation/retrieval status + legacy LAPS conflict check |
-| `Scripts/Get-CertificateProfileStatus.ps1` | Flag Failed/Conflict/stale-Pending SCEP/PKCS cert profiles |
+| `Scripts/Get-PlatformScriptRunStatus.ps1` | IME health locally and/or fleet-wide Platform Script run status via Graph |
+| `Scripts/Get-RemediationRunHistory.ps1` | Fleet-wide Proactive Remediations run-state report via Graph |
+| `Scripts/Get-ScopeTagRBACAudit.ps1` | Tenant-wide Scope Tag / RBAC role assignment audit; optional per-admin effective-visibility check |
 | `Scripts/Get-SecurityBaselineDrift.ps1` | Fleet-wide baseline Error/Conflict/Pending report across assigned baselines |
-| `Scripts/Get-FeatureUpdateDeploymentStatus.ps1` | Local TargetReleaseVersion/safeguard-hold/GPO-conflict check + fleet-wide Feature Update Profile deployment status |
+| `Scripts/Get-WUfBDeploymentStatus.ps1` | WUfB ring assignment, local policy state, and GPO conflicts |
+| `Reporting/Get-NonCompliantDevices.ps1` | Export all non-compliant devices with reasons, grouped by policy/reason/user |
+| `IntuneChecker.ps1` | ⚠️ Legacy/misfiled — root-level ad hoc sync+IME-repair one-liner, predates the `Scripts/`/`Troubleshooting/` convention; not linked from any runbook. Flagged for interactive user review (rename/relocate/retire), consistent with the similar misfiled Autopilot scripts — not touched autonomously per standing guidance. |
 
 ---
 
 ## Common entry points
 
-- "Device not enrolling in Intune" → `Troubleshooting/Enrollment-B.md`
-- "Policy not applying to device" → `Troubleshooting/Policy-Conflict-B.md`
-- "App stuck at 'Pending install'" → `Troubleshooting/App-Deployment-B.md`
+- "Device not enrolling in Intune" → `Troubleshooting/Enrollment-B.md` + `Scripts/Get-EnrollmentDiagnostics.ps1`
+- "Policy not applying to device" → `Troubleshooting/Policy-Conflict-B.md` + `Scripts/Get-PolicyConflictScan.ps1`
+- "App stuck at 'Pending install'" → `Troubleshooting/App-Deployment-B.md` + `Scripts/Get-AppDeploymentDiagnostics.ps1`
 - "Device shows non-compliant, user can't access resources" → `Troubleshooting/Policy-Conflict-B.md` + `Security/ConditionalAccess/`
-- "User can't see available apps" → check MDM scope + Company Portal
-- "Settings applied by GPO are conflicting with Intune" → `Troubleshooting/Policy-Conflict-B.md`
+- "User can't see available apps" → check MDM scope + Company Portal; `Troubleshooting/Managed-Apps-B.md`
+- "Settings applied by GPO are conflicting with Intune" → `Troubleshooting/Policy-Conflict-B.md` / `Troubleshooting/GP-to-CSP-B.md`
 - "Bulk compliance report needed" → `Reporting/Get-NonCompliantDevices.ps1`
+- "Need a full picture of what's assigned to a device/group" → `Scripts/Get-IntuneAssignmentReport.ps1`
 - "LAPS password not showing / rotation not happening" → `Troubleshooting/LAPS-B.md` + `Scripts/Get-LAPSPasswordStatus.ps1`
 - "Cert profile stuck Pending/Failed for a device or fleet" → `Troubleshooting/Certificates-B.md` + `Scripts/Get-CertificateProfileStatus.ps1`
 - "Security baseline shows Error/Conflict" → `Troubleshooting/Security-Baselines-B.md` + `Scripts/Get-SecurityBaselineDrift.ps1`
 - "Device stuck on old Windows version / feature update not installing" → `Troubleshooting/FeatureUpdates-B.md` + `Scripts/Get-FeatureUpdateDeploymentStatus.ps1`
+- "App Protection / MAM policy not applying, 'Open in' blocked" → `Troubleshooting/AppProtection-B.md` + `Scripts/Get-AppProtectionCoverageReport.ps1`
+- "Autopatch device not in expected ring / deployment stalled" → `Troubleshooting/Autopatch-B.md` + `Scripts/Get-AutopatchReadiness.ps1`
+- "Co-managed device workload going to wrong authority" → `Troubleshooting/CoManagement-B.md` + `Scripts/Get-CoManagementStatus.ps1`
+- "Custom compliance script marking devices non-compliant incorrectly" → `Troubleshooting/CustomCompliance-B.md` + `Scripts/Get-CustomComplianceScriptValidator.ps1`
+- "Driver update not installing / WDfB conflict" → `Troubleshooting/DriverManagement-B.md` + `Scripts/Get-DriverManagementStatus.ps1`
+- "EPM elevation request not working / agent missing" → `Troubleshooting/EPM-B.md` + `Scripts/Get-EPMElevationReport.ps1`
+- "Assignment Filter not matching expected devices" → `Troubleshooting/Filters-B.md` + `Scripts/Get-AssignmentFilterAudit.ps1`
+- "Migrating GPOs to CSP / need coverage gap report" → `Troubleshooting/GP-to-CSP-B.md` + `Scripts/Get-GPtoCSPCoverageReport.ps1`
+- "Kiosk device not locking down / Assigned Access broken" → `Troubleshooting/Kiosk-B.md` + `Scripts/Get-KioskDeviceHealthReport.ps1`
+- "Platform script (PowerShell) not running on device" → `Troubleshooting/Platform-Scripts-B.md` + `Scripts/Get-PlatformScriptRunStatus.ps1`
+- "Proactive Remediation not detecting/fixing issue" → `Troubleshooting/Remediations-B.md` + `Scripts/Get-RemediationRunHistory.ps1`
+- "Admin can't see/manage a device they should (or can see one they shouldn't)" → `Troubleshooting/ScopeTags-B.md` + `Scripts/Get-ScopeTagRBACAudit.ps1`
+- "Windows Update for Business ring not applying / stuck deferring" → `Troubleshooting/WUfB-B.md` + `Scripts/Get-WUfBDeploymentStatus.ps1`
 
 ---
 
@@ -73,6 +127,10 @@ mdmdiagnosticstool.exe -area DeviceEnrollment+DeviceProvisioning+TPM -zip C:\MDM
 Get-WinEvent -LogName "Microsoft-Windows-DeviceManagement-Enterprise-Diagnostic-Provider/Admin" |
   Where-Object { $_.LevelDisplayName -in "Error","Warning" } |
   Select TimeCreated, Id, Message | Format-Table -Wrap
+
+# IME (Intune Management Extension) service health — needed for Win32 apps, Platform Scripts, Remediations
+Get-Service -Name IntuneManagementExtension
+Get-Content "$env:ProgramData\Microsoft\IntuneManagementExtension\Logs\IntuneManagementExtension.log" -Tail 100
 ```
 
 ---
@@ -83,12 +141,14 @@ Get-WinEvent -LogName "Microsoft-Windows-DeviceManagement-Enterprise-Diagnostic-
 Entra ID device object exists + is enabled
     → Device is Entra joined (not just registered)
     → Intune licence assigned to user
-    → MDM authority = Microsoft Intune (not mixed/SCCM)
+    → MDM authority = Microsoft Intune (not mixed/SCCM — see co-management workload split)
     → Device within MDM scope (All Users or specific group)
     → Intune service reachable (firewall: *.manage.microsoft.com)
     → Device checks in (every 8h by default; force sync for immediate)
     → Policies target correct AAD group
+    → Assignment Filter (if used) evaluates true against device properties
     → No conflicting GPO overriding Intune settings (MDM wins unless GPO is CSP-equivalent)
+    → For Win32 apps/Platform Scripts/Remediations: IME service present and healthy on device
 ```
 
 ---

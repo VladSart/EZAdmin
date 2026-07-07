@@ -51,6 +51,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Intune enrollment failures | `Intune/` | `Autopilot/`, `EntraID/` |
 | Intune policy conflicts, compliance not applying | `Intune/` | `EntraID/`, `Windows/` |
 | Autopilot enrollment, hybrid join, hash upload | `Autopilot/` | `Intune/`, `EntraID/` |
+| Windows Autopilot device preparation (APDP) — Entra-join-only enrollment mode | `Autopilot/` | `Intune/`, `EntraID/` |
 | Entra ID join, PRT issues, device registration | `EntraID/` | `Intune/`, `Security/ConditionalAccess/` |
 | Conditional Access policy conflicts, CA failures | `Security/ConditionalAccess/` | `EntraID/`, `Intune/` |
 | Hybrid join (HAADJ), Entra Connect sync | `EntraID/` | `Security/ConditionalAccess/` |

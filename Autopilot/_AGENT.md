@@ -11,6 +11,7 @@ Covers:
 - **ESP (Enrollment Status Page)** — why devices get stuck, timeout handling
 - **TPM issues** — attestation failures, firmware version problems
 - **Network requirements** — firewall/proxy requirements for Autopilot to reach Microsoft
+- **Windows Autopilot device preparation (APDP)** — the newer, Entra-join-only enrollment mode built on Enrollment Time Grouping; architecturally distinct from classic Autopilot above (no ESP, no dynamic-group wait) — classic Autopilot always takes precedence if a device matches both
 
 ---
 
@@ -52,6 +53,8 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 - "TPM attestation error" → `Troubleshooting/TPM-Attestation-B.md` + `Scripts/Get-TPMAttestationStatus.ps1`
 - "Need to upload hardware hash and enroll" → `Scripts/Upload-Hash-Enroll2Autopilot.ps1`
 - "Network test before Autopilot deployment" → `Scripts/Test-AutopilotNetworkRequirements.ps1`
+- "Device prep policy won't save / 0 groups assigned / ESP showing when it shouldn't" → `Troubleshooting/DevicePreparation-B.md` (hotfix) / `DevicePreparation-A.md` (deep dive — Enrollment Time Grouping architecture) + `Scripts/Get-DevicePreparationReadinessAudit.ps1`
+- "Apps/scripts Skipped during a device preparation OOBE deployment" → `Troubleshooting/DevicePreparation-B.md` (Fix 4)
 
 ---
 
@@ -68,6 +71,8 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 | `Scripts/Upload-AutopilotDiagnostics.ps1` | Uploads Autopilot diagnostic data for support cases |
 | `Scripts/Upload-Hash-Enroll2Autopilot.ps1` | Captures hardware hash and enrolls device into Autopilot |
 | `Troubleshooting/Test-AutopilotNetworkRequirements.ps1` | Tests reachability of required Autopilot network endpoints |
+| `Troubleshooting/DevicePreparation-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot device preparation (APDP) — Enrollment Time Grouping, device group ownership/eligibility, classic-Autopilot precedence shadowing |
+| `Scripts/Get-DevicePreparationReadinessAudit.ps1` | Read-only audit of device-prep prerequisites — device group ownership/eligibility, Intune Provisioning Client SP presence, classic-Autopilot shadowing by serial |
 
 ---
 
