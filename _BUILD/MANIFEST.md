@@ -2440,6 +2440,17 @@ This run's `git commit` initially failed twice with `fatal: Unable to create '..
 
 ---
 
+## Entra ID — Access Reviews deep-dive gap closed (run 60, second pass)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/AccessReviews-A.md` | ✅ | auto-build |
+| `EntraID/Scripts/Get-AccessReviewAudit.ps1` | ✅ | auto-build |
+| `EntraID/_AGENT.md` (added AccessReviews rows, summary line, 2 new entry points) | ✅ | auto-build |
+
+*Note: this closes the gap flagged in the "Recovered uncommitted work" entry above — `AccessReviews-B.md` had been recovered from the working tree without its `-A.md` deep-dive pair or companion script. Built both here: `AccessReviews-A.md` covers the object model (definition → instance → decision), the resource-type-specific RBAC permission table (the most common "I have an admin role but can't create a review" root cause — Global Reader/Security Reader are read-only for every resource type), the on-prem-synced-group remediation gap (survey-only unless group writeback is configured), the application reviewability gate (`AppRoleAssignmentRequired`), and the Graph API coverage gap for Azure resource role reviews (Entra roles and groups/apps/access packages are covered; Azure resource roles are not and need the ARM API instead). `Get-AccessReviewAudit.ps1` is read-only — flags auto-apply-disabled definitions, stalled/low-response in-progress instances (past halfway to end date with <25% decisions recorded), reviews scoped to on-prem-synced groups, and exports the app reviewability gate and recent AccessReviews audit log activity; does not create/modify/apply/stop any review or touch membership. Verified brace/paren/bracket balance via Python counts before committing (45/45 braces, 70/70 parens, 23/23 brackets). Two separate agent sessions were evidently working this repo concurrently this run (this content was drafted independently of the "recovered work" commit above, which landed first) — confirmed no content collision by diffing against the already-committed `AccessReviews-B.md` before writing the `-A.md` companion, and cross-checked terminology/structure consistency (reviewer-type table, remediation-gap framing) matches what was already committed.*
+
+---
+
 ## Active Directory — AD FS / Web Application Proxy (run 60)
 | File | Status | Assigned |
 |------|--------|---------|
