@@ -12,6 +12,7 @@ Covers:
 - **Compliance** — macOS compliance policies, FileVault encryption reporting
 - **Company Portal** — app visibility, install failures
 - **Recovery Lock** — Apple Silicon-only recoveryOS/Startup Options password, Settings Catalog policy, check-in-gated rotation, no local bypass (distinct from FileVault Secure Token/Bootstrap Token — see FileVault-A.md for the related-but-separate credential system)
+- **Wi-Fi / 802.1X Enterprise** — WPA/WPA2-Enterprise Wi-Fi and wired 802.1X authentication; the three-profile certificate dependency (network profile + Trusted root profile + SCEP/PKCS profile), deployment channel (User/Device) architecture, and `eapolclient` diagnosis
 
 ---
 
@@ -59,6 +60,7 @@ sudo profiles -e /tmp/MDMProfile.plist
 - "MDM push certificate expiring or expired / device dropped MDM management" → `Troubleshooting/MDM-Certificate-Renewal-B.md` + `Troubleshooting/MDM-Certificate-Renewal-A.md` + `Scripts/Get-MDMCertificateStatus.sh` + `Scripts/Repair-MacMDMEnrollment.sh`
 - "General Mac/Intune status check before deeper triage" → `Scripts/Get-MacIntuneStatus.sh`
 - "Recovery Lock passcode needed / user stuck at recoveryOS prompt / Rotate action greyed out / device eligibility for Recovery Lock" → `Troubleshooting/RecoveryLock-B.md` + `Troubleshooting/RecoveryLock-A.md` + `Scripts/Get-RecoveryLockAudit.ps1` (admin-side Graph check — policy assignment + fleet supervision/sync-freshness eligibility; the passcode itself is never bulk-queryable, only per-device in the Intune portal with the correct RBAC "Remote tasks" permission)
+- "Mac won't join enterprise Wi-Fi / 802.1X wired network fails / cert-based Wi-Fi not authenticating" → `Troubleshooting/WiFi-8021x-B.md` + `Troubleshooting/WiFi-8021x-A.md` + `Scripts/Get-WiFiProfileAudit.ps1` (admin-side Graph check — cross-references network/Trusted-root/SCEP-PKCS profile assignment scope for the "three-legged stool" gap; triage first via `security find-identity -v -p ssl-client` and the `eapolclient` log on the Mac itself)
 
 ---
 
