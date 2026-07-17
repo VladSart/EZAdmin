@@ -1,14 +1,14 @@
 # Microsoft Defender — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Secure Score, posture, multicloud/hybrid connectors), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), and Attack Simulation Training troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, and incident response workflows across the Defender XDR suite plus the Defender for Office 365 phishing-simulation product.
+Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Secure Score, posture, multicloud/hybrid connectors), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, and Defender for Office 365 Safe Links/Safe Attachments troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, real-time URL/attachment protection, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
 
 ## Before responding, also check
 - `Security/ConditionalAccess/` — CA policies often interact with MDE compliance signals
 - `Intune/Troubleshooting/Policy-Conflict-A.md` — MDE/WDAC policies are delivered via Intune; conflicts surface there
 - `EntraID/Troubleshooting/HybridJoin-A.md` — Hybrid-joined devices require correct AAD join state for MDE tagging
 - `Windows/Troubleshooting/` — OS-level issues (WMI, services) can break MDE sensor
-- `M365/Exchange/` — mail-flow/transport-rule interactions with Attack Simulation Training and reported-phish routing
+- `M365/Exchange/` — mail-flow/transport-rule interactions with Attack Simulation Training, reported-phish routing, and Safe Links/Safe Attachments (which sit downstream of EOP anti-spam/anti-malware in the same pipeline — see `M365/Exchange/EOP-AntiSpam-A.md` for the layer that runs first)
 - `Security/Purview/` — Insider Risk and Communication Compliance are adjacent but separate Purview workloads, not part of this folder
 - `Azure/Arc/` — Defender for Cloud (CSPM) posture data for on-prem/hybrid servers depends on the machine being Arc-connected first; Arc agent health itself is out of scope for this folder
 - `Security/Sentinel/` — Defender for Cloud alerts/recommendations feed into Sentinel via a data connector, distinct from Defender XDR's own alert queue
@@ -28,6 +28,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `NetworkProtection-B.md` | Network Protection blocking legitimate connections, indicator/exclusion issues |
 | `WDAC-B.md` / `-A.md` | Windows Defender Application Control policy conflicts and blocked binaries |
 | `AttackSimulationTraining-B.md` / `-A.md` | Phishing simulation delivery, reporting, and training-assignment issues (Defender for Office 365 Plan 2) |
+| `SafeLinksAttachments-B.md` / `-A.md` | Defender for Office 365 Safe Links (URL rewrite/time-of-click) and Safe Attachments (detonation) — policy precedence, Teams/Office app coverage, SPO/OneDrive/Teams separate toggle, quarantine visibility |
 | `DefenderForCloud-B.md` / `-A.md` | Defender for Cloud (CSPM) — Secure Score, unhealthy recommendations, multicloud (AWS/GCP) connector onboarding, agentless scanning, regulatory compliance dashboard |
 | `Scripts/Get-MDEDeviceStatus.ps1` | Graph-based MDE device health/risk/sensor report |
 | `Scripts/Get-TamperProtectionStatus.ps1` | Tamper Protection state audit |
@@ -39,6 +40,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `Scripts/Get-NetworkProtectionStatus.ps1` | Network Protection state/exclusion audit |
 | `Scripts/Get-WDACPolicyStatus.ps1` | WDAC policy deployment/enforcement audit |
 | `Scripts/Get-AttackSimulationCampaignAudit.ps1` | Graph-based Attack Simulation Training campaign health audit — stuck/stale simulations, audit-logging gate, transport-rule interference, per-user licensing gaps |
+| `Scripts/Get-SafeLinksAttachmentsPolicyAudit.ps1` | Safe Links/Safe Attachments policy+rule audit — precedence conflicts, non-blocking Action settings, silent quarantine tags, SPO/OneDrive/Teams toggle state, possible upstream gateway conflicts |
 | `Scripts/Get-DefenderForCloudPostureAudit.ps1` | Fleet-wide CSPM audit — plan tiers, Secure Score, unhealthy assessments, multicloud connector coverage, connector resource locks |
 
 ## Common entry points
@@ -56,6 +58,9 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "AWS/GCP account shows no data in Defender for Cloud" / connector onboarding failed → `DefenderForCloud-B.md` Fix 3
 - "Attack path analysis / agentless scanning / regulatory compliance is missing" → `DefenderForCloud-B.md` Fix 1 — check plan tier (Foundational vs. Defender CSPM) first
 - "GCP agentless VM scan results empty" → `DefenderForCloud-B.md` Fix 4 — check the disk-scanning org policy
+- "Link in email isn't blue/wrapped / phishing link got through" / "attachment wasn't scanned or delayed" → `SafeLinksAttachments-B.md` — check policy precedence first (preset always wins over custom)
+- "Teams link protection not working after I turned it on" → `SafeLinksAttachments-B.md` Fix 4 — allow up to 24h for Teams policy changes
+- "File uploaded to SharePoint/OneDrive/Teams wasn't scanned even though mail Safe Attachments is set to Block" → `SafeLinksAttachments-B.md` Fix 1 — separate `EnableATPForSPOTeamsODB` toggle
 
 ## Key diagnostic commands
 

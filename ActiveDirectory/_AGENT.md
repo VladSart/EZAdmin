@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), and **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), and **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
 
 ---
 
@@ -10,9 +10,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 
 - `DFS/` — if the symptom is a SYSVOL/DFSR replication backlog itself (not GPO processing behavior), that's a separate replication system layered on top of AD — `Troubleshooting/GroupPolicy/` here covers the GPO-processing side of that same dependency
 - `Intune/` — if the org has migrated or is migrating settings off Group Policy onto CSP/Intune configuration profiles (see `Intune/Troubleshooting/GP-to-CSP-B.md`)
-- `EntraID/` — if the symptom involves Entra Connect, hybrid join, or cloud-side identity; on-prem AD health is a prerequisite dependency for all of it
+- `EntraID/` — if the symptom involves Entra Connect, hybrid join, cloud-side identity, or the org uses Password Hash Sync/Pass-through Auth instead of federation; on-prem AD health is a prerequisite dependency for all of it
 - `Windows/` — if the issue is Kerberos/NTLM auth failures on a client (not between DCs), DNS client-side resolver config, or time sync at the endpoint level (this folder's DNS coverage is the AD-integrated *server* side — zones, SRV records, scavenging)
-- `Security/ConditionalAccess/` — if access is being blocked by policy rather than by a broken identity/replication chain
+- `Security/ConditionalAccess/` — if access is being blocked by policy rather than by a broken identity/replication chain; this includes the case where AD FS issued a valid token but Entra ID's Conditional Access still blocks the resulting sign-in
 
 ---
 
@@ -35,6 +35,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/DNS/AD-DNS-B.md` | Hotfix: missing/stale SRV records (DC Locator broken), over-aggressive scavenging, forwarder/root-hint failures, split-brain DNS, replication scope mismatch |
 | `Troubleshooting/DNS/AD-DNS-A.md` | Deep dive: `_msdcs` zone architecture, dynamic update/registration lifecycle, replication scope internals, scavenging mechanics, rebuild/scavenging-recovery/cross-domain-scope playbooks |
 | `Scripts/Get-ADDNSHealth.ps1` | One-shot DNS health check: zone inventory/scope, dynamic update mode, DC Locator SRV presence per DC, netlogon.dns comparison, scavenging config coherence, external resolution test |
+| `Troubleshooting/ADFS/ADFS-B.md` | Hotfix: farm-wide vs. extranet-only outage triage, certificate expiry/mismatch checks, relying party trust and WAP proxy trust fix paths |
+| `Troubleshooting/ADFS/ADFS-A.md` | Deep dive: token-signing/decrypting cert lifecycle and rollover mechanics, relying party trust and claims rule architecture, WAP proxy trust internals, farm topology/behavior level playbooks |
+| `Scripts/Get-ADFSHealth.ps1` | One-shot farm health check: certificate expiry/rollover state, relying party trust inventory, farm topology, recent AD FS/Admin log errors, optional WAP proxy trust event scan |
 
 ---
 
@@ -70,6 +73,12 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Some users get random DNS failures with no clear pattern" → `Troubleshooting/DNS/AD-DNS-B.md` (Fix 4 — split-brain DNS)
 - "Cross-domain DC Locator fails in a multi-domain forest" → `Troubleshooting/DNS/AD-DNS-A.md` (Playbook 3 — `_msdcs` replication scope)
 - "Quick AD DNS health snapshot" → `Scripts/Get-ADDNSHealth.ps1`
+- "Everyone can't sign into M365/federated apps at once" → `Troubleshooting/ADFS/ADFS-B.md` (Fix 1 — check token-signing/decrypting cert expiry first)
+- "Only external/remote users can't sign in, internal is fine" → `Troubleshooting/ADFS/ADFS-B.md` (Fix 5 — WAP proxy trust)
+- "AD FS says signed in but Entra ID says user not found" → `Troubleshooting/ADFS/ADFS-A.md` (Playbook 2 — immutableid claims rule mismatch)
+- "One specific app's SSO broke, everything else including M365 works" → `Troubleshooting/ADFS/ADFS-B.md` (Fix 3 — relying party trust)
+- "AD FS certificate keeps expiring and breaking things repeatedly" → `Troubleshooting/ADFS/ADFS-B.md` (Fix 4 — enable AutoCertificateRollover)
+- "Quick AD FS farm health snapshot" → `Scripts/Get-ADFSHealth.ps1`
 
 ---
 
@@ -147,6 +156,19 @@ DNS Server role running on enough DCs
                                 └── AD replication carries zone data to every DNS-hosting DC
                                       └── DC Locator (_ldap/_kerberos/_gc SRV) resolves correctly
                                             └── (separate path) Forwarders/root hints resolve external names
+```
+
+**AD FS federation chain** (see `Troubleshooting/ADFS/`):
+
+```
+Active Directory reachable (service account/gMSA authentication)
+  └── AD FS Configuration Database (WID/SQL) shared across all farm nodes
+        └── Token-Signing / Token-Decrypting certificates live + service account has private-key read access
+              └── Relying Party Trust object (e.g. Microsoft Office 365 Identity Platform) — enabled, correct claims rules
+                    └── Claims issued (immutableid must match Entra Connect's sourceAnchor/ImmutableId)
+                          └── (extranet only) Web Application Proxy — separate rolling proxy trust certificate
+                                └── Relying party (Entra ID) validates signature + claims → issues its own token
+                                      └── (post-token) Conditional Access evaluated — see `Security/ConditionalAccess/`
 ```
 
 ---
