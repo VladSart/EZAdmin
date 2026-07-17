@@ -11,6 +11,7 @@ Covers:
 - **Shell scripts** — deploying and troubleshooting Intune shell scripts on macOS
 - **Compliance** — macOS compliance policies, FileVault encryption reporting
 - **Company Portal** — app visibility, install failures
+- **Recovery Lock** — Apple Silicon-only recoveryOS/Startup Options password, Settings Catalog policy, check-in-gated rotation, no local bypass (distinct from FileVault Secure Token/Bootstrap Token — see FileVault-A.md for the related-but-separate credential system)
 
 ---
 
@@ -57,6 +58,7 @@ sudo profiles -e /tmp/MDMProfile.plist
 - "Privacy Preferences Policy Control (PPPC/TCC) permission not being granted silently" → `Troubleshooting/PPPC-B.md` + `Troubleshooting/PPPC-A.md` + `Scripts/Get-PPPCStatus.sh`
 - "MDM push certificate expiring or expired / device dropped MDM management" → `Troubleshooting/MDM-Certificate-Renewal-B.md` + `Troubleshooting/MDM-Certificate-Renewal-A.md` + `Scripts/Get-MDMCertificateStatus.sh` + `Scripts/Repair-MacMDMEnrollment.sh`
 - "General Mac/Intune status check before deeper triage" → `Scripts/Get-MacIntuneStatus.sh`
+- "Recovery Lock passcode needed / user stuck at recoveryOS prompt / Rotate action greyed out / device eligibility for Recovery Lock" → `Troubleshooting/RecoveryLock-B.md` + `Troubleshooting/RecoveryLock-A.md` + `Scripts/Get-RecoveryLockAudit.ps1` (admin-side Graph check — policy assignment + fleet supervision/sync-freshness eligibility; the passcode itself is never bulk-queryable, only per-device in the Intune portal with the correct RBAC "Remote tasks" permission)
 
 ---
 
