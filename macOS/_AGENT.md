@@ -13,6 +13,8 @@ Covers:
 - **Company Portal** — app visibility, install failures
 - **Recovery Lock** — Apple Silicon-only recoveryOS/Startup Options password, Settings Catalog policy, check-in-gated rotation, no local bypass (distinct from FileVault Secure Token/Bootstrap Token — see FileVault-A.md for the related-but-separate credential system)
 - **Wi-Fi / 802.1X Enterprise** — WPA/WPA2-Enterprise Wi-Fi and wired 802.1X authentication; the three-profile certificate dependency (network profile + Trusted root profile + SCEP/PKCS profile), deployment channel (User/Device) architecture, and `eapolclient` diagnosis
+- **Declarative Device Management (DDM)** — the general DDM protocol/transport layer underneath Software Updates, Compliance, and Settings Catalog "Declarative Device Management" category settings; macOS 13+ hard floor, the four declaration types (Configurations/Assets/Activations/Management), the Status Channel, and the false-error/downgrade-detection pattern — distinct from `SoftwareUpdates-A/B.md`'s update-specific content
+- **Time Machine backup policy** — the `com.apple.MCX.TimeMachine` MDM payload (Settings Catalog); configuration-delivery-only with no Intune-side completion signal, the credential-provisioning gap for authenticated network destinations, and the Device Enrollment/ADE-only enrollment-method gate
 
 ---
 
@@ -61,6 +63,8 @@ sudo profiles -e /tmp/MDMProfile.plist
 - "General Mac/Intune status check before deeper triage" → `Scripts/Get-MacIntuneStatus.sh`
 - "Recovery Lock passcode needed / user stuck at recoveryOS prompt / Rotate action greyed out / device eligibility for Recovery Lock" → `Troubleshooting/RecoveryLock-B.md` + `Troubleshooting/RecoveryLock-A.md` + `Scripts/Get-RecoveryLockAudit.ps1` (admin-side Graph check — policy assignment + fleet supervision/sync-freshness eligibility; the passcode itself is never bulk-queryable, only per-device in the Intune portal with the correct RBAC "Remote tasks" permission)
 - "Mac won't join enterprise Wi-Fi / 802.1X wired network fails / cert-based Wi-Fi not authenticating" → `Troubleshooting/WiFi-8021x-B.md` + `Troubleshooting/WiFi-8021x-A.md` + `Scripts/Get-WiFiProfileAudit.ps1` (admin-side Graph check — cross-references network/Trusted-root/SCEP-PKCS profile assignment scope for the "three-legged stool" gap; triage first via `security find-identity -v -p ssl-client` and the `eapolclient` log on the Mac itself)
+- "Software Update / Compliance / a Settings Catalog policy all stuck or erroring at once on one device" or "DDM declaration not landing / device eligibility for DDM" → `Troubleshooting/DDM-B.md` + `Troubleshooting/DDM-A.md` + `Scripts/Get-DDMStatusAudit.ps1` (admin-side Graph check — fleet-wide macOS-13+ eligibility + DDM-category Settings Catalog policy inventory; `mdmclient QueryDeclarations`/`QueryResponses` remain the device-local source of truth, not Graph-visible)
+- "Managed Time Machine not backing up / destination not configuring / backup destination questions" → `Troubleshooting/TimeMachine-B.md` + `Troubleshooting/TimeMachine-A.md` + `Scripts/Get-TimeMachineBackupAudit.sh` (device-local — there is no Intune-side backup-completion report; script checks destination reachability, credential presence, and last-backup recency)
 
 ---
 
