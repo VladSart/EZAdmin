@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), and **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability).
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability), and **Azure Key Vault** (RBAC vs. legacy Access Policy authorization model, network/private-endpoint access denials, soft-delete and purge-protection recovery, certificate auto-rotation failures).
 
 ---
 
@@ -41,6 +41,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `Backup/AzureBackup-B.md` | Azure Backup hotfix runbook — backup job failures (guest agent, extension, VSS, stuck jobs, protection stopped) |
 | `Backup/AzureBackup-A.md` | Azure Backup deep dive — recovery point tiers/consistency, soft delete, immutability, restore and bulk-remediation playbooks |
 | `Backup/Scripts/Get-AzureBackupJobStatus.ps1` | Vault-wide report — protection status, failed jobs, guest prerequisite health, soft-deleted items pending |
+| `KeyVault/KeyVault-B.md` | Key Vault hotfix runbook — authorization model mismatch, firewall/private-endpoint/DNS denials, soft-delete recovery, certificate renewal failures |
+| `KeyVault/KeyVault-A.md` | Key Vault deep dive — RBAC vs. Access Policy architecture, network path evaluation, soft-delete/purge-protection lifecycle, certificate auto-rotation model, migration and recovery playbooks |
+| `KeyVault/Scripts/Get-KeyVaultAccessAudit.ps1` | Read-only report across one or all vaults — authorization grants, network posture, soft-delete/purge-protection state, certificate expiry vs. auto-renew capability |
 
 ---
 
@@ -64,6 +67,10 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"How do I restore a VM from backup"** → `Backup/AzureBackup-A.md` Playbook 2
 - **"I deleted a backup item by mistake"** → `Backup/AzureBackup-A.md` Playbook 1 (soft delete, 14-day window)
 - **"Collect vault backup health for a ticket/report"** → `Backup/Scripts/Get-AzureBackupJobStatus.ps1`
+- **"I have a role assignment but still get access denied in Key Vault"** → `KeyVault/KeyVault-B.md` Fix 1 (check `EnableRbacAuthorization` first — RBAC and Access Policy are mutually exclusive)
+- **"403 accessing Key Vault through a private endpoint"** → `KeyVault/KeyVault-B.md` Fix 2 — check DNS resolution before touching firewall rules
+- **"Certificate stopped auto-renewing in Key Vault"** → `KeyVault/KeyVault-B.md` Fix 4 — confirm the CA is Key-Vault-partnered (DigiCert/GlobalSign) first
+- **"Audit access across all our Key Vaults"** → `KeyVault/Scripts/Get-KeyVaultAccessAudit.ps1 -AllVaults`
 
 ---
 
