@@ -87,6 +87,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Teams Rooms devices, calling, meeting policies | `M365/Teams/` | `Intune/`, `EntraID/` |
 | DFS Access-Based Enumeration, referral ordering / site costing | `DFS/` | `EntraID/`, `Windows/` |
 | Windows Always On VPN, AppLocker, Credential Guard/VBS, Kerberos/NTLM | `Windows/` | `EntraID/`, `Security/ConditionalAccess/` |
+| Intune Remote Help (helper/sharer remote assistance, tenant enablement, RBAC combo, licensing-both-sides, remote-launch notification delivery, elevation/unattended/CA) | `Intune/` | `Azure/Windows365/` (distinct connection stack — Remote Help can run *inside* a Cloud PC session but doesn't connect *to* one), `EntraID/` (Conditional Access service principal) — explicitly distinct from Graph's `remoteAssistancePartner` (third-party ISV onboarding) |
 | Microsoft 365 Backup (SharePoint/OneDrive/Exchange protection policies, restore points, coverage gaps) | `M365/Backup/` | `Security/Purview/`, `M365/SharePoint-OneDrive/`, `M365/Exchange/`, `EntraID/` |
 | Entra Verified ID (verifiable credentials — issuance/verification, DID/domain linkage, Admin API) | `EntraID/` | N/A (own Admin API, not Microsoft Graph) |
 | SharePoint Advanced Management (SAM) — Restricted Access Control, Restricted Content Discovery, Site Lifecycle Management, Data Access Governance reports | `M365/SharePoint-OneDrive/` | `Security/Purview/` (sensitivity labels), `Security/ConditionalAccess/` (auth context, idle sign-out scoping) |

@@ -13,6 +13,7 @@ Covers:
 - **Specialty device modes** — Kiosk / Assigned Access
 - **Automation** — Platform scripts, Proactive Remediations
 - **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries, Endpoint analytics (Startup performance / Application reliability / Work from anywhere scoring)
+- **Remote Help** — Entra-authenticated helper/sharer remote assistance app, tenant enablement, RBAC, licensing (both helper AND sharer need one), deployment, Conditional Access integration — distinct from Windows 365/AVD's own connection stack and from the separate `remoteAssistancePartner` third-party ISV onboarding feature
 
 ---
 
@@ -50,6 +51,7 @@ Covers:
 | `Troubleshooting/Platform-Scripts-B.md` / `-A.md` | Hotfix / deep dive: Platform Scripts not running, IME health |
 | `Troubleshooting/Policy-Conflict-B.md` / `-A.md` | Hotfix / deep dive: policy conflicts across profile types |
 | `Troubleshooting/Remediations-B.md` / `-A.md` | Hotfix / deep dive: Proactive Remediations not detecting/remediating |
+| `Troubleshooting/RemoteHelp-B.md` / `-A.md` | Hotfix / deep dive: Remote Help session failures, tenant enablement, RBAC, licensing, remote-launch notification delivery, elevation/unattended/CA gaps |
 | `Troubleshooting/ScopeTags-B.md` / `-A.md` | Hotfix / deep dive: Scope Tags / RBAC visibility issues |
 | `Troubleshooting/Security-Baselines-B.md` / `-A.md` | Hotfix / deep dive: Endpoint Security Baseline Error/Conflict states |
 | `Troubleshooting/WUfB-B.md` / `-A.md` | Hotfix / deep dive: Windows Update for Business ring assignment, GPO conflicts |
@@ -74,6 +76,7 @@ Covers:
 | `Scripts/Get-LAPSPasswordStatus.ps1` | Audit LAPS rotation/retrieval status + legacy LAPS conflict check |
 | `Scripts/Get-PlatformScriptRunStatus.ps1` | IME health locally and/or fleet-wide Platform Script run status via Graph |
 | `Scripts/Get-RemediationRunHistory.ps1` | Fleet-wide Proactive Remediations run-state report via Graph |
+| `Scripts/Get-RemoteHelpReadinessAudit.ps1` | Tenant-wide Remote Help readiness audit (enablement, RBAC combo completeness, scope-group gaps, app deployment) + optional local client/IME/WebView2/event-log diagnostics |
 | `Scripts/Get-ScopeTagRBACAudit.ps1` | Tenant-wide Scope Tag / RBAC role assignment audit; optional per-admin effective-visibility check |
 | `Scripts/Get-SecurityBaselineDrift.ps1` | Fleet-wide baseline Error/Conflict/Pending report across assigned baselines |
 | `Scripts/Get-WUfBDeploymentStatus.ps1` | WUfB ring assignment, local policy state, and GPO conflicts |
@@ -110,6 +113,7 @@ Covers:
 - "Proactive Remediation not detecting/fixing issue" → `Troubleshooting/Remediations-B.md` + `Scripts/Get-RemediationRunHistory.ps1`
 - "Admin can't see/manage a device they should (or can see one they shouldn't)" → `Troubleshooting/ScopeTags-B.md` + `Scripts/Get-ScopeTagRBACAudit.ps1`
 - "Windows Update for Business ring not applying / stuck deferring" → `Troubleshooting/WUfB-B.md` + `Scripts/Get-WUfBDeploymentStatus.ps1`
+- "Remote Help session won't start / notification never arrives / can't get elevation" → `Troubleshooting/RemoteHelp-B.md` + `Scripts/Get-RemoteHelpReadinessAudit.ps1`
 
 ---
 
