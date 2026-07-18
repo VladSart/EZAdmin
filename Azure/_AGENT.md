@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability), and **Azure Key Vault** (RBAC vs. legacy Access Policy authorization model, network/private-endpoint access denials, soft-delete and purge-protection recovery, certificate auto-rotation failures).
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability), **Azure Key Vault** (RBAC vs. legacy Access Policy authorization model, network/private-endpoint access denials, soft-delete and purge-protection recovery, certificate auto-rotation failures), and **Azure Networking / Hybrid Connectivity** (VPN Gateway site-to-site IPsec/BGP, ExpressRoute circuit provisioning and eBGP peering across the customer/provider/Microsoft three-zone model).
 
 ---
 
@@ -44,6 +44,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `KeyVault/KeyVault-B.md` | Key Vault hotfix runbook — authorization model mismatch, firewall/private-endpoint/DNS denials, soft-delete recovery, certificate renewal failures |
 | `KeyVault/KeyVault-A.md` | Key Vault deep dive — RBAC vs. Access Policy architecture, network path evaluation, soft-delete/purge-protection lifecycle, certificate auto-rotation model, migration and recovery playbooks |
 | `KeyVault/Scripts/Get-KeyVaultAccessAudit.ps1` | Read-only report across one or all vaults — authorization grants, network posture, soft-delete/purge-protection state, certificate expiry vs. auto-renew capability |
+| `Networking/HybridConnectivity-B.md` | Hybrid connectivity hotfix runbook — IPsec tunnel down, BGP peer not connecting/flapping, ExpressRoute circuit/provider stuck, eBGP peering mismatch, routes present but traffic blocked |
+| `Networking/HybridConnectivity-A.md` | Hybrid connectivity deep dive — VPN Gateway IPsec/BGP and ExpressRoute three-zone architecture, six-layer dependency stack, migration and provider-outage playbooks |
+| `Networking/Scripts/Get-HybridConnectivityHealth.ps1` | Read-only sweep across VPN Gateways and ExpressRoute circuits — connection/BGP/peering state, near-prefix-limit warning, control-plane-vs-data-plane traffic check |
 
 ---
 
@@ -71,6 +74,10 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"403 accessing Key Vault through a private endpoint"** → `KeyVault/KeyVault-B.md` Fix 2 — check DNS resolution before touching firewall rules
 - **"Certificate stopped auto-renewing in Key Vault"** → `KeyVault/KeyVault-B.md` Fix 4 — confirm the CA is Key-Vault-partnered (DigiCert/GlobalSign) first
 - **"Audit access across all our Key Vaults"** → `KeyVault/Scripts/Get-KeyVaultAccessAudit.ps1 -AllVaults`
+- **"Site-to-site VPN won't connect"** → `Networking/HybridConnectivity-B.md` Fix 1 — confirm IPsec tunnel before touching BGP
+- **"ExpressRoute circuit shows Not provisioned"** → `Networking/HybridConnectivity-B.md` Triage — split Microsoft-side vs. provider-side immediately
+- **"BGP peering Active/Idle instead of Established"** → `Networking/HybridConnectivity-B.md` Fix 4
+- **"Fleet-wide hybrid connectivity health check"** → `Networking/Scripts/Get-HybridConnectivityHealth.ps1`
 
 ---
 
