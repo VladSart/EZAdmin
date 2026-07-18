@@ -1,10 +1,10 @@
-# Azure Networking (Hybrid Connectivity + NSG) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM) — Agent Instructions
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure networking**, covering two related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. NSG is the shared data-plane checkpoint that HybridConnectivity, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files.
+Runbooks and scripts for **Azure networking**, covering three related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that provisions the peerings/connected-groups NSGs then filter — `NSG-A.md` covers Security Admin Rules only as they intersect NSG evaluation order; `AVNM-A.md` is where the rest of AVNM (network groups, connectivity topologies, deployments) is documented.
 
-Does not cover point-to-site VPN (individual remote-access users), Virtual WAN hub routing, Azure Firewall/NVA routing policy beyond where it intersects GatewaySubnet behavior, or User-Defined Routes/route tables as a standalone routing topic (referenced here only where it intersects NSG troubleshooting).
+Does not cover point-to-site VPN (individual remote-access users), Virtual WAN hub routing as a standalone topic, Azure Firewall/NVA routing policy beyond where it intersects GatewaySubnet behavior, User-Defined Routes/route tables as a standalone routing topic (referenced here only where it intersects NSG troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
 
 ---
 
@@ -26,6 +26,9 @@ Does not cover point-to-site VPN (individual remote-access users), Virtual WAN h
 | `NSG-B.md` | NSG hotfix runbook — priority conflicts, subnet/NIC dual-layer conflicts, service tag and ASG misconfigurations, default-deny blocks, Security Admin Rule check |
 | `NSG-A.md` | NSG deep dive — rule evaluation architecture, Security Admin Rules (AVNM), service tags, ASGs, augmented rules, flow log migration (NSG flow logs retiring Sept 30, 2027) |
 | `Scripts/Get-NSGRuleAudit.ps1` | Read-only fleet-wide sweep — broad management-port exposure, priority-collision risk, dual-layer NIC/subnet coverage inventory, Security Admin Rule presence |
+| `AVNM-B.md` | AVNM hotfix runbook — VNet not receiving configuration (scope/never-deployed), dynamic membership lag, goal-state redeploy trap, "use hub as gateway" silent partial-peering, mesh IP-overlap drops |
+| `AVNM-A.md` | AVNM deep dive — scope/delegation model, network groups (static/dynamic), connectivity configuration architecture (mesh/hub-and-spoke/connected groups), goal-state deployment model, migration and fleet-audit playbooks |
+| `Scripts/Get-AVNMConfigAudit.ps1` | Read-only sweep — network group membership (flags empty static groups), configurations defined but never deployed, multi-config goal-state risk regions, failed deployments, optional single-VNet effective-state check |
 
 ---
 
@@ -44,6 +47,12 @@ Does not cover point-to-site VPN (individual remote-access users), Virtual WAN h
 - **"Rule uses a service tag and doesn't behave as expected"** → `NSG-B.md` Fix 3 — `VirtualNetwork` includes peered VNets + on-prem + gateway VIP, not just the local VNet
 - **"Client wants NSG flow logs turned on"** → redirect to VNet flow logs; NSG flow logs can no longer be newly created (cutoff June 30, 2025, retiring Sept 30, 2027) — see `NSG-A.md` Learning Pointers
 - **"Fleet-wide NSG hygiene / exposed management-port review"** → `Scripts/Get-NSGRuleAudit.ps1`
+- **"I deployed an AVNM connectivity config and nothing happened"** → `AVNM-B.md` Fix 1 — check scope, then check it was actually deployed to the VNet's region (configurations are inert until deployed)
+- **"New VNet isn't picking up our dynamic network group policy"** → `AVNM-B.md` Fix 2 — Azure Policy evaluation lag (~30 min, up to 24h at scale), not necessarily a bug
+- **"I can't find the peering for our AVNM mesh connection"** → `AVNM-B.md` Triage — mesh is realized as a connected group, never a peering resource; check effective connectivity config or effective routes instead
+- **"A previously-working AVNM connection broke after an unrelated change"** → `AVNM-A.md` Playbook 2 — goal-state redeploy trap, the unrelated deploy likely omitted this configuration
+- **"Hub-and-spoke peering is one-sided (hub→spoke exists, spoke→hub doesn't)"** → `AVNM-B.md` Fix 4 — hub gateway didn't exist yet when "use hub as gateway" was deployed
+- **"Fleet-wide AVNM configuration health check across clients"** → `Scripts/Get-AVNMConfigAudit.ps1`
 
 ---
 
@@ -73,6 +82,12 @@ az network watcher test-ip-flow --direction Inbound --protocol TCP --local <ip>:
 
 # Security Admin Rules (Azure Virtual Network Manager) — invisible from the NSG blade
 Get-AzNetworkManager | Get-AzNetworkManagerSecurityAdminConfiguration
+
+# AVNM — the authoritative "what's actually applied" view for a VNet (check this before anything else)
+Get-AzNetworkManagerEffectiveConnectivityConfiguration -VirtualNetworkName <vnetName> -VirtualNetworkResourceGroupName <vnetRg>
+
+# AVNM — per-region deployment status and failure detail (configurations do nothing until deployed)
+Get-AzNetworkManagerDeploymentStatus -ResourceGroupName <nmRg> -NetworkManagerName <nm> -DeploymentType @("Connectivity")
 ```
 
 ---
@@ -111,6 +126,27 @@ Default rules (65000/65001/65500) — cannot be deleted, only overridden by a lo
     │
     ▼
 Packet delivered (or dropped)
+```
+
+AVNM's own layer, which *provisions* the connectivity NSGs then filter (AVNM-A.md/AVNM-B.md):
+
+```
+Network Manager scope (management group/subscription) — hard ceiling, out-of-scope VNets get nothing
+    │
+    ▼
+Network Group membership — static (immediate) or dynamic (Azure Policy, ~30min-24h lag)
+    │
+    ▼
+Configuration object (connectivity/security admin/routing) — inert until deployed
+    │
+    ▼
+Deployment (per-region commit, GOAL-STATE: exclusive per region, not additive across deploy actions)
+    │
+    ▼
+Mesh → Connected Group (never a peering) | Hub-and-spoke → real peering | VWAN hub (preview) → VWAN connection
+    │
+    ▼
+Effective state (Get-AzNetworkManagerEffectiveConnectivityConfiguration — the only authoritative view)
 ```
 
 ---
