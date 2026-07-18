@@ -50,6 +50,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | DFS Replication backlog, SYSVOL, conflicts | `DFS/` | `Windows/` |
 | Intune enrollment failures | `Intune/` | `Autopilot/`, `EntraID/` |
 | Intune policy conflicts, compliance not applying | `Intune/` | `EntraID/`, `Windows/` |
+| Endpoint analytics (Startup performance / App reliability / Work from anywhere scoring) | `Intune/` | `Autopilot/` (deployment profile assignment), `Windows/` (WUfB/feature updates) |
 | Autopilot enrollment, hybrid join, hash upload | `Autopilot/` | `Intune/`, `EntraID/` |
 | Windows Autopilot device preparation (APDP) — Entra-join-only enrollment mode | `Autopilot/` | `Intune/`, `EntraID/` |
 | Entra ID join, PRT issues, device registration | `EntraID/` | `Intune/`, `Security/ConditionalAccess/` |

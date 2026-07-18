@@ -12,7 +12,7 @@ Covers:
 - **Security & compliance controls** — LAPS, certificates (SCEP/PKCS), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
 - **Specialty device modes** — Kiosk / Assigned Access
 - **Automation** — Platform scripts, Proactive Remediations
-- **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries
+- **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries, Endpoint analytics (Startup performance / Application reliability / Work from anywhere scoring)
 
 ---
 
@@ -38,6 +38,7 @@ Covers:
 | `Troubleshooting/Certificates-B.md` / `-A.md` | Hotfix / deep dive: SCEP/PKCS certificate profile delivery failures |
 | `Troubleshooting/CoManagement-B.md` / `-A.md` | Hotfix / deep dive: ConfigMgr/Intune co-management workload authority conflicts |
 | `Troubleshooting/CustomCompliance-B.md` / `-A.md` | Hotfix / deep dive: custom compliance discovery script failures |
+| `Troubleshooting/EndpointAnalytics-B.md` / `-A.md` | Hotfix / deep dive: Startup performance / Application reliability / Work from anywhere scoring not populating, data collection policy and network/SSL-inspection path |
 | `Troubleshooting/DriverManagement-B.md` / `-A.md` | Hotfix / deep dive: Windows Driver Update for Business (WDfB) issues |
 | `Troubleshooting/EPM-B.md` / `-A.md` | Hotfix / deep dive: Endpoint Privilege Management agent/elevation rule issues |
 | `Troubleshooting/FeatureUpdates-B.md` / `-A.md` | Hotfix / deep dive: device stuck on old Windows version, feature update deployment |
@@ -64,6 +65,7 @@ Covers:
 | `Scripts/Get-CertificateProfileStatus.ps1` | Flags Failed/Conflict/stale-Pending SCEP/PKCS cert profiles |
 | `Scripts/Get-CoManagementStatus.ps1` | Device-local ConfigMgr client health, per-workload authority, hybrid join, MDM enrollment |
 | `Scripts/Get-CustomComplianceScriptValidator.ps1` | Validates a Custom Compliance discovery script locally + cross-references fleet compliance state |
+| `Scripts/Get-EndpointAnalyticsHealth.ps1` | Fleet-wide Endpoint analytics score/health sweep via Graph — flags below-threshold reporting population, unavailable (-1/-2) scores, and Work From Anywhere Cloud Provisioning gaps |
 | `Scripts/Get-DriverManagementStatus.ps1` | WDfB policy state and local driver update conflicts |
 | `Scripts/Get-EPMElevationReport.ps1` | EPM agent health and elevation rule delivery audit |
 | `Scripts/Get-FeatureUpdateDeploymentStatus.ps1` | Local TargetReleaseVersion/safeguard-hold/GPO-conflict check + fleet-wide Feature Update Profile status |
@@ -98,6 +100,7 @@ Covers:
 - "Autopatch device not in expected ring / deployment stalled" → `Troubleshooting/Autopatch-B.md` + `Scripts/Get-AutopatchReadiness.ps1`
 - "Co-managed device workload going to wrong authority" → `Troubleshooting/CoManagement-B.md` + `Scripts/Get-CoManagementStatus.ps1`
 - "Custom compliance script marking devices non-compliant incorrectly" → `Troubleshooting/CustomCompliance-B.md` + `Scripts/Get-CustomComplianceScriptValidator.ps1`
+- "Startup performance / device experience score not showing, stuck at zero, or 'Insufficient data'" → `Troubleshooting/EndpointAnalytics-B.md` + `Scripts/Get-EndpointAnalyticsHealth.ps1`
 - "Driver update not installing / WDfB conflict" → `Troubleshooting/DriverManagement-B.md` + `Scripts/Get-DriverManagementStatus.ps1`
 - "EPM elevation request not working / agent missing" → `Troubleshooting/EPM-B.md` + `Scripts/Get-EPMElevationReport.ps1`
 - "Assignment Filter not matching expected devices" → `Troubleshooting/Filters-B.md` + `Scripts/Get-AssignmentFilterAudit.ps1`
