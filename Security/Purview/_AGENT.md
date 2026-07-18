@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, Communication Compliance, and Information Barriers in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, Communication Compliance, Information Barriers, and Microsoft Priva (Privacy Risk Management + Subject Rights Requests) in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -37,6 +37,8 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `CommunicationCompliance-B.md` | Hotfix runbook for zero-admin lockout, reviewer eligibility, under-reviewing templates, licensing gaps |
 | `InformationBarriers-A.md` | Deep dive — segment/policy evaluation pipeline, FwdSync propagation delay, Allow vs. Block policy design |
 | `InformationBarriers-B.md` | Hotfix runbook for segment overlap, Address Book Policy conflicts, and stuck/failed policy application |
+| `Priva-A.md` | Deep dive — Privacy Risk Management policy pipeline (Test mode default, Alert→Issue→Remediation), Subject Rights Requests workflow (Access/Export/Tagged list/Delete), RBAC model, data-residency exclusions |
+| `Priva-B.md` | Hotfix runbook for Priva access/licensing/RBAC gates, policies stuck in Test mode, alert-storm tuning, stuck/incomplete Subject Rights Requests, and pre-execution review for irreversible Delete requests |
 | `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
 | `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
 | `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
@@ -44,6 +46,7 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Scripts/Get-RetentionPolicyAudit.ps1` | Tenant-wide retention label + policy distribution audit |
 | `Scripts/Get-CommunicationComplianceReadinessAudit.ps1` | Audit log, role group (zero-admin risk), reviewer eligibility, licence, and Teams reporting-policy readiness check (adjacent-signal audit only — no policy CRUD API exists) |
 | `Scripts/Get-InformationBarriersAudit.ps1` | Address Book Policy blocker check, segment/policy inventory with orphan and missing-reverse-pair flags, last application health, and audit-log segment-conflict scan |
+| `Scripts/Get-PrivaReadinessAudit.ps1` | Priva RBAC (all 5 role groups) + Unified Audit Log prerequisite + Privacy Risk Management policy inventory audit — flags EMPTY_RBAC, NO_AUDIT_LOG, POLICY_IN_TEST_MODE, CMDLET_UNAVAILABLE; Subject Rights Requests are portal-only and out of scope for this script |
 
 ---
 
@@ -72,6 +75,12 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "IB policy application failed / stuck" | `InformationBarriers-B.md` → Triage + Fix 3/4 |
 | "Two users who should be blocked can still chat" | `InformationBarriers-B.md` → Fix 2 |
 | "Client wants to block email between two departments" | `InformationBarriers-A.md` → Scope & Assumptions (IB doesn't cover Exchange mail flow) |
+| "Priva portal shows nothing / cmdlets fail" | `Priva-B.md` → Triage + Fix 1 (data residency, licensing, RBAC gates) |
+| "Priva policy isn't generating any alerts" | `Priva-B.md` → Fix 4 (Test mode is the default — this is by design, not a bug) |
+| "Priva alert storm / too many matches" | `Priva-A.md` → Remediation Playbook 2 (narrow classification group, adjust alert frequency) |
+| "Subject Rights Request found zero/partial results" | `Priva-B.md` → Fix 5 (identity resolution + data-source scope) |
+| "Need to run a Delete-type Subject Rights Request" | `Priva-B.md` → Fix 6 (irreversible — confirm holds and get sign-off first) |
+| "Difference between Priva and DLP / Insider Risk" | `Priva-A.md` → Scope & Assumptions (Priva = proactive personal-data risk visibility, not loss-prevention blocking or behavioral insider-threat indicators) |
 
 ---
 
@@ -106,6 +115,12 @@ Get-Label | Select-Object DisplayName, Priority, IsActive | Format-Table -AutoSi
 Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
 Get-RoleGroupMember -Identity "Communication Compliance Admins"
 Get-EXOMailbox -Identity <reviewer@tenant.com> | Select-Object RecipientTypeDetails
+
+# Priva — read/RBAC/prerequisite cmdlets only (legacy naming, pre-dates the Priva rebrand);
+# policy conditions, Test→On toggling, and ALL Subject Rights Requests actions are portal-only
+Get-PrivacyManagementPolicy | Select-Object Name, Type, Mode, Enabled
+Get-RoleGroupMember -Identity "Privacy Management"
+Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
 ```
 
 ---
@@ -135,6 +150,21 @@ Get-EXOMailbox -Identity <reviewer@tenant.com> | Select-Object RecipientTypeDeta
               └── Required for Endpoint DLP enforcement
                     └── Devices must be onboarded to MDE
                           └── Windows 10 21H2+ or Windows 11
+```
+
+Priva has its own, separate chain — it reuses DLP's foundational SIT/classification-group engine but is not gated by DLP policy state:
+
+```
+[Tenant NOT in a Priva-excluded data-residency region] (hard, unfixable gate)
+        └── [Priva licence] (E5/E5 Compliance bundle OR standalone Priva add-on)
+              └── [Purview portal RBAC role] (Privacy Management role groups — NOT Entra ID roles)
+                    ├── [Privacy Risk Management]
+                    │     └── [Unified Audit Log enabled] → [Policy, default Test mode] →
+                    │           [Alert] → [manually-created Issue] → [Remediation]
+                    └── [Subject Rights Requests] (portal-only, no PowerShell equivalent)
+                          └── [Data subject identity resolved] → [Search: Exchange/SharePoint/
+                                OneDrive/Teams] → [auto Teams channel] → [Review] →
+                                [Report/Export or irreversible Delete]
 ```
 
 ---
