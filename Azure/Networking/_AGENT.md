@@ -1,8 +1,10 @@
-# Azure Networking (Hybrid Connectivity) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG) — Agent Instructions
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure. Covers IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. Does not cover point-to-site VPN (individual remote-access users), Virtual WAN hub routing, or Azure Firewall/NVA routing policy beyond where it intersects GatewaySubnet behavior.
+Runbooks and scripts for **Azure networking**, covering two related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. NSG is the shared data-plane checkpoint that HybridConnectivity, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files.
+
+Does not cover point-to-site VPN (individual remote-access users), Virtual WAN hub routing, Azure Firewall/NVA routing policy beyond where it intersects GatewaySubnet behavior, or User-Defined Routes/route tables as a standalone routing topic (referenced here only where it intersects NSG troubleshooting).
 
 ---
 
@@ -21,6 +23,9 @@ Runbooks and scripts for **Azure hybrid connectivity** — the VPN Gateway (site
 | `HybridConnectivity-B.md` | Hotfix runbook — IPsec tunnel down, BGP peer not connecting/flapping, ExpressRoute circuit/provider provisioning stuck, eBGP peering mismatch, routes present but traffic blocked |
 | `HybridConnectivity-A.md` | Deep dive — full IPsec/BGP and ExpressRoute three-zone architecture, dependency stack from physical/provisioning layer through data plane, migration and provider-outage playbooks |
 | `Scripts/Get-HybridConnectivityHealth.ps1` | Read-only sweep across VPN Gateways and ExpressRoute circuits — connection/BGP/peering state, near-prefix-limit warning, control-plane-vs-data-plane traffic sanity check |
+| `NSG-B.md` | NSG hotfix runbook — priority conflicts, subnet/NIC dual-layer conflicts, service tag and ASG misconfigurations, default-deny blocks, Security Admin Rule check |
+| `NSG-A.md` | NSG deep dive — rule evaluation architecture, Security Admin Rules (AVNM), service tags, ASGs, augmented rules, flow log migration (NSG flow logs retiring Sept 30, 2027) |
+| `Scripts/Get-NSGRuleAudit.ps1` | Read-only fleet-wide sweep — broad management-port exposure, priority-collision risk, dual-layer NIC/subnet coverage inventory, Security Admin Rule presence |
 
 ---
 
@@ -34,6 +39,11 @@ Runbooks and scripts for **Azure hybrid connectivity** — the VPN Gateway (site
 - **"Routes look fine but traffic still doesn't reach the destination"** → `HybridConnectivity-B.md` Fix 5 — check GatewaySubnet and destination-subnet NSG/UDR
 - **"Should we move this client from static routes to BGP?"** → `HybridConnectivity-A.md` Playbook 1
 - **"Fleet-wide hybrid connectivity health check across clients"** → `Scripts/Get-HybridConnectivityHealth.ps1`
+- **"I added an NSG allow rule and traffic is still blocked"** → `NSG-B.md` Fix 1 (priority conflict) then Fix 2 (subnet/NIC dual-layer gap)
+- **"NSG rules look correct but traffic still misbehaves"** → `NSG-B.md` Triage step 5 — check for a Security Admin Rule (Azure Virtual Network Manager) first
+- **"Rule uses a service tag and doesn't behave as expected"** → `NSG-B.md` Fix 3 — `VirtualNetwork` includes peered VNets + on-prem + gateway VIP, not just the local VNet
+- **"Client wants NSG flow logs turned on"** → redirect to VNet flow logs; NSG flow logs can no longer be newly created (cutoff June 30, 2025, retiring Sept 30, 2027) — see `NSG-A.md` Learning Pointers
+- **"Fleet-wide NSG hygiene / exposed management-port review"** → `Scripts/Get-NSGRuleAudit.ps1`
 
 ---
 
@@ -54,6 +64,15 @@ Get-AzExpressRouteCircuit -ResourceGroupName <rg> -Name <circuitName> | Select C
 
 # ExpressRoute MSEE route table (eBGP peering state lives here)
 Get-AzExpressRouteCircuitRouteTable -DevicePath Primary -ExpressRouteCircuitName <circuitName> -PeeringType AzurePrivatePeering -ResourceGroupName <rg>
+
+# Effective NSG rules for a NIC — the pre-merged, authoritative view
+az network nic list-effective-nsg --resource-group <rg> --name <nicName> -o table
+
+# Synthetic packet test — allowed or denied, and by which rule
+az network watcher test-ip-flow --direction Inbound --protocol TCP --local <ip>:<port> --remote <ip>:* --vm <vmResourceId> --nic <nicName>
+
+# Security Admin Rules (Azure Virtual Network Manager) — invisible from the NSG blade
+Get-AzNetworkManager | Get-AzNetworkManagerSecurityAdminConfiguration
 ```
 
 ---
@@ -78,6 +97,20 @@ GatewaySubnet + destination NSG/UDR   ←──  Virtual Network Gateway (Expres
     │                                          │
     ▼                                          ▼
               Traffic flows (both paths converge here)
+
+
+NSG evaluation (NSG-A.md/NSG-B.md — the data-plane layer both paths above converge on):
+
+Security Admin Rules (AVNM)  ← evaluated first, invisible from the NSG resource itself
+    │  AlwaysAllow/Deny terminate here; Allow passes through
+    ▼
+Subnet-level NSG  ──AND──  NIC-level NSG   (order is direction-dependent: subnet-first inbound, NIC-first outbound)
+    │  both must independently allow — first rule match per NSG wins, evaluation stops
+    ▼
+Default rules (65000/65001/65500) — cannot be deleted, only overridden by a lower-priority custom rule
+    │
+    ▼
+Packet delivered (or dropped)
 ```
 
 ---

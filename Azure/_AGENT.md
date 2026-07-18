@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability), **Azure Key Vault** (RBAC vs. legacy Access Policy authorization model, network/private-endpoint access denials, soft-delete and purge-protection recovery, certificate auto-rotation failures), and **Azure Networking / Hybrid Connectivity** (VPN Gateway site-to-site IPsec/BGP, ExpressRoute circuit provisioning and eBGP peering across the customer/provider/Microsoft three-zone model).
+Azure infrastructure runbooks and scripts for MSP engineers managing Azure environments on behalf of clients. Covers **Azure Virtual Desktop (AVD)** (session host management, FSLogix profile containers, MSIX App Attach, network connectivity), **Azure Files** (direct SMB/NFS shares, identity-based auth, Azure File Sync), **Windows 365 Cloud PC** (provisioning, Azure Network Connections, licensing, resize/reprovision), **Azure Arc-enabled servers** (Connected Machine agent onboarding, connectivity/heartbeat, identity model, prerequisite layer for Sentinel/Defender for Cloud on non-Azure servers), **Azure Backup** (Recovery Services Vault — Azure VM disk backup job failures, recovery point consistency, restores, soft delete, immutability), **Azure Key Vault** (RBAC vs. legacy Access Policy authorization model, network/private-endpoint access denials, soft-delete and purge-protection recovery, certificate auto-rotation failures), **Azure Networking / Hybrid Connectivity** (VPN Gateway site-to-site IPsec/BGP, ExpressRoute circuit provisioning and eBGP peering across the customer/provider/Microsoft three-zone model), and **Network Security Groups** (general-purpose rule precedence, dual subnet/NIC-layer evaluation, service tags, Application Security Groups, and Security Admin Rules via Azure Virtual Network Manager — the shared data-plane layer underneath every other Azure connectivity topic in this folder).
 
 ---
 
@@ -47,6 +47,9 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 | `Networking/HybridConnectivity-B.md` | Hybrid connectivity hotfix runbook — IPsec tunnel down, BGP peer not connecting/flapping, ExpressRoute circuit/provider stuck, eBGP peering mismatch, routes present but traffic blocked |
 | `Networking/HybridConnectivity-A.md` | Hybrid connectivity deep dive — VPN Gateway IPsec/BGP and ExpressRoute three-zone architecture, six-layer dependency stack, migration and provider-outage playbooks |
 | `Networking/Scripts/Get-HybridConnectivityHealth.ps1` | Read-only sweep across VPN Gateways and ExpressRoute circuits — connection/BGP/peering state, near-prefix-limit warning, control-plane-vs-data-plane traffic check |
+| `Networking/NSG-B.md` | NSG hotfix runbook — priority conflicts, subnet/NIC dual-layer conflicts, service tag and ASG misconfigurations, default-deny blocks, Security Admin Rule check |
+| `Networking/NSG-A.md` | NSG deep dive — rule evaluation architecture, Security Admin Rules (AVNM), service tags, ASGs, augmented rules, flow log migration, dependency stack shared by every other Azure networking topic in this folder |
+| `Networking/Scripts/Get-NSGRuleAudit.ps1` | Read-only fleet-wide sweep — broad management-port exposure, priority-collision risk, dual-layer NIC/subnet coverage inventory, Security Admin Rule presence |
 
 ---
 
@@ -78,6 +81,10 @@ Azure infrastructure runbooks and scripts for MSP engineers managing Azure envir
 - **"ExpressRoute circuit shows Not provisioned"** → `Networking/HybridConnectivity-B.md` Triage — split Microsoft-side vs. provider-side immediately
 - **"BGP peering Active/Idle instead of Established"** → `Networking/HybridConnectivity-B.md` Fix 4
 - **"Fleet-wide hybrid connectivity health check"** → `Networking/Scripts/Get-HybridConnectivityHealth.ps1`
+- **"I added an NSG allow rule and traffic is still blocked"** → `Networking/NSG-B.md` Fix 1/Fix 2 — check for a priority conflict first, then confirm both subnet-level and NIC-level NSGs allow it
+- **"NSG rules look correct but traffic is still wrong"** → `Networking/NSG-B.md` Triage step 5 — check for a Security Admin Rule (Azure Virtual Network Manager) silently overriding evaluation
+- **"Client wants NSG flow logs enabled"** → `Networking/NSG-B.md` Learning Pointers — redirect to VNet flow logs (NSG flow logs can no longer be newly created, retiring Sept 30, 2027)
+- **"Fleet-wide NSG hygiene / exposed management ports review"** → `Networking/Scripts/Get-NSGRuleAudit.ps1`
 
 ---
 
