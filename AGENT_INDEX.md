@@ -70,6 +70,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Attack Simulation Training (phishing simulations, training assignment, MDO Plan 2) | `Security/Defender/` | `M365/Exchange/`, `EntraID/` |
 | Purview DLP, sensitivity labels, insider risk, eDiscovery | `Security/Purview/` | `M365/Exchange/`, `M365/SharePoint-OneDrive/` |
 | Communication Compliance (message review policies — no PowerShell for policy CRUD) | `Security/Purview/` | `M365/Exchange/`, `M365/Teams/`, `EntraID/` |
+| Information Barriers (segment/policy design, Teams/SharePoint/OneDrive communication restrictions, Address Book Policy conflicts, segment overlap, FwdSync propagation delay) | `Security/Purview/` | `M365/Teams/` (primary enforcement surface), `M365/SharePoint-OneDrive/`, `EntraID/` (attribute source for segment filters), `M365/Exchange/` (Address Book Policy conflict, and the separate ethical-wall mechanism for mail flow) |
 | Graph API queries, automation, reporting | `EntraID/Graph/` | Any domain using Graph |
 | macOS Intune enrollment, ADE, shell scripts | `macOS/` | `Intune/`, `EntraID/` |
 | Entra ID PIM, MFA methods, SSPR, Identity Protection risk | `EntraID/` | `Security/ConditionalAccess/` |

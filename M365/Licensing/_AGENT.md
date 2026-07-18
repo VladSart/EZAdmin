@@ -18,6 +18,7 @@ Runbooks and scripts for Microsoft 365 licensing issues. Covers license assignme
 | `Group-Based-Licensing-B.md` | Group-based licensing errors, processing failures, inherited assignment problems |
 | `Group-Based-Licensing-A.md` | Deep dive: group-based licensing engine — dynamic/assigned group processing, conflict resolution order, propagation timing |
 | `Scripts/Get-LicenseReport.ps1` | Tenant-wide licence audit: SKU inventory/thresholds, per-user assignments, unlicensed-but-active users, duplicate/overlapping SKUs, GBL errors — exports CSVs |
+| `Scripts/Get-GroupBasedLicensingDiagnostics.ps1` | Group-by-group GBL diagnostic: per-member error-state taxonomy (MutuallyExclusiveViolation, CountViolation, ProhibitedInUsageLocationViolation, UniquenessViolation, DependencyViolation), usageLocation gaps, nested-static-group licensing gaps, SKU exhaustion risk per group |
 
 ## Common entry points
 
@@ -29,6 +30,8 @@ Runbooks and scripts for Microsoft 365 licensing issues. Covers license assignme
 - "User was licensed but feature disappeared" → check group-based licensing reassignment or SKU change
 - "Need a tenant-wide licence audit for a report/ticket" → `Scripts/Get-LicenseReport.ps1`
 - "Why does group-based licensing conflict with a direct assignment" → `Group-Based-Licensing-A.md`
+- "Group members not getting licensed / GBL error states" → `Scripts/Get-GroupBasedLicensingDiagnostics.ps1` for a per-group, per-member error breakdown; `Group-Based-Licensing-B.md` for the fix path per error type
+- "Nested group members aren't inheriting a license" → `Group-Based-Licensing-A.md` Nested Group Limitation; confirm with `Scripts/Get-GroupBasedLicensingDiagnostics.ps1` (NESTED_GROUP_NOT_FLAT flag)
 
 ## Key diagnostic commands
 

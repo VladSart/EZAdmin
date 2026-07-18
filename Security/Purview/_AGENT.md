@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, and Communication Compliance in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, Communication Compliance, and Information Barriers in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -35,12 +35,15 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `RetentionLabels-B.md` | Hotfix runbook for unpublished labels, distribution errors, and retention/policy conflicts |
 | `CommunicationCompliance-A.md` | Deep dive — policy templates, scoping/reviewer rules, role groups, channel prerequisites (no PowerShell for policy CRUD) |
 | `CommunicationCompliance-B.md` | Hotfix runbook for zero-admin lockout, reviewer eligibility, under-reviewing templates, licensing gaps |
+| `InformationBarriers-A.md` | Deep dive — segment/policy evaluation pipeline, FwdSync propagation delay, Allow vs. Block policy design |
+| `InformationBarriers-B.md` | Hotfix runbook for segment overlap, Address Book Policy conflicts, and stuck/failed policy application |
 | `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
 | `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
 | `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
 | `Scripts/Get-eDiscoveryHoldAudit.ps1` | Tenant-wide case hold + export expiry audit |
 | `Scripts/Get-RetentionPolicyAudit.ps1` | Tenant-wide retention label + policy distribution audit |
 | `Scripts/Get-CommunicationComplianceReadinessAudit.ps1` | Audit log, role group (zero-admin risk), reviewer eligibility, licence, and Teams reporting-policy readiness check (adjacent-signal audit only — no policy CRUD API exists) |
+| `Scripts/Get-InformationBarriersAudit.ps1` | Address Book Policy blocker check, segment/policy inventory with orphan and missing-reverse-pair flags, last application health, and audit-log segment-conflict scan |
 
 ---
 
@@ -65,6 +68,10 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "Communication Compliance policy isn't catching everything" | `CommunicationCompliance-B.md` → Fix 5 (check review percentage — two templates default to 10%) |
 | "Reviewer added to a Communication Compliance policy but sees nothing" | `CommunicationCompliance-B.md` → Fix 3 |
 | "Can I manage Communication Compliance policies with PowerShell/Graph?" | `CommunicationCompliance-A.md` → How It Works (no — portal only) |
+| "User can't find/message someone in Teams" | `InformationBarriers-B.md` → Diagnosis Step 1-2 (may be working as designed) |
+| "IB policy application failed / stuck" | `InformationBarriers-B.md` → Triage + Fix 3/4 |
+| "Two users who should be blocked can still chat" | `InformationBarriers-B.md` → Fix 2 |
+| "Client wants to block email between two departments" | `InformationBarriers-A.md` → Scope & Assumptions (IB doesn't cover Exchange mail flow) |
 
 ---
 
