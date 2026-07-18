@@ -55,6 +55,7 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 - "Network test before Autopilot deployment" → `Scripts/Test-AutopilotNetworkRequirements.ps1`
 - "Device prep policy won't save / 0 groups assigned / ESP showing when it shouldn't" → `Troubleshooting/DevicePreparation-B.md` (hotfix) / `DevicePreparation-A.md` (deep dive — Enrollment Time Grouping architecture) + `Scripts/Get-DevicePreparationReadinessAudit.ps1`
 - "Apps/scripts Skipped during a device preparation OOBE deployment" → `Troubleshooting/DevicePreparation-B.md` (Fix 4)
+- "Reset device for next user / redeploy / wipe and reprovision" → `Troubleshooting/Reset-B.md` (hotfix) / `Reset-A.md` (deep dive — Autopilot Reset vs. Wipe vs. Fresh Start comparison, hybrid-join hard exclusion) + `Scripts/Get-AutopilotResetReadinessAudit.ps1`
 
 ---
 
@@ -77,6 +78,8 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 | `Troubleshooting/TPM-Attestation-B.md` / `-A.md` | Hotfix / deep dive: TPM attestation failures at enrollment — spec version, firmware, clock accuracy |
 | `Troubleshooting/DevicePreparation-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot device preparation (APDP) — Enrollment Time Grouping, device group ownership/eligibility, classic-Autopilot precedence shadowing |
 | `Scripts/Get-DevicePreparationReadinessAudit.ps1` | Read-only audit of device-prep prerequisites — device group ownership/eligibility, Intune Provisioning Client SP presence, classic-Autopilot shadowing by serial |
+| `Troubleshooting/Reset-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot Reset (local + remote) — hybrid-join/Surface Hub hard exclusion, WinRE preflight gate, local vs. remote identity-handoff divergence, comparison vs. Wipe/Fresh Start |
+| `Scripts/Get-AutopilotResetReadinessAudit.ps1` | Fleet-wide pre-flight audit of Autopilot Reset eligibility via Graph — flags hybrid-joined devices and stale MDM sync before a bulk reset is attempted |
 
 > ⚠️ Not listed above: `Troubleshooting/Autopilot-Troubleshooting2.ps1` and `Troubleshooting/Autopilot-Network-Connectivity.ps1` (misfiled `.ps1` scripts sitting under `Troubleshooting/` rather than `Scripts/`, one a near-duplicate of `Test-AutopilotNetworkRequirements.ps1`) are flagged since run 30 for interactive user review (rename/relocate/dedupe), not touched autonomously.
 
