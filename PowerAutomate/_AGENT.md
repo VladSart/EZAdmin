@@ -11,6 +11,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - **Approval workflows** — routing requests before provisioning
 - **Connector troubleshooting** — auth failures, throttling, licence issues
 - **Flow governance** — DLP policies, environment management, licence requirements
+- **Desktop flows (RPA)** — machine runtime registration, attended/unattended session model, capacity licensing — a distinct execution model from cloud flows (see `Desktop-RPA/`)
 
 ---
 
@@ -20,6 +21,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - `EntraID/` — if connector auth is failing (OAuth, service principal, permissions)
 - `EntraID/Graph/` — for flows using HTTP/Graph API actions
 - `Intune/` — if Power Automate Desktop flows are deployed via Intune
+- `Desktop-RPA/` — if the issue is a desktop flow's **machine/session runtime** (registration, RDP, service account, unattended capacity) rather than the cloud flow orchestrating it — the two have entirely separate failure domains
 
 ---
 
@@ -48,6 +50,9 @@ This module focuses on what MSPs actually use Power Automate for:
 | `Scripts/Get-ApprovalApproverEligibilityAudit.ps1` | PS: checks approver account/license eligibility for a stuck approval, resolves manager for escalation |
 | `Scripts/Get-FlowOwnershipSweep.ps1` | PS: tenant-wide discovery of flows owned by a departing user — no-co-owner and premium-connector risk flags |
 | `Scripts/Get-ThrottlingLimitDiagnostics.ps1` | PS: flags confirmed 429/throttle runs, retry-cascade risk, missing loop concurrency, high-frequency recurrence triggers |
+| `Desktop-RPA/MachineRuntime-B.md` | Hotfix: desktop flow (attended/unattended) failing to start or run on a registered machine — UIFlowService, RDP, session collisions, connectivity |
+| `Desktop-RPA/MachineRuntime-A.md` | Deep dive: direct-connectivity architecture (gateways retired), session lifecycle, full error-code taxonomy, machine groups, Process/Unattended RPA capacity licensing |
+| `Desktop-RPA/Scripts/Get-PADMachineHealth.ps1` | PS: local/fleet health check for UIFlowService, RDP, Remote Desktop Users membership, PAD version vs. direct-connectivity floor |
 
 ---
 
@@ -63,6 +68,8 @@ This module focuses on what MSPs actually use Power Automate for:
 - "Approval flow stuck / approver never responds" → `Troubleshooting/Approval-Workflows-B.md`
 - "Self-service Team/Group provisioning flow fails or is inconsistent" → `Groups-Teams/Groups-Teams-Provisioning-B.md`
 - "An employee is leaving, what happens to their flows?" / "Flow stopped working after we disabled someone's account" → `Troubleshooting/Flow-Ownership-Transfer-B.md`
+- "Desktop flow won't run / machine shows offline / unattended flow fails to start a session" → `Desktop-RPA/MachineRuntime-B.md`
+- "Client mentions a 'Power Automate gateway' for desktop flows" → that model is retired; point to `Desktop-RPA/MachineRuntime-A.md` Remediation Playbook 2 (migrate to direct connectivity)
 
 ---
 
@@ -91,7 +98,7 @@ This module focuses on what MSPs actually use Power Automate for:
 | Basic automated flows | Microsoft 365 E3/E5 (seeded) |
 | Premium connectors (SQL, Azure, etc.) | Power Automate Premium |
 | Per-flow licence | Power Automate per-flow plan |
-| Unattended desktop flows | Power Automate Premium |
+| Unattended desktop flows | Power Automate Process licence (or legacy Unattended RPA add-on — combined into one capacity pool today); allocated as an "unattended bot" per machine, see `Desktop-RPA/MachineRuntime-A.md` |
 | HTTP connector (to Graph API) | Premium connector = Premium licence |
 
 > ⚠️ The HTTP connector is premium. Many flows that "just use Graph" break because the HTTP action requires a premium licence that the account doesn't have.

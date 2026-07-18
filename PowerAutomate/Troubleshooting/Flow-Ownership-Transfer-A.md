@@ -23,7 +23,7 @@
 - Environment admin and tenant admin tooling for discovering and reassigning flow ownership at scale
 
 **Out of scope:**
-- Power Automate Desktop (RPA) flows — different licensing and execution model (runs under a machine/gateway identity, not covered here)
+- Power Automate Desktop (RPA) flows — different licensing and execution model (machines connect via direct connectivity/Machine Runtime App, not a gateway — gateways for desktop flows are retired; runs execute under a registered machine's session identity, not covered here — see `Desktop-RPA/MachineRuntime-A.md`)
 - Power Apps canvas/model-driven app ownership — related but separate object type, separate cmdlets
 - Dataverse plugin/workflow ownership — different execution engine entirely
 

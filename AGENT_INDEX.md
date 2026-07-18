@@ -59,6 +59,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Windows Update, WfUB, WSUS conflicts | `Windows/` | `Intune/` |
 | BitLocker, key escrow, recovery | `Windows/` | `Intune/`, `EntraID/` |
 | Power Automate flows, connectors, licensing | `PowerAutomate/` | `M365/SharePoint-OneDrive/`, `EntraID/` |
+| Power Automate Desktop (RPA) — machine registration/direct connectivity (gateways retired), attended/unattended session model, UIFlowService, machine groups, Process/Unattended RPA capacity licensing | `PowerAutomate/Desktop-RPA/` | `PowerAutomate/Troubleshooting/` (cloud-flow-side ownership/connector auth — a separate failure domain from the machine runtime), `Intune/` (if PAD is deployed via Intune, not a runtime issue) |
 | SharePoint site creation, permissions via automation | `PowerAutomate/SharePoint/` | `EntraID/`, `M365/SharePoint-OneDrive/` |
 | Exchange Online mail flow, rules, hybrid | `M365/Exchange/` | `EntraID/` |
 | SharePoint/OneDrive sync, permissions, migration | `M365/SharePoint-OneDrive/` | `PowerAutomate/` |
