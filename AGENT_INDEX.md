@@ -77,6 +77,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Entra ID PIM, MFA methods, SSPR, Identity Protection risk | `EntraID/` | `Security/ConditionalAccess/` |
 | Entra Domain Services (managed domain), App Proxy, Access Packages | `EntraID/` | `Azure/`, `Security/ConditionalAccess/` |
 | GDAP (Granular Delegated Admin Privileges) — CSP/partner relationship access, security group role delegation | `EntraID/` | Partner Center (external) |
+| Lifecycle Workflows — Entra ID Governance JML task automation (enable/schedule two-switch model, 3-day catch-up window, AD DS-synced Enable/Disable/Delete task prerequisites, Logic Apps extensibility) | `EntraID/` | HR-driven provisioning (external, creates the account), `EntraID/` Access Reviews (recertification, distinct), `EntraID/` PIM (role activation, distinct) |
 | Windows Hello for Business, LAPS, Endpoint Privilege Mgmt (EPM) | `EntraID/` (WHfB) / `Intune/` (LAPS, EPM) | `Security/ConditionalAccess/` |
 | Azure Virtual Desktop (session hosts, FSLogix, App Attach) | `Azure/AVD/` | `Intune/`, `EntraID/`, `Windows/` |
 | Azure Files (SMB/NFS shares, identity auth, Azure File Sync) | `Azure/Files/` | `DFS/`, `EntraID/` |

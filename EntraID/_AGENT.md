@@ -13,6 +13,7 @@ Covers:
 - **Entra Connect / Sync** — attribute conflicts, password hash sync, staging mode
 - **Privileged Identity Management (PIM)** — role activation
 - **Access Reviews** — periodic recertification of group/app/access-package membership and Entra/Azure role assignments (distinct from PIM activation and from entitlement management delivery)
+- **Lifecycle Workflows** — Entra ID Governance joiner-mover-leaver (JML) task automation (welcome email, license/group assignment, account enable/disable/delete, Temporary Access Pass, custom Logic App tasks) — distinct from HR-driven provisioning (creates the account), Access Reviews (recertification), and PIM (role activation)
 - **Graph API** — scripting against Entra, batch queries, permissions model
 
 ---
@@ -101,6 +102,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-AppRegistrationCredentialAudit.ps1` | Tenant-wide App Registration secret/cert expiry audit, zero-owner detection, Service Principal existence/enablement cross-check, per-app risk scoring |
 | `Scripts/Get-WorkloadIdentityAudit.ps1` | Tenant-wide federated credential inventory, non-standard audience detection, Conditional Access workload-identity targeting cross-check, Workload Identities Premium license consumption |
 | `Scripts/Get-AccessReviewAudit.ps1` | Access review definition/instance audit — auto-apply gaps, stalled instances, on-prem-synced-group remediation gaps, app reviewability gate, recent audit log activity |
+| `Troubleshooting/LifecycleWorkflows-B.md` / `-A.md` | Hotfix + deep dive: Lifecycle Workflows — enable-vs-scheduled two-switch gotcha, 3-day catch-up window, case-sensitive rule/custom-security-attribute matching, AD DS-synced Enable/Disable/Delete task prerequisites (provisioning agent version, extension mode, gMSA rights, AD Recycle Bin), Logic Apps task extensibility model |
+| `Scripts/Get-LifecycleWorkflowAudit.ps1` | Workflow inventory (enabled/scheduled state), recent run failure/no-run detection, AD DS account-task prerequisite risk flagging, deactivated custom security attribute detection, license check, optional per-user processing result lookup |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
 ---
@@ -136,6 +139,10 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Verified ID / verifiable credential won't issue or verify / Authenticator shows unverified warning" → `Troubleshooting/VerifiedID-B.md` + `Scripts/Get-VerifiedIDConfigAudit.ps1`
 - "Access review completed but the person still has access" / "reviewer never got notified" / "can't find this app to review it" → `Troubleshooting/AccessReviews-B.md` + `Scripts/Get-AccessReviewAudit.ps1`
 - "I have Global Reader but can't create an access review" / "group owner can't review their own group" → `Troubleshooting/AccessReviews-B.md` Fix 5 / `Troubleshooting/AccessReviews-A.md` resource-type permission table
+- "Built a Lifecycle Workflow and nothing runs automatically" / "workflow is enabled but never fires" → `Troubleshooting/LifecycleWorkflows-B.md` Fix 1 (check `IsSchedulingEnabled` — separate switch from `IsEnabled`)
+- "New hire's welcome email/license never arrived even though start date passed" / "leaver workflow ran late" → `Troubleshooting/LifecycleWorkflows-B.md` (3-day catch-up window) + `Scripts/Get-LifecycleWorkflowAudit.ps1`
+- "Workflow says the Disable/Delete task succeeded but the AD account is still active" → `Troubleshooting/LifecycleWorkflows-B.md` Fix 3 / `Troubleshooting/LifecycleWorkflows-A.md` Playbook 2 (provisioning agent version, extension mode, gMSA rights, AD Recycle Bin)
+- "Lifecycle Workflow rule shows a red error icon / invalid properties" → `Troubleshooting/LifecycleWorkflows-B.md` Fix 4 (deactivated custom security attribute)
 
 ---
 
