@@ -6,7 +6,7 @@ Distributed File System — both components:
 - **DFSN (DFS Namespaces)** — the virtual path layer (`\\domain\share`) that abstracts physical UNC paths. Users see one path; the namespace redirects them to a folder target.
 - **DFSR (DFS Replication)** — the multi-master replication engine that keeps folder targets in sync. Also used by AD to replicate SYSVOL.
 
-This module covers setup, health validation, access failures, replication backlog, SYSVOL issues, and conflict resolution.
+This module covers setup, health validation, access failures, replication backlog, SYSVOL issues, and conflict resolution. Also covers **File Server Resource Manager (FSRM)** — quota management, file screening, file classification, and storage reports on the same file servers that host DFS namespace folder targets. FSRM is architecturally separate from DFSN/DFSR (it has no awareness of namespace paths or replication state) but is grouped here because MSPs manage both roles on the same physical file servers.
 
 ---
 
@@ -36,6 +36,9 @@ This module covers setup, health validation, access failures, replication backlo
 | `Scripts/Get-DFSRBacklog.ps1` | Backlog size per replication group/connection |
 | `Scripts/Get-DFSRMigrationState.ps1` | Cross-references dfsrmig state against live DC inventory, flags orphaned DCs and unshared SYSVOL |
 | `Scripts/Get-DFSNamespaceConfigAudit.ps1` | Namespace-wide config audit: covers both ABE state and AD site-costing/referral settings in one report |
+| `Troubleshooting/FSRM/FSRM-B.md` | Hotfix: service/config-store failures, quota template drift, nested-quota confusion, notification issues, screen/report failures |
+| `Troubleshooting/FSRM/FSRM-A.md` | Deep dive: quota/screen/classification architecture, config store internals, USN journal real-time classification trade-off, migration and recovery playbooks |
+| `Scripts/Get-FSRMAudit.ps1` | One-shot FSRM audit: service/config-store ACL health, ReFS-volume violations, stale derived quotas, nested-quota risk, .tmp-blocking screens, SMTP/report health, classification mode |
 
 ---
 
@@ -54,6 +57,13 @@ This module covers setup, health validation, access failures, replication backlo
 - "Branch users are being routed to a slow/remote file server instead of their local one" → `Troubleshooting/SiteCosting/DFS-SiteCosting-B.md`
 - "DFS referral order looks random / not respecting site topology" → `Troubleshooting/SiteCosting/DFS-SiteCosting-A.md`
 - "One-shot audit of ABE + site-costing config across the whole namespace" → `Scripts/Get-DFSNamespaceConfigAudit.ps1`
+- "Quota won't apply / template edit didn't take effect" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 2)
+- "Quota numbers don't match the limit I set" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 3, nested quota)
+- "FSRM console won't open / Access Denied / SrmSvc won't start" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 1)
+- "Users can't save .xlsm/.xlsb files to a screened share" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 5)
+- "No FSRM email notifications / storage report failing" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 4, Fix 6)
+- "Setting up quotas/file screening for the first time" → `Troubleshooting/FSRM/FSRM-A.md` (Playbook 1)
+- "One-shot FSRM health check across a file server" → `Scripts/Get-FSRMAudit.ps1`
 
 ---
 
