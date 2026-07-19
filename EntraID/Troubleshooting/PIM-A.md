@@ -16,7 +16,7 @@
 ---
 ## Scope & Assumptions
 
-This runbook covers **Entra ID PIM for Directory Roles** (Global Admin, Security Admin, etc.) and **PIM for Groups**. It does not cover PIM for Azure Resources (subscription/resource-group RBAC) except where noted.
+This runbook covers **Entra ID PIM for Directory Roles** (Global Admin, Security Admin, etc.) and **PIM for Groups**. It does not cover PIM for Azure Resources (subscription/resource-group/management-group RBAC) — a different portal blade, a different API (Azure Resource Manager, not Microsoft Graph), and a different PowerShell module (`Az.Resources`, not `Microsoft.Graph.Identity.Governance`). See `PIMAzureResources-A.md`/`PIMAzureResources-B.md` for that surface.
 
 **Assumes:**
 - Microsoft Graph PowerShell SDK installed (`Install-Module Microsoft.Graph`)

@@ -12,7 +12,8 @@ Covers:
 - **Workload identity federation + Conditional Access for workload identities** — federated credentials (GitHub Actions/Azure DevOps/Kubernetes OIDC trust), CA policies scoped to service principals, workload identity risk (leaked credentials/anomalous token)
 - **Entra Connect Sync** — attribute conflicts, password hash sync, staging mode (legacy on-prem sync-engine model)
 - **Entra Cloud Sync** — lightweight provisioning-agent model, gMSA auth, multi-agent HA, disconnected forest sync, quarantine handling, and Group Provisioning to AD DS (the reverse direction) — architecturally distinct from Entra Connect Sync, see `Troubleshooting/CloudSync-B.md`/`-A.md`
-- **Privileged Identity Management (PIM)** — role activation
+- **Privileged Identity Management (PIM) for Directory Roles/Groups** — role/group activation via Microsoft Graph
+- **Privileged Identity Management (PIM) for Azure Resources** — JIT activation of Azure RBAC roles (Owner/Contributor/UAA/custom) at management group/subscription/RG/resource scope, via the Azure Resource Manager API and `Az.Resources` — architecturally distinct from directory-role PIM despite sharing a portal shell, see `Troubleshooting/PIMAzureResources-B.md`/`-A.md`
 - **Access Reviews** — periodic recertification of group/app/access-package membership and Entra/Azure role assignments (distinct from PIM activation and from entitlement management delivery)
 - **Lifecycle Workflows** — Entra ID Governance joiner-mover-leaver (JML) task automation (welcome email, license/group assignment, account enable/disable/delete, Temporary Access Pass, custom Logic App tasks) — distinct from HR-driven provisioning (creates the account), Access Reviews (recertification), and PIM (role activation)
 - **Graph API** — scripting against Entra, batch queries, permissions model
@@ -105,6 +106,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-WorkloadIdentityAudit.ps1` | Tenant-wide federated credential inventory, non-standard audience detection, Conditional Access workload-identity targeting cross-check, Workload Identities Premium license consumption |
 | `Scripts/Get-AccessReviewAudit.ps1` | Access review definition/instance audit — auto-apply gaps, stalled instances, on-prem-synced-group remediation gaps, app reviewability gate, recent audit log activity |
 | `Scripts/Get-CloudSyncHealth.ps1` | Cloud Sync provisioning agent host health (services, OS/Server-2025-KB check, TLS/.NET/execution-policy prereqs, gMSA, network reachability, optional GPAD LDAP/GC check) plus optional cloud-side agent/job/quarantine status via AADCloudSyncTools |
+| `Troubleshooting/PIMAzureResources-B.md` / `-A.md` | Hotfix + deep dive: PIM for Azure Resources — Azure RBAC JIT activation via ARM API/`Az.Resources` (not Graph), MS-PIM service principal as scope-wide single point of failure, one-way onboarding, per-scope (non-inherited) policy model, static-vs-PIM assignment coexistence and duplicate-conflict traps |
+| `Scripts/Get-PIMAzureResourcesAudit.ps1` | Fleet-wide (multi-subscription) PIM for Azure Resources audit — MS-PIM permission health, scope onboarding state, no-expiry eligible assignments, expiring-soon active assignments, static-assignment-duplicates-eligible cross-reference |
 | `Troubleshooting/LifecycleWorkflows-B.md` / `-A.md` | Hotfix + deep dive: Lifecycle Workflows — enable-vs-scheduled two-switch gotcha, 3-day catch-up window, case-sensitive rule/custom-security-attribute matching, AD DS-synced Enable/Disable/Delete task prerequisites (provisioning agent version, extension mode, gMSA rights, AD Recycle Bin), Logic Apps task extensibility model |
 | `Scripts/Get-LifecycleWorkflowAudit.ps1` | Workflow inventory (enabled/scheduled state), recent run failure/no-run detection, AD DS account-task prerequisite risk flagging, deactivated custom security attribute detection, license check, optional per-user processing result lookup |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
@@ -136,7 +139,9 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "On-prem app published via App Proxy unreachable / pre-auth failing" → `Troubleshooting/AppProxy-B.md`
 - "Risky sign-in blocking a user who says it's legitimate" → `Troubleshooting/IdentityProtection-B.md`
 - "User can't register for MFA / stuck in method-registration loop" → `Troubleshooting/MFA-B.md`
-- "PIM role activation failing / approval never arrives" → `Troubleshooting/PIM-B.md`
+- "PIM role activation failing / approval never arrives" (Entra directory role or group) → `Troubleshooting/PIM-B.md`
+- "PIM for Azure resources" / "Owner or Contributor eligible assignment on a subscription" / "Global Admin can't see any subscriptions in PIM" / "MS-PIM service principal" → `Troubleshooting/PIMAzureResources-B.md` + `Scripts/Get-PIMAzureResourcesAudit.ps1`
+- "Removed someone from PIM but they still have access to the subscription" → `Troubleshooting/PIMAzureResources-B.md` Fix 6 (static assignment coexists with, and outlives, PIM eligibility)
 - "User can't reset their own password / SSPR registration incomplete" → `Troubleshooting/SSPR-B.md`
 - "Windows Hello for Business won't provision / stuck on TPM or cert enrollment" → `Troubleshooting/WHfB-B.md`
 - "User can't register a passkey / TAP rejected / locked out of Security info trying to add a passkey" → `Troubleshooting/Passkeys-B.md` + `Scripts/Get-PasskeyRegistrationAudit.ps1`
