@@ -1,7 +1,7 @@
 # Microsoft Defender — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Secure Score, posture, multicloud/hybrid connectors), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, and Defender for Office 365 Safe Links/Safe Attachments troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, real-time URL/attachment protection, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
+Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Azure-resource Secure Score, posture, multicloud/hybrid connectors), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, Defender for Office 365 Safe Links/Safe Attachments, and the tenant-wide **Microsoft Secure Score** (Identity/Device/Apps/Data — security.microsoft.com/securescore, explicitly distinct from Defender for Cloud's Azure-resource CSPM score of the same name) troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, real-time URL/attachment protection, tenant-wide security posture scoring, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
 
 ## Before responding, also check
 - `Security/ConditionalAccess/` — CA policies often interact with MDE compliance signals
@@ -31,6 +31,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `SafeLinksAttachments-B.md` / `-A.md` | Defender for Office 365 Safe Links (URL rewrite/time-of-click) and Safe Attachments (detonation) — policy precedence, Teams/Office app coverage, SPO/OneDrive/Teams separate toggle, quarantine visibility |
 | `DefenderForCloud-B.md` / `-A.md` | Defender for Cloud (CSPM) — Secure Score, unhealthy recommendations, multicloud (AWS/GCP) connector onboarding, agentless scanning, regulatory compliance dashboard |
 | `DeviceControl-B.md` / `-A.md` | Device control (USB/removable media/printer/Bluetooth/WPD) — Policy→Rules→Groups→Entries model, fall-through to default enforcement, distinct from Windows Device Installation Restrictions and Purview Endpoint DLP |
+| `SecureScore-B.md` / `-A.md` | Microsoft Secure Score (tenant-wide, security.microsoft.com/securescore) — Identity/Device/Apps/Data scoring model, regression triage, EnabledServices licensing gate, manual override reconciliation, RBAC (Unified RBAC vs. legacy Entra roles vs. Graph API access), explicitly disambiguated from Defender for Cloud's Azure-resource CSPM Secure Score and from TVM's per-device exposure score |
 | `Scripts/Get-MDEDeviceStatus.ps1` | Graph-based MDE device health/risk/sensor report |
 | `Scripts/Get-TamperProtectionStatus.ps1` | Tamper Protection state audit |
 | `Scripts/Get-ASRRuleStatus.ps1` | ASR rule state/mode audit |
@@ -44,6 +45,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `Scripts/Get-SafeLinksAttachmentsPolicyAudit.ps1` | Safe Links/Safe Attachments policy+rule audit — precedence conflicts, non-blocking Action settings, silent quarantine tags, SPO/OneDrive/Teams toggle state, possible upstream gateway conflicts |
 | `Scripts/Get-DefenderForCloudPostureAudit.ps1` | Fleet-wide CSPM audit — plan tiers, Secure Score, unhealthy assessments, multicloud connector coverage, connector resource locks |
 | `Scripts/Get-DeviceControlPolicyAudit.ps1` | Local device control readiness audit — onboarding/AM version, policy delivery, PnP device Hardware ID/Instance Path inventory for group cross-referencing, Device Installation Restriction layer check |
+| `Scripts/Get-SecureScoreReport.ps1` | Graph-based tenant-wide Secure Score audit — regression/category-regression detection, EnabledServices-vs-license gap check, stale manual override flagging, quick-win candidate ranking, device-category informational routing |
 
 ## Common entry points
 
@@ -65,6 +67,11 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "File uploaded to SharePoint/OneDrive/Teams wasn't scanned even though mail Safe Attachments is set to Block" → `SafeLinksAttachments-B.md` Fix 1 — separate `EnableATPForSPOTeamsODB` toggle
 - "USB drive blocked, can't read/write files, printer suddenly blocked" → `DeviceControl-B.md` — first confirm it's this layer and not Windows Device Installation Restrictions (device fully absent vs. installed-but-restricted)
 - "Policy says Allow but device is still denied" → `DeviceControl-B.md` Fix 3 — device likely fell through to default enforcement, check Advanced Hunting `RemovableStoragePolicy` field for the actual rule name
+- "Secure Score dropped" / "recommendation stuck at To address" (M365 tenant-wide, NOT an Azure subscription) → `SecureScore-B.md` — first confirm it's this score and not Defender for Cloud's CSPM score of the same name
+- "Fixed it but the score didn't move" → `SecureScore-B.md` Fix 3 — 24–48h refresh delay (weekly/monthly for Teams/Entra specifically)
+- "Third-party MFA/DLP tool covers this, why is it still unresolved" → `SecureScore-B.md` Fix 4 — manually set "Resolved through third party"
+- "Device category recommendation won't let me change status" → `SecureScore-B.md` Fix 5 — routes through Defender Vulnerability Management; Global exception updates the score, per-device-group exception does not
+- "Graph script gets 403 on Secure Score but the portal works fine for that user" → `SecureScore-B.md` Fix 6 — Graph API access is still legacy-Entra-role-gated, not yet covered by Unified RBAC custom roles
 
 ## Key diagnostic commands
 
@@ -87,11 +94,15 @@ Get-MpComputerStatus | Select-Object TamperProtectionSource, IsTamperProtected
 # Check Defender for Cloud (CSPM) plan tiers
 Get-AzSecurityPricing | Select-Object Name, PricingTier
 
-# Pull Secure Score
+# Pull Defender for Cloud's Azure-resource Secure Score (Az.Security — a DIFFERENT score, see DefenderForCloud-A.md)
 Get-AzSecuritySecureScore | Select-Object DisplayName, @{N="Current";E={$_.Score.Current}}, @{N="Max";E={$_.Score.Max}}
 
 # Find multicloud (AWS/GCP) connectors tenant-wide
 Search-AzGraph -Query "resources | where type =~ 'microsoft.security/securityconnectors'"
+
+# Pull the M365 tenant-wide Secure Score (Microsoft Graph — a DIFFERENT score, see SecureScore-A.md)
+Connect-MgGraph -Scopes "SecurityEvents.Read.All"
+Get-MgSecuritySecureScore -Top 1 | Select-Object CreatedDateTime, CurrentScore, MaxScore, EnabledServices
 ```
 
 ## Key dependency chain
@@ -112,6 +123,15 @@ Entra ID tenant + Azure subscription
                     governance rules, regulatory compliance
     └── Multicloud connectors: AWS (CloudFormation/IAM role) | GCP (Workload
             Identity Federation) | on-prem/hybrid (Azure Arc agent — see Azure/Arc/)
+
+Microsoft Secure Score (tenant-wide) — a THIRD, separate chain, M365-workload-scoped:
+Licensed & provisioned workload (Entra/Exchange/SPO/Teams/MDE/MDI/MDCA/Purview IP/
+non-Microsoft apps) ── must appear in EnabledServices or the whole category is absent
+    └── secureScoreControlProfiles evaluated against live config
+            └── controlScores aggregated into currentScore/maxScore
+                    └── RBAC gate: Unified RBAC "Exposure Management" (portal) OR
+                            legacy Entra global role (portal AND currently the
+                            only path for Graph API access)
 ```
 
 ## Response format reminder
