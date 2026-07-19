@@ -1,10 +1,10 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN) — Agent Instructions
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure networking**, covering three related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that provisions the peerings/connected-groups NSGs then filter — `NSG-A.md` covers Security Admin Rules only as they intersect NSG evaluation order; `AVNM-A.md` is where the rest of AVNM (network groups, connectivity topologies, deployments) is documented.
+Runbooks and scripts for **Azure networking**, covering four related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. **Azure Virtual WAN** — the Microsoft-managed global transit-network service: the Basic/Standard SKU capability boundary (one-way upgrade), the virtual hub and its embedded BGP router (with `ProvisioningState`/`RoutingState` as two independent health signals and a fixed ASN 65515 shared by VPN and ExpressRoute gateways), the connection association/propagation model, hub route tables and labels, and Routing Intent/Routing Policies (the declarative Internet/Private traffic-steering feature whose single biggest gotcha is silently taking over the Default route table on enable). NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, Virtual WAN spoke traffic, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that can, in preview, target a Virtual WAN hub as its "hub" type — that's AVNM orchestrating Virtual WAN, not a duplicate of Virtual WAN's own native hub-routing model documented in `VirtualWAN-A.md`/`VirtualWAN-B.md`.
 
-Does not cover point-to-site VPN (individual remote-access users), Virtual WAN hub routing as a standalone topic, Azure Firewall/NVA routing policy beyond where it intersects GatewaySubnet behavior, User-Defined Routes/route tables as a standalone routing topic (referenced here only where it intersects NSG troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
+Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User VPN/P2S gateway type embedded in a Virtual WAN hub is covered in `VirtualWAN-A.md`/`VirtualWAN-B.md`; a customer-managed P2S gateway on a traditional hub VNet is not separately documented), Azure Firewall/NVA **rule content or policy authoring** (covered only as Virtual WAN Routing Intent's Next Hop resource, or where it intersects GatewaySubnet behavior), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
 
 ---
 
@@ -29,6 +29,9 @@ Does not cover point-to-site VPN (individual remote-access users), Virtual WAN h
 | `AVNM-B.md` | AVNM hotfix runbook — VNet not receiving configuration (scope/never-deployed), dynamic membership lag, goal-state redeploy trap, "use hub as gateway" silent partial-peering, mesh IP-overlap drops |
 | `AVNM-A.md` | AVNM deep dive — scope/delegation model, network groups (static/dynamic), connectivity configuration architecture (mesh/hub-and-spoke/connected groups), goal-state deployment model, migration and fleet-audit playbooks |
 | `Scripts/Get-AVNMConfigAudit.ps1` | Read-only sweep — network group membership (flags empty static groups), configurations defined but never deployed, multi-config goal-state risk regions, failed deployments, optional single-VNet effective-state check |
+| `VirtualWAN-B.md` | Virtual WAN hotfix runbook — hub/router health split (ProvisioningState vs. RoutingState), Basic-SKU capability gaps, Routing Intent's Default-route-table takeover on enable, shared-ASN (65515) VPN/ExpressRoute gateway conflicts, connection association checks |
+| `VirtualWAN-A.md` | Virtual WAN deep dive — Basic/Standard SKU architecture, virtual hub router, connection association/propagation/labels model, Routing Intent and secured virtual hub architecture, scale limits, greenfield/retrofit/SKU-upgrade/fleet-audit playbooks |
+| `Scripts/Get-VirtualWANHealth.ps1` | Read-only sweep across every Virtual WAN — hub/router health, Basic-SKU gateway anomalies, half-finished secured-hub builds (Firewall present, no Routing Intent), inconsistent branch/spoke route-table association, optional ExpressRoute prefix-count flag |
 
 ---
 
@@ -53,6 +56,13 @@ Does not cover point-to-site VPN (individual remote-access users), Virtual WAN h
 - **"A previously-working AVNM connection broke after an unrelated change"** → `AVNM-A.md` Playbook 2 — goal-state redeploy trap, the unrelated deploy likely omitted this configuration
 - **"Hub-and-spoke peering is one-sided (hub→spoke exists, spoke→hub doesn't)"** → `AVNM-B.md` Fix 4 — hub gateway didn't exist yet when "use hub as gateway" was deployed
 - **"Fleet-wide AVNM configuration health check across clients"** → `Scripts/Get-AVNMConfigAudit.ps1`
+- **"Our Virtual WAN hub shows healthy but I can't update routes"** → `VirtualWAN-B.md` Fix 1 — `ProvisioningState`/`RoutingState` are independent; use "Reset router," not a full hub reset
+- **"Client wants ExpressRoute/P2S/Firewall/Routing Intent but the portal won't let them"** → `VirtualWAN-B.md` Fix 3 — Virtual WAN is on the `Basic` SKU; plan a one-way upgrade to Standard
+- **"Our Virtual WAN static route disappeared after we set up the firewall"** → `VirtualWAN-B.md` Fix 4 — enabling Routing Intent silently took over the Default route table and connection associations
+- **"Traffic isn't going through our Azure Firewall in Virtual WAN"** → `VirtualWAN-B.md` Triage — confirm the spoke's Hub VNet connection is associated to the route table Routing Intent manages
+- **"Some on-prem routes aren't reaching the other gateway type in the same hub"** → `VirtualWAN-B.md` Fix 6 — both VPN and ExpressRoute gateways share a fixed ASN 65515; check for an on-prem ASN collision
+- **"Should we move this client from traditional hub-and-spoke to Virtual WAN?"** → `VirtualWAN-A.md` Learning Pointers — a genuine trade-off conversation, not a strict upgrade; Virtual WAN earns its overhead mainly at 30+ spokes or 3+ regions
+- **"Fleet-wide Virtual WAN health check across clients"** → `Scripts/Get-VirtualWANHealth.ps1`
 
 ---
 
@@ -88,6 +98,18 @@ Get-AzNetworkManagerEffectiveConnectivityConfiguration -VirtualNetworkName <vnet
 
 # AVNM — per-region deployment status and failure detail (configurations do nothing until deployed)
 Get-AzNetworkManagerDeploymentStatus -ResourceGroupName <nmRg> -NetworkManagerName <nm> -DeploymentType @("Connectivity")
+
+# Virtual WAN — SKU (Basic vs Standard) — check first for any capability question
+Get-AzVirtualWan -ResourceGroupName <rg> -Name <vwanName> | Select VirtualWANType
+
+# Virtual WAN — hub + router health (two independent signals)
+Get-AzVirtualHub -ResourceGroupName <rg> -Name <hubName> | Select ProvisioningState, RoutingState, VirtualRouterAsn
+
+# Virtual WAN — Routing Intent policies and Next Hop for a hub
+Get-AzRoutingIntent -ResourceGroupName <rg> -ParentResourceId (Get-AzVirtualHub -ResourceGroupName <rg> -Name <hubName>).Id
+
+# Virtual WAN — spoke connection status and routing configuration (association/propagation)
+Get-AzVirtualHubVnetConnection -ResourceGroupName <rg> -ParentResourceName <hubName> -Name <connectionName>
 ```
 
 ---
