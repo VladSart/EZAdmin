@@ -31,7 +31,8 @@
   dependency and are out of scope for this cert-focused runbook
 - RADIUS/NPS server-side configuration, on-prem NDES health, or certificate template/CA administration
   — this repo's macOS scope covers the client-side symptom only; see `Windows/Troubleshooting/`
-  certificate services content and your PKI team for server-side issues
+  certificate services content and `Windows/Troubleshooting/NPS-RADIUS-A.md`/`-B.md` for RADIUS
+  server-side administration and troubleshooting
 - Switch/access-point-side 802.1X port configuration (RADIUS client definitions, VLAN assignment on
   authorization) — outside Intune's control entirely
 - Per-app VPN and IKEv2 VPN profiles — a related but architecturally distinct network profile type;

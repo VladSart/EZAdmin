@@ -59,6 +59,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Entra Cloud Sync (provisioning-agent model — gMSA, multi-agent HA, disconnected forests, Group Provisioning to AD DS) | `EntraID/` | `ActiveDirectory/` (gMSA/schema prerequisites live in on-prem AD) |
 | Windows Update, WfUB, WSUS conflicts | `Windows/` | `Intune/` |
 | BitLocker, key escrow, recovery | `Windows/` | `Intune/`, `EntraID/` |
+| NPS/RADIUS server — connection request/network policy evaluation, RADIUS client registration, VPN and 802.1X wired/wireless auth backend, NPS Extension for Entra MFA | `Windows/` | `Windows/` AlwaysOnVPN topic (client/RRAS-side VPN symptoms that hand off to NPS for user-tunnel auth), `macOS/` WiFi-8021x topic (client-side certificate trust for the same RADIUS server, explicitly out of scope there) |
 | Power Automate flows, connectors, licensing | `PowerAutomate/` | `M365/SharePoint-OneDrive/`, `EntraID/` |
 | Power Automate Desktop (RPA) — machine registration/direct connectivity (gateways retired), attended/unattended session model, UIFlowService, machine groups, Process/Unattended RPA capacity licensing | `PowerAutomate/Desktop-RPA/` | `PowerAutomate/Troubleshooting/` (cloud-flow-side ownership/connector auth — a separate failure domain from the machine runtime), `Intune/` (if PAD is deployed via Intune, not a runtime issue) |
 | SharePoint site creation, permissions via automation | `PowerAutomate/SharePoint/` | `EntraID/`, `M365/SharePoint-OneDrive/` |

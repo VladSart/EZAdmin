@@ -29,6 +29,10 @@
 - Third-party VPN gateway appliances (Palo Alto, Cisco, Fortinet)
 - Azure VPN Gateway (P2S scenarios)
 - Per-App VPN (separate profile type, different debug path)
+- NPS/RADIUS server administration and configuration in general (RADIUS client registration, connection
+  request/network policy authoring, the NPS Extension for Entra MFA's own health) — this runbook covers
+  NPS only as it appears from the VPN client/RRAS side; for the NPS server's own dedicated troubleshooting
+  see `Windows/Troubleshooting/NPS-RADIUS-A.md`/`-B.md`
 
 **Assumptions:**
 - You have local admin or Intune remediation script access to the affected Windows client

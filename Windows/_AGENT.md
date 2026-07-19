@@ -11,6 +11,7 @@ Covers:
 - **LSA Protection (RunAsPPL)** — VBS-independent PPL protection for lsass.exe, Windows 11 22H2+ silent auto-enablement, blocked smart card/VPN/password-filter plug-ins
 - **AppLocker / WDAC** — application control, policy audit mode, blocking legitimate apps
 - **Networking** — DNS, DHCP, proxy, time sync, VPN coexistence
+- **NPS / RADIUS server** — Network Policy Server as RADIUS server/proxy for VPN (RRAS/AlwaysOnVPN) and 802.1X wired/wireless auth, connection request vs. network policy evaluation, NPS Extension for Entra MFA
 - **USB / Peripherals** — policy-driven control, driver management
 - **Performance** — boot times, CPU/memory issues, storage health
 - **Event log analysis** — systematic log collection and interpretation
@@ -32,6 +33,7 @@ Covers:
 | `Troubleshooting/DHCP-Client-A.md` / `B.md` | DHCP lease failure, APIPA, relay/scope architecture |
 | `Troubleshooting/NetworkAdapters-A.md` / `B.md` | NIC/driver/NDIS stack, routing conflicts, LBFO teaming, MTU issues |
 | `Troubleshooting/AlwaysOnVPN-A.md` / `B.md` | Always On VPN device/user tunnel, IKEv2/SSTP negotiation |
+| `Troubleshooting/NPS-RADIUS-A.md` / `B.md` | Network Policy Server as RADIUS server/proxy — connection request vs. network policy evaluation, RADIUS client registration, cross-forest proxy requirements, NPS Extension for Entra MFA (PAP vs. CHAPv2/EAP method gating) |
 | `Troubleshooting/RDP-A.md` / `B.md` | Remote Desktop connection failures |
 | `Troubleshooting/SMB-A.md` / `B.md` | File share access, SMB protocol issues |
 | `Troubleshooting/GPO-A.md` / `B.md` | Group Policy application and conflict diagnosis |
@@ -71,6 +73,7 @@ Covers:
 | `Scripts/Get-VBSCredentialGuardStatus.ps1` | Diagnostic companion script to VBS-CredentialGuard — hardware prerequisites, Win32_DeviceGuard WMI status, lsaiso.exe check, MDM/registry policy state, CodeIntegrity/Operational HVCI block-event scan |
 | `Scripts/Get-LSAProtectionStatus.ps1` | Diagnostic companion script to LSA-Protection — WinInit Event ID 12 ground-truth check (registry-independent), auto-enablement criteria evaluation, CodeIntegrity blocked/audit plug-in event scan, Smart App Control state |
 | `Scripts/Test-VPNConnectivity.ps1` | Companion script to AlwaysOnVPN |
+| `Scripts/Get-NPSHealthAudit.ps1` | Companion script to NPS-RADIUS — service/auditing state, RADIUS client and policy inventory, 6272/6273/6274/13/18 event summary, DC reachability, Entra MFA extension registry/connectivity check |
 | `Scripts/WindowsUpdateModule.ps1` / `Update-AllWindows.ps1` / `WindowsUpdateTool-25h2-A.ps1` | Companion scripts to Windows Update topics |
 | `Scripts/Setup-Apps.ps1` / `USB-Diagnostics.ps1` | General utility scripts (not tied to a single topic) |
 
@@ -127,6 +130,7 @@ Get-WinEvent -LogName System |
 - "App blocked, need to know which AppLocker rule / AppIDSvc stopped" → `Troubleshooting/AppLocker-B.md` + `Scripts/Get-AppLockerDiagnostics.ps1`
 - "Name won't resolve / internal names fail but public works / DNS cache stale" → `Troubleshooting/DNS-Client-B.md` (hotfix) / `DNS-Client-A.md` (deep dive — resolver chain, NRPT, DoH) + `Scripts/Get-DNSClientDiagnostics.ps1`
 - "NTLM auth failing / trust relationship broken / 0x80070005 Access Denied" → `Troubleshooting/NTLM-B.md` (hotfix) / `NTLM-A.md` (deep dive — NTLM protocol, secure channel, LM level hardening) + `Scripts/Get-NTLMDiagnostics.ps1`
+- "VPN or 802.1X auth denied and it's not a client-side cert/ProfileXML problem, NPS event 6273/6274, RADIUS shared secret mismatch, Entra MFA extension error" → `Troubleshooting/NPS-RADIUS-B.md` (hotfix — start here, Reason Code lookup table) / `NPS-RADIUS-A.md` (deep dive — connection request vs. network policy model, RADIUS proxy/cross-forest requirements) + `Scripts/Get-NPSHealthAudit.ps1`
 
 ---
 
