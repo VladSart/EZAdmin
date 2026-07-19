@@ -8,6 +8,7 @@ Covers:
 - **Windows Update / WfUB** — WSUS conflicts, dual-scan, update rings, stuck updates, 24H2 upgrade issues
 - **BitLocker** — key escrow to Entra, recovery, policy enforcement, suspension
 - **VBS / Credential Guard / HVCI** — enabling, conflicts with legacy apps/hypervisors
+- **LSA Protection (RunAsPPL)** — VBS-independent PPL protection for lsass.exe, Windows 11 22H2+ silent auto-enablement, blocked smart card/VPN/password-filter plug-ins
 - **AppLocker / WDAC** — application control, policy audit mode, blocking legitimate apps
 - **Networking** — DNS, DHCP, proxy, time sync, VPN coexistence
 - **USB / Peripherals** — policy-driven control, driver management
@@ -25,6 +26,7 @@ Covers:
 | `Troubleshooting/BitLocker/BitLocker-A.md` / `B.md` | Recovery key escrow, policy enforcement, suspension |
 | `Troubleshooting/BitLocker/NetworkUnlock-A.md` / `B.md` | On-prem AD/WDS-based PIN-prompt bypass on wired boot — GPO cert delivery, WDS provider role, subnet policy, no cloud/Entra equivalent |
 | `Troubleshooting/VBS-CredentialGuard-A.md` / `B.md` | VBS/Credential Guard/HVCI enabling and app compatibility conflicts |
+| `Troubleshooting/LSA-Protection-A.md` / `B.md` | LSA Protection (RunAsPPL) — VBS-independent PPL mechanism, Win11 22H2+ silent auto-enablement (no registry trace), blocked smart card/VPN/password-filter plug-ins, UEFI-locked recovery |
 | `Troubleshooting/AppLocker-A.md` / `B.md` | Application control policy, audit mode, blocked-app diagnosis |
 | `Troubleshooting/DNS-Client-A.md` / `B.md` | Resolver chain, NRPT, DoH, cache/HOSTS issues |
 | `Troubleshooting/DHCP-Client-A.md` / `B.md` | DHCP lease failure, APIPA, relay/scope architecture |
@@ -67,6 +69,7 @@ Covers:
 | `Scripts/Get-NetworkUnlockReadinessAudit.ps1` | Companion script to Network Unlock — auto-detects client vs. WDS server role and audits the relevant half of the dependency stack |
 | `Scripts/Enable-VBS.ps1` | Legacy remediation-only snippet for VBS-CredentialGuard (enables VBS/Credential Guard via registry, no diagnostics) |
 | `Scripts/Get-VBSCredentialGuardStatus.ps1` | Diagnostic companion script to VBS-CredentialGuard — hardware prerequisites, Win32_DeviceGuard WMI status, lsaiso.exe check, MDM/registry policy state, CodeIntegrity/Operational HVCI block-event scan |
+| `Scripts/Get-LSAProtectionStatus.ps1` | Diagnostic companion script to LSA-Protection — WinInit Event ID 12 ground-truth check (registry-independent), auto-enablement criteria evaluation, CodeIntegrity blocked/audit plug-in event scan, Smart App Control state |
 | `Scripts/Test-VPNConnectivity.ps1` | Companion script to AlwaysOnVPN |
 | `Scripts/WindowsUpdateModule.ps1` / `Update-AllWindows.ps1` / `WindowsUpdateTool-25h2-A.ps1` | Companion scripts to Windows Update topics |
 | `Scripts/Setup-Apps.ps1` / `USB-Diagnostics.ps1` | General utility scripts (not tied to a single topic) |
@@ -115,6 +118,7 @@ Get-WinEvent -LogName System |
 - "NIC disabled/missing, adapter shows Limited Connectivity, VPN eating all traffic, MTU/jumbo frame issue" → `Troubleshooting/NetworkAdapters-B.md` (hotfix) / `NetworkAdapters-A.md` (deep dive — NDIS stack, LBFO teaming) + `Scripts/Get-NetworkAdapterDiagnostics.ps1`
 - "USB device being blocked by policy" → Intune Device Control policy + Windows event log
 - "VBS/Credential Guard not running, BSOD after enabling VBS, HVCI driver conflict" → `Troubleshooting/VBS-CredentialGuard-B.md` (hotfix) / `VBS-CredentialGuard-A.md` (deep dive) + `Scripts/Get-VBSCredentialGuardStatus.ps1` (diagnostic) / `Scripts/Enable-VBS.ps1` (legacy remediation-only registry snippet)
+- "Smart card login / VPN client auth / password filter broken after a Windows 11 upgrade, registry shows RunAsPPL off but engineer suspects it's actually on, LSASS crash loop" → `Troubleshooting/LSA-Protection-B.md` (hotfix — start here, this is VBS-independent) / `LSA-Protection-A.md` (deep dive — PPL mechanism, auto-enablement, signing requirements) + `Scripts/Get-LSAProtectionStatus.ps1`
 - "Kerberos auth failing / NTLM fallback" → `Troubleshooting/Kerberos-B.md` + `Scripts/Get-KerberosDiagnostics.ps1`
 - "Can't access a file share / SMB errors" → `Troubleshooting/SMB-B.md` + `Scripts/Get-SMBDiagnostics.ps1`
 - "App or port blocked by firewall" → `Troubleshooting/Firewall-B.md` + `Scripts/Get-FirewallDiagnostics.ps1`

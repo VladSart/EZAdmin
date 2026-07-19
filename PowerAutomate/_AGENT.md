@@ -12,6 +12,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - **Connector troubleshooting** — auth failures, throttling, licence issues
 - **Flow governance** — DLP policies, environment management, licence requirements
 - **Desktop flows (RPA)** — machine runtime registration, attended/unattended session model, capacity licensing — a distinct execution model from cloud flows (see `Desktop-RPA/`)
+- **Power Apps environments & Dataverse** — environment creation/licensing/capacity, Dataverse database provisioning, the three-portal (admin center/maker/Power Automate) visibility divergence, solution import missing-dependency resolution — a distinct admin surface from flow execution (see `PowerApps/`)
 
 ---
 
@@ -22,6 +23,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - `EntraID/Graph/` — for flows using HTTP/Graph API actions
 - `Intune/` — if Power Automate Desktop flows are deployed via Intune
 - `Desktop-RPA/` — if the issue is a desktop flow's **machine/session runtime** (registration, RDP, service account, unattended capacity) rather than the cloud flow orchestrating it — the two have entirely separate failure domains
+- `PowerApps/` — if the issue is **environment/Dataverse admin** (can't create an environment, can't see an environment, database provisioning stuck, solution import failing) rather than a specific flow's execution — again, an entirely separate failure domain from the flow-focused topics in this folder
 
 ---
 
@@ -53,6 +55,9 @@ This module focuses on what MSPs actually use Power Automate for:
 | `Desktop-RPA/MachineRuntime-B.md` | Hotfix: desktop flow (attended/unattended) failing to start or run on a registered machine — UIFlowService, RDP, session collisions, connectivity |
 | `Desktop-RPA/MachineRuntime-A.md` | Deep dive: direct-connectivity architecture (gateways retired), session lifecycle, full error-code taxonomy, machine groups, Process/Unattended RPA capacity licensing |
 | `Desktop-RPA/Scripts/Get-PADMachineHealth.ps1` | PS: local/fleet health check for UIFlowService, RDP, Remote Desktop Users membership, PAD version vs. direct-connectivity floor |
+| `PowerApps/Environment-Dataverse-B.md` | Hotfix: environment creation blocked (license/policy/capacity), environment "invisible" in a specific portal, Dataverse database provisioning stuck, solution import missing-dependency error |
+| `PowerApps/Environment-Dataverse-A.md` | Deep dive: environment/license/capacity model, Dataverse provisioning architecture, the three-portal (admin center/maker/Power Automate) visibility divergence, the irreversible "Enable Dynamics 365 apps" decision, solution import dependency resolution |
+| `PowerApps/Scripts/Get-PowerAppsEnvironmentAudit.ps1` | PS: tenant-wide environment inventory — flags stalled provisioning and Trial/Sandbox capacity-reclaim candidates |
 
 ---
 
@@ -70,6 +75,9 @@ This module focuses on what MSPs actually use Power Automate for:
 - "An employee is leaving, what happens to their flows?" / "Flow stopped working after we disabled someone's account" → `Troubleshooting/Flow-Ownership-Transfer-B.md`
 - "Desktop flow won't run / machine shows offline / unattended flow fails to start a session" → `Desktop-RPA/MachineRuntime-B.md`
 - "Client mentions a 'Power Automate gateway' for desktop flows" → that model is retired; point to `Desktop-RPA/MachineRuntime-A.md` Remediation Playbook 2 (migrate to direct connectivity)
+- "Can't create a new environment / 'not enough capacity' / creation button greyed out" → `PowerApps/Environment-Dataverse-B.md`; use `Scripts/Get-PowerAppsEnvironmentAudit.ps1` to find reclaimable Trial/Sandbox capacity
+- "User can see the environment in [admin center/maker portal/Power Automate portal] but not the others" → `PowerApps/Environment-Dataverse-B.md` Fix 2 — the three portals have independent visibility rules, this is usually expected once the right role is assigned
+- "Dataverse database stuck provisioning" / "solution import fails with missing dependency" → `PowerApps/Environment-Dataverse-B.md`
 
 ---
 
