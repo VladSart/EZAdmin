@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, Communication Compliance, Information Barriers, and Microsoft Priva (Privacy Risk Management + Subject Rights Requests) in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), and the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -39,6 +39,8 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `InformationBarriers-B.md` | Hotfix runbook for segment overlap, Address Book Policy conflicts, and stuck/failed policy application |
 | `Priva-A.md` | Deep dive — Privacy Risk Management policy pipeline (Test mode default, Alert→Issue→Remediation), Subject Rights Requests workflow (Access/Export/Tagged list/Delete), RBAC model, data-residency exclusions |
 | `Priva-B.md` | Hotfix runbook for Priva access/licensing/RBAC gates, policies stuck in Test mode, alert-storm tuning, stuck/incomplete Subject Rights Requests, and pre-execution review for irreversible Delete requests |
+| `Audit-A.md` | Deep dive — Unified Audit Log ingestion pipeline, Standard vs. Premium retention/licensing model, the four retrieval methods (portal/Graph/cmdlet/Management Activity API) and their limits, custom retention policies |
+| `Audit-B.md` | Hotfix runbook for the silent 100/5,000/50,000 `Search-UnifiedAuditLog` result-count tiers, ingestion delay, mailbox audit bypass, missing Premium-only properties, and non-retroactive retention gaps |
 | `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
 | `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
 | `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
@@ -47,6 +49,7 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Scripts/Get-CommunicationComplianceReadinessAudit.ps1` | Audit log, role group (zero-admin risk), reviewer eligibility, licence, and Teams reporting-policy readiness check (adjacent-signal audit only — no policy CRUD API exists) |
 | `Scripts/Get-InformationBarriersAudit.ps1` | Address Book Policy blocker check, segment/policy inventory with orphan and missing-reverse-pair flags, last application health, and audit-log segment-conflict scan |
 | `Scripts/Get-PrivaReadinessAudit.ps1` | Priva RBAC (all 5 role groups) + Unified Audit Log prerequisite + Privacy Risk Management policy inventory audit — flags EMPTY_RBAC, NO_AUDIT_LOG, POLICY_IN_TEST_MODE, CMDLET_UNAVAILABLE; Subject Rights Requests are portal-only and out of scope for this script |
+| `Scripts/Get-AuditLogHealthCheck.ps1` | Tenant-wide Unified Audit Log health check — ingestion status, mailbox audit bypass sweep (flags real UserMailboxes separately from resource/service accounts), retention policy inventory, and a live control search that flags the silent 100-record cap; best-effort tenant Premium SKU signal |
 
 ---
 
@@ -81,6 +84,13 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "Subject Rights Request found zero/partial results" | `Priva-B.md` → Fix 5 (identity resolution + data-source scope) |
 | "Need to run a Delete-type Subject Rights Request" | `Priva-B.md` → Fix 6 (irreversible — confirm holds and get sign-off first) |
 | "Difference between Priva and DLP / Insider Risk" | `Priva-A.md` → Scope & Assumptions (Priva = proactive personal-data risk visibility, not loss-prevention blocking or behavioral insider-threat indicators) |
+| "Search-UnifiedAuditLog only returns 100 results" | `Audit-B.md` → Fix 3 (silent default cap — use `ReturnLargeSet` or `HighCompleteness`) |
+| "Audit log search returns nothing for recent activity" | `Audit-B.md` → Fix 2 (ingestion delay, 30 min–24 hrs is normal) |
+| "Why can't I see this specific mailbox's activity at all" | `Audit-B.md` → Fix 4 (check `Get-MailboxAuditBypassAssociation`) |
+| "MailItemsAccessed / Teams event is missing a property" | `Audit-B.md` → Fix 5 (Audit Premium license gates per actor, not per tenant) |
+| "Need audit records older than 180 days / 1 year" | `Audit-B.md` → Fix 6 (retention policies are not retroactive — must be created proactively) |
+| "Difference between Audit Standard and Audit Premium" | `Audit-A.md` → How It Works |
+| "Client wants a SIEM feed of audit data, not ad-hoc searches" | `Audit-A.md` → Phase 2 (use the Office 365 Management Activity API, not `Search-UnifiedAuditLog`) |
 
 ---
 
@@ -121,6 +131,13 @@ Get-EXOMailbox -Identity <reviewer@tenant.com> | Select-Object RecipientTypeDeta
 Get-PrivacyManagementPolicy | Select-Object Name, Type, Mode, Enabled
 Get-RoleGroupMember -Identity "Privacy Management"
 Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
+
+# Unified Audit Log — ingestion status, mailbox bypass check, retention policies
+Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
+Get-MailboxAuditBypassAssociation -Identity <UPN> | Select-Object AuditBypassEnabled
+Get-UnifiedAuditLogRetentionPolicy | Select-Object Name, Priority, Workload, RetentionDuration
+# Search with paging — never trust a bare call past 100 results:
+Search-UnifiedAuditLog -StartDate <date> -EndDate <date> -ResultSize 5000 -HighCompleteness
 ```
 
 ---
@@ -165,6 +182,20 @@ Priva has its own, separate chain — it reuses DLP's foundational SIT/classific
                           └── [Data subject identity resolved] → [Search: Exchange/SharePoint/
                                 OneDrive/Teams] → [auto Teams channel] → [Review] →
                                 [Report/Export or irreversible Delete]
+```
+
+The Unified Audit Log is a foundational dependency underneath Priva, Insider Risk Management, and Communication Compliance (all three check `UnifiedAuditLogIngestionEnabled` before anything else works) — troubleshoot this layer first if any of those three show no signal:
+
+```
+[UnifiedAuditLogIngestionEnabled] (tenant-wide, on by default)
+        └── [Per-mailbox: NOT bypassed via Set-MailboxAuditBypassAssociation]
+              └── [Ingestion pipeline] (30 min–24 hr typical latency)
+                    └── [Retention] — 180 days (Standard) default, or
+                    │     1 yr AAD/Exchange/OneDrive/SharePoint (Premium default),
+                    │     up to 10 yrs (Premium custom policy + per-user add-on)
+                    └── [Retrieval] — Portal / Graph API / Search-UnifiedAuditLog
+                          (100 default → 5,000/page → 50,000/session ceiling) /
+                          Management Activity API (SIEM-scale, throttled by rate not count)
 ```
 
 ---
