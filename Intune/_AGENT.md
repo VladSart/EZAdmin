@@ -9,7 +9,7 @@ Covers:
 - **Policy** — configuration profiles, compliance policies, settings catalog, GPO conflicts, assignment filters, scope tags/RBAC
 - **Apps** — Win32 app deployment, managed apps (LOB/VPP), app protection (MAM)
 - **Updates** — Update rings (WUfB), feature updates, driver updates (WDfB), Autopatch
-- **Security & compliance controls** — LAPS, certificates (SCEP/PKCS), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
+- **Security & compliance controls** — LAPS, certificates (on-prem NDES/PKCS **and** cloud-native Cloud PKI), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
 - **Specialty device modes** — Kiosk / Assigned Access
 - **Automation** — Platform scripts, Proactive Remediations
 - **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries, Endpoint analytics (Startup performance / Application reliability / Work from anywhere scoring)
@@ -36,7 +36,8 @@ Covers:
 | `Troubleshooting/App-Deployment-B.md` / `-A.md` | Hotfix / deep dive: Win32 app stuck in pending/failed, IME/AgentExecutor pipeline |
 | `Troubleshooting/AppProtection-B.md` / `-A.md` | Hotfix / deep dive: MAM policy not applying, "Open in" blocked, data-at-rest PIN issues |
 | `Troubleshooting/Autopatch-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopatch ring assignment, readiness, deployment failures |
-| `Troubleshooting/Certificates-B.md` / `-A.md` | Hotfix / deep dive: SCEP/PKCS certificate profile delivery failures |
+| `Troubleshooting/Certificates-B.md` / `-A.md` | Hotfix / deep dive: on-prem NDES/PKCS certificate profile delivery failures via Intune Certificate Connector |
+| `Troubleshooting/CloudPKI-B.md` / `-A.md` | Hotfix / deep dive: Microsoft Cloud PKI (fully cloud-hosted PKI — no NDES/connector/on-prem CA) — CA status, BYOCA signing loop, trust chain delivery, 3-CA capacity cap |
 | `Troubleshooting/CoManagement-B.md` / `-A.md` | Hotfix / deep dive: ConfigMgr/Intune co-management workload authority conflicts |
 | `Troubleshooting/CustomCompliance-B.md` / `-A.md` | Hotfix / deep dive: custom compliance discovery script failures |
 | `Troubleshooting/EndpointAnalytics-B.md` / `-A.md` | Hotfix / deep dive: Startup performance / Application reliability / Work from anywhere scoring not populating, data collection policy and network/SSL-inspection path |
@@ -64,7 +65,8 @@ Covers:
 | `Scripts/Get-ManagedAppDeploymentStatus.ps1` | Device-local + fleet-wide managed app (Win32/LOB/VPP) deployment health incl. Apple VPP token |
 | `Scripts/Get-AppProtectionCoverageReport.ps1` | Fleet-wide App Protection Policy (MAM) coverage and health report |
 | `Scripts/Get-AutopatchReadiness.ps1` | Fleet-level Autopatch readiness and ring-assignment audit |
-| `Scripts/Get-CertificateProfileStatus.ps1` | Flags Failed/Conflict/stale-Pending SCEP/PKCS cert profiles |
+| `Scripts/Get-CertificateProfileStatus.ps1` | Flags Failed/Conflict/stale-Pending SCEP/PKCS cert profiles (on-prem NDES/Connector model) |
+| `Scripts/Get-CloudPKIHealth.ps1` | Tenant-wide Cloud PKI CA health/capacity audit via Graph — CA status, BYOCA signing staleness, 3-CA cap, key backing, issuance volume |
 | `Scripts/Get-CoManagementStatus.ps1` | Device-local ConfigMgr client health, per-workload authority, hybrid join, MDM enrollment |
 | `Scripts/Get-CustomComplianceScriptValidator.ps1` | Validates a Custom Compliance discovery script locally + cross-references fleet compliance state |
 | `Scripts/Get-EndpointAnalyticsHealth.ps1` | Fleet-wide Endpoint analytics score/health sweep via Graph — flags below-threshold reporting population, unavailable (-1/-2) scores, and Work From Anywhere Cloud Provisioning gaps |
@@ -96,7 +98,8 @@ Covers:
 - "Bulk compliance report needed" → `Reporting/Get-NonCompliantDevices.ps1`
 - "Need a full picture of what's assigned to a device/group" → `Scripts/Get-IntuneAssignmentReport.ps1`
 - "LAPS password not showing / rotation not happening" → `Troubleshooting/LAPS-B.md` + `Scripts/Get-LAPSPasswordStatus.ps1`
-- "Cert profile stuck Pending/Failed for a device or fleet" → `Troubleshooting/Certificates-B.md` + `Scripts/Get-CertificateProfileStatus.ps1`
+- "Cert profile stuck Pending/Failed for a device or fleet (on-prem NDES/PKCS)" → `Troubleshooting/Certificates-B.md` + `Scripts/Get-CertificateProfileStatus.ps1`
+- "Cloud PKI CA stuck 'Signing required' / SCEP cert not issuing / hit the 3-CA limit" → `Troubleshooting/CloudPKI-B.md` + `Scripts/Get-CloudPKIHealth.ps1`
 - "Security baseline shows Error/Conflict" → `Troubleshooting/Security-Baselines-B.md` + `Scripts/Get-SecurityBaselineDrift.ps1`
 - "Device stuck on old Windows version / feature update not installing" → `Troubleshooting/FeatureUpdates-B.md` + `Scripts/Get-FeatureUpdateDeploymentStatus.ps1`
 - "App Protection / MAM policy not applying, 'Open in' blocked" → `Troubleshooting/AppProtection-B.md` + `Scripts/Get-AppProtectionCoverageReport.ps1`
