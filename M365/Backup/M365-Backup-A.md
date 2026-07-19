@@ -19,7 +19,7 @@
 
 This covers **Microsoft 365 Backup** (the first-party, pay-as-you-go backup service for SharePoint, OneDrive, and Exchange Online — sometimes internally called "M365 Backup Storage" or referenced by its Graph namespace `solutions/backupRestore`). It is a **different product** from:
 
-- **Microsoft Purview retention policies/labels** (compliance-driven preservation, not point-in-time recovery — see `Security/Purview/Retention-Policies-A.md`)
+- **Microsoft Purview retention policies/labels** (compliance-driven preservation, not point-in-time recovery — see `Security/Purview/RetentionLabels-A.md`)
 - **Third-party backup solutions** built on the same Backup Storage platform (Veeam, AvePoint, Commvault, etc.) — those wrap the same underlying Graph APIs but bill and manage through their own apps
 - **OneDrive/SharePoint's native 93-day recycle bin and file version history** — those are always-on and free; Microsoft 365 Backup is the paid, longer-retention, bulk-recovery layer on top
 

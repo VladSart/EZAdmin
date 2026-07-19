@@ -11,6 +11,7 @@ Covers:
 - **Hybrid coexistence** — on-prem Exchange routing through Exchange Online, Hybrid Configuration Wizard, hybrid connectors, certificate issues
 - **Spam and phishing** — EOP (Exchange Online Protection) policies, Safe Sender lists, quarantine, anti-phishing rules
 - **Connectors** — inbound/outbound connectors, partner connectors, on-prem relay, TLS enforcement
+- **Outlook desktop client** — classic Outlook vs. New Outlook architecture split, Autodiscover resolution, connection status states, OST corruption, credential/token loops, COM add-in conflicts
 
 ---
 
@@ -35,7 +36,10 @@ Covers:
 | `Hybrid-Coexistence-A.md` | Deep dive: hybrid topology, centralised vs decentralised routing, HCW internals |
 | `TransportRules-B.md` | Hotfix: rule doesn't fire, wrong rule fires, priority/StopRuleProcessing conflicts, DLP overlap |
 | `TransportRules-A.md` | Deep dive: ETR evaluation order, condition/exception AND/OR logic, multi-rule action stacking, DLP boundary |
+| `Outlook-Client-B.md` | Hotfix: profile/Autodiscover failures, Disconnected/Trying-to-connect/Needs-Password loops, OST corruption, COM add-in conflicts, New Outlook cache issues |
+| `Outlook-Client-A.md` | Deep dive: classic Outlook vs. New Outlook architecture split, Autodiscover v2/v1/SCP resolution chain, Cached Exchange Mode/OST model, modern-auth token caching |
 | `Scripts/Get-MessageTrace.ps1` | Mail flow trace wrapper for stuck/bounced messages |
+| `Scripts/Get-OutlookClientHealth.ps1` | Device-local Outlook client diagnostic — client type, profile, OST freshness, Autodiscover DNS, cached credentials, COM add-ins, optional CA sign-in check |
 | `Scripts/Get-ExchangeHybridHealth.ps1` | Hybrid connector/certificate health check |
 | `Scripts/Get-MailboxAuditReport.ps1` | General mailbox permissions/forwarding/audit-log report |
 | `Scripts/Get-DKIMDMARCReport.ps1` | Per-domain SPF/DKIM/DMARC audit |
@@ -67,6 +71,12 @@ Covers:
 - "Two transport rules conflicting / wrong one firing / priority order" → `TransportRules-B.md` (Fix 3/4)
 - "Transport rule and DLP policy both acting on same message" → `TransportRules-B.md` (Fix 6)
 - "Fleet audit of all transport rules for conflict risks" → `Scripts/Get-TransportRuleConflictAudit.ps1`
+- "Outlook shows Disconnected / Trying to connect / Needs Password" → `Outlook-Client-B.md`
+- "Can't create Outlook profile / new profile builds as IMAP" → `Outlook-Client-B.md` (Fix 1)
+- "Outlook folders won't expand, search broken, random crashes" → `Outlook-Client-B.md` (Fix 5 — OST rebuild)
+- "New Outlook missing calendar/delegates for an on-prem or hosted mailbox" → `Outlook-Client-A.md` (New Outlook treats non-EXO mailboxes as generic IMAP — expected, not a bug)
+- "Outlook hangs on launch or on send/print/invite" → `Outlook-Client-B.md` (Fix 6 — COM add-in isolation)
+- "Device-local Outlook client diagnostic before escalating" → `Scripts/Get-OutlookClientHealth.ps1`
 
 ---
 
