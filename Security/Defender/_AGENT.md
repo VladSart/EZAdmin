@@ -30,6 +30,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `AttackSimulationTraining-B.md` / `-A.md` | Phishing simulation delivery, reporting, and training-assignment issues (Defender for Office 365 Plan 2) |
 | `SafeLinksAttachments-B.md` / `-A.md` | Defender for Office 365 Safe Links (URL rewrite/time-of-click) and Safe Attachments (detonation) — policy precedence, Teams/Office app coverage, SPO/OneDrive/Teams separate toggle, quarantine visibility |
 | `DefenderForCloud-B.md` / `-A.md` | Defender for Cloud (CSPM) — Secure Score, unhealthy recommendations, multicloud (AWS/GCP) connector onboarding, agentless scanning, regulatory compliance dashboard |
+| `DeviceControl-B.md` / `-A.md` | Device control (USB/removable media/printer/Bluetooth/WPD) — Policy→Rules→Groups→Entries model, fall-through to default enforcement, distinct from Windows Device Installation Restrictions and Purview Endpoint DLP |
 | `Scripts/Get-MDEDeviceStatus.ps1` | Graph-based MDE device health/risk/sensor report |
 | `Scripts/Get-TamperProtectionStatus.ps1` | Tamper Protection state audit |
 | `Scripts/Get-ASRRuleStatus.ps1` | ASR rule state/mode audit |
@@ -42,6 +43,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `Scripts/Get-AttackSimulationCampaignAudit.ps1` | Graph-based Attack Simulation Training campaign health audit — stuck/stale simulations, audit-logging gate, transport-rule interference, per-user licensing gaps |
 | `Scripts/Get-SafeLinksAttachmentsPolicyAudit.ps1` | Safe Links/Safe Attachments policy+rule audit — precedence conflicts, non-blocking Action settings, silent quarantine tags, SPO/OneDrive/Teams toggle state, possible upstream gateway conflicts |
 | `Scripts/Get-DefenderForCloudPostureAudit.ps1` | Fleet-wide CSPM audit — plan tiers, Secure Score, unhealthy assessments, multicloud connector coverage, connector resource locks |
+| `Scripts/Get-DeviceControlPolicyAudit.ps1` | Local device control readiness audit — onboarding/AM version, policy delivery, PnP device Hardware ID/Instance Path inventory for group cross-referencing, Device Installation Restriction layer check |
 
 ## Common entry points
 
@@ -61,6 +63,8 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "Link in email isn't blue/wrapped / phishing link got through" / "attachment wasn't scanned or delayed" → `SafeLinksAttachments-B.md` — check policy precedence first (preset always wins over custom)
 - "Teams link protection not working after I turned it on" → `SafeLinksAttachments-B.md` Fix 4 — allow up to 24h for Teams policy changes
 - "File uploaded to SharePoint/OneDrive/Teams wasn't scanned even though mail Safe Attachments is set to Block" → `SafeLinksAttachments-B.md` Fix 1 — separate `EnableATPForSPOTeamsODB` toggle
+- "USB drive blocked, can't read/write files, printer suddenly blocked" → `DeviceControl-B.md` — first confirm it's this layer and not Windows Device Installation Restrictions (device fully absent vs. installed-but-restricted)
+- "Policy says Allow but device is still denied" → `DeviceControl-B.md` Fix 3 — device likely fell through to default enforcement, check Advanced Hunting `RemovableStoragePolicy` field for the actual rule name
 
 ## Key diagnostic commands
 

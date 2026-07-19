@@ -23,6 +23,7 @@ Covers:
 | `Troubleshooting/Windows Update/Update to Latest A.md` / `B.md` | Feature update deployment, stuck upgrades |
 | `Troubleshooting/Windows Update/WSUS to WfUB A.md` / `B.md` | WSUS-to-Windows Update for Business migration, dual-scan conflicts |
 | `Troubleshooting/BitLocker/BitLocker-A.md` / `B.md` | Recovery key escrow, policy enforcement, suspension |
+| `Troubleshooting/BitLocker/NetworkUnlock-A.md` / `B.md` | On-prem AD/WDS-based PIN-prompt bypass on wired boot — GPO cert delivery, WDS provider role, subnet policy, no cloud/Entra equivalent |
 | `Troubleshooting/VBS-CredentialGuard-A.md` / `B.md` | VBS/Credential Guard/HVCI enabling and app compatibility conflicts |
 | `Troubleshooting/AppLocker-A.md` / `B.md` | Application control policy, audit mode, blocked-app diagnosis |
 | `Troubleshooting/DNS-Client-A.md` / `B.md` | Resolver chain, NRPT, DoH, cache/HOSTS issues |
@@ -63,6 +64,7 @@ Covers:
 | `Scripts/Get-PrinterDiagnostics.ps1` | Companion script to PrintSpooler |
 | `Scripts/Get-DeliveryOptimizationDiagnostics.ps1` | Companion script to DeliveryOptimization |
 | `Scripts/Get-BitLockerStatus.ps1` | Companion script to BitLocker |
+| `Scripts/Get-NetworkUnlockReadinessAudit.ps1` | Companion script to Network Unlock — auto-detects client vs. WDS server role and audits the relevant half of the dependency stack |
 | `Scripts/Enable-VBS.ps1` | Legacy remediation-only snippet for VBS-CredentialGuard (enables VBS/Credential Guard via registry, no diagnostics) |
 | `Scripts/Get-VBSCredentialGuardStatus.ps1` | Diagnostic companion script to VBS-CredentialGuard — hardware prerequisites, Win32_DeviceGuard WMI status, lsaiso.exe check, MDM/registry policy state, CodeIntegrity/Operational HVCI block-event scan |
 | `Scripts/Test-VPNConnectivity.ps1` | Companion script to AlwaysOnVPN |
@@ -106,6 +108,7 @@ Get-WinEvent -LogName System |
 - "Windows Update stuck / won't install" → `Troubleshooting/Windows Update/`
 - "WSUS conflict after moving to WfUB / Intune" → `Troubleshooting/Windows Update/WSUS to WfUB B.md`
 - "BitLocker recovery key not in Entra" → check Intune BitLocker policy + device escrow
+- "BitLocker still prompts for PIN on wired domain-joined desktops/servers even though Network Unlock is configured" → `Troubleshooting/BitLocker/NetworkUnlock-B.md` (hotfix) / `NetworkUnlock-A.md` (deep dive — on-prem AD/WDS only, no Entra equivalent) + `Scripts/Get-NetworkUnlockReadinessAudit.ps1`
 - "App blocked after WDAC/AppLocker deployed" → audit logs, policy mode check
 - "Time sync failing / source shows Local CMOS Clock / ping works but NTP doesn't" → `Troubleshooting/Time/TimeSync B.md` (hotfix) / `TimeSync A.md` (deep dive — W32Time architecture, policy layer, STS) + `Scripts/Get-TimeSyncDiagnostics.ps1`
 - "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture)
