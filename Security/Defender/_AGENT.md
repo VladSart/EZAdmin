@@ -18,7 +18,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | File | What it covers |
 |------|---------------|
 | `_AGENT.md` | This file — routing and orientation |
-| `MDE-Onboarding-B.md` / `-A.md` | Devices not appearing in MDE portal, onboarding failures, sensor health |
+| `MDE-Onboarding-B.md` / `-A.md` | Devices not appearing in MDE portal, onboarding failures, sensor health — **Windows-only** (SENSE service, registry-based state); for macOS see `macOS/Troubleshooting/MDE-macOS-A.md`/`-B.md` |
 | `ASR-Rules-B.md` / `-A.md` | ASR rule blocking legitimate apps, false positives, audit vs. block mode |
 | `Tamper-Protection-B.md` | Tamper Protection preventing policy changes, locked sensor state |
 | `CloudProtection-B.md` | Defender cloud-delivered protection / MAPS connectivity issues |
@@ -54,7 +54,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "Can't change Defender settings / policy not applying" → `Tamper-Protection-B.md` — Tamper Protection state check
 - "MDE showing unhealthy sensor" → `MDE-Onboarding-B.md` — Sensor health triage section
 - "ASR blocking Office macros / LOB app" → `ASR-Rules-B.md` — Per-rule exclusion and audit mode
-- "Onboarding package not working" → `MDE-Onboarding-B.md` — Package validation and re-onboarding steps
+- "Onboarding package not working" → `MDE-Onboarding-B.md` — Package validation and re-onboarding steps (Windows). On a Mac, go straight to `macOS/Troubleshooting/MDE-macOS-B.md` instead — the onboarding mechanism is entirely different (no SENSE service/registry key)
 - "WDAC / Application Control blocking a signed app" → `WDAC-B.md` — Policy conflict and audit-mode triage
 - "Phishing simulation didn't reach all users" / "training assigned incorrectly" / "reports are empty" → `AttackSimulationTraining-B.md` — Licensing, audit-log, target-group hygiene, and reporting-mailbox triage
 - "Reported phishing email never shows in simulation reports" → `AttackSimulationTraining-B.md` Fix 6 — transport rule interference with submission addresses

@@ -27,7 +27,7 @@
 - Offboarding and re-onboarding procedures
 
 **Does not cover:**
-- macOS/Linux MDE onboarding (see macOS runbook)
+- macOS MDE onboarding — see `macOS/Troubleshooting/MDE-macOS-A.md`/`-B.md` (12-component Intune deployment, `mdatp` CLI, system extension/PPPC approval, licensing via a separate onboarding package). Linux MDE onboarding has no dedicated runbook yet.
 - MDE features (EDR, ASR, threat hunting) — see respective runbooks
 - Third-party security product conflicts (handled per-vendor)
 

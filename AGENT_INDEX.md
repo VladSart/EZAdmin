@@ -69,6 +69,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Teams calling, policies, devices | `M365/Teams/` | `EntraID/` |
 | M365 licensing, group-based, service plans | `M365/Licensing/` | `EntraID/` |
 | Defender for Endpoint onboarding, ASR, alerts | `Security/Defender/` | `Intune/`, `EntraID/` |
+| Defender for Endpoint on macOS — the 12-component Intune deployment (System Extensions/Network Filter/Full Disk Access/Background Services/Notifications/Accessibility/Bluetooth/AutoUpdate profiles, app, and a separately-licensed onboarding package), `mdatp` CLI health, single-system-wide-Network-Filter-slot conflicts with other AV/EDR, SSL-inspecting-proxy incompatibility | `macOS/` | `Security/Defender/MDE-Onboarding-A.md` (Windows-only equivalent — SENSE service/registry, explicitly out of scope for macOS), `macOS/Troubleshooting/Extensions-A.md` (vendor-agnostic system extension/PPPC mechanics this topic builds on top of) |
 | Defender: Cloud Apps (MDA), Identity (MDI), Vuln Mgmt, Network Protection, WDAC | `Security/Defender/` | `Intune/`, `EntraID/` |
 | Attack Simulation Training (phishing simulations, training assignment, MDO Plan 2) | `Security/Defender/` | `M365/Exchange/`, `EntraID/` |
 | Purview DLP, sensitivity labels, insider risk, eDiscovery | `Security/Purview/` | `M365/Exchange/`, `M365/SharePoint-OneDrive/` |
