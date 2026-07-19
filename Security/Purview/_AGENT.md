@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), and the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, **Adaptive Protection** (the ML-driven bridge routing IRM risk signal into DLP/Data Lifecycle Management/Conditional Access enforcement), Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), and the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -29,6 +29,8 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Sensitivity-Labels-B.md` | Hotfix runbook for label publishing, encryption, and co-authoring issues |
 | `Insider-Risk-A.md` | Deep dive — Insider Risk Management policy engine, indicators, Adaptive Protection |
 | `Insider-Risk-B.md` | Hotfix runbook for IRM alert noise, missing signals, licensing gaps |
+| `AdaptiveProtection-A.md` | Deep dive — insider risk LEVEL vs. alert SEVERITY distinction, Quick vs. Custom Setup, the three enforcement arms (DLP/CA/DLM) and their independent safe-by-default states, disable lifecycle and orphaned-policy risk |
+| `AdaptiveProtection-B.md` | Hotfix runbook for CA policies stuck in Report-only, DLP policies stuck in simulation mode, level-assignment mismatches, and the `Get-MgRiskyUser`/Entra ID Protection wrong-system gotcha |
 | `eDiscovery-A.md` | Deep dive — eDiscovery case/hold/search/export architecture |
 | `eDiscovery-B.md` | Hotfix runbook for case holds, failed searches, and failed exports |
 | `RetentionLabels-A.md` | Deep dive — retention label vs. retention policy architecture, conflict resolution, disposition review |
@@ -50,6 +52,7 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Scripts/Get-InformationBarriersAudit.ps1` | Address Book Policy blocker check, segment/policy inventory with orphan and missing-reverse-pair flags, last application health, and audit-log segment-conflict scan |
 | `Scripts/Get-PrivaReadinessAudit.ps1` | Priva RBAC (all 5 role groups) + Unified Audit Log prerequisite + Privacy Risk Management policy inventory audit — flags EMPTY_RBAC, NO_AUDIT_LOG, POLICY_IN_TEST_MODE, CMDLET_UNAVAILABLE; Subject Rights Requests are portal-only and out of scope for this script |
 | `Scripts/Get-AuditLogHealthCheck.ps1` | Tenant-wide Unified Audit Log health check — ingestion status, mailbox audit bypass sweep (flags real UserMailboxes separately from resource/service accounts), retention policy inventory, and a live control search that flags the silent 100-record cap; best-effort tenant Premium SKU signal |
+| `Scripts/Get-AdaptiveProtectionAudit.ps1` | Cross-arm Adaptive Protection audit — licensing (P2/E5), CA policies referencing insider risk (flags Report-only + wrong-risk-signal naming mismatches), best-effort DLP rule text-search for the Adaptive Protection condition (flags simulation mode), upstream IRM enabled-policy check, and orphaned-CA-policy detection when no IRM signal is live |
 
 ---
 
@@ -91,6 +94,12 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "Need audit records older than 180 days / 1 year" | `Audit-B.md` → Fix 6 (retention policies are not retroactive — must be created proactively) |
 | "Difference between Audit Standard and Audit Premium" | `Audit-A.md` → How It Works |
 | "Client wants a SIEM feed of audit data, not ad-hoc searches" | `Audit-A.md` → Phase 2 (use the Office 365 Management Activity API, not `Search-UnifiedAuditLog`) |
+| "Elevated-risk user still has full app access" | `AdaptiveProtection-B.md` → Triage #3 (CA policy likely stuck in Report-only — the Quick Setup default) |
+| "Adaptive Protection DLP rule isn't blocking anything" | `AdaptiveProtection-B.md` → Triage #4 / Fix 2 (policy likely still in simulation mode) |
+| "User has a High-severity IRM alert but no Elevated risk level" | `AdaptiveProtection-B.md` → Fix 3 (insider risk LEVEL ≠ alert SEVERITY — different scales) |
+| "Deleted files not being preserved for a risky user" | `AdaptiveProtection-B.md` → Triage #5 / Fix 5 (DLM opt-in sub-toggle, not retroactive) |
+| "Troubleshooting Adaptive Protection with `Get-MgRiskyUser` / sign-in risk finds nothing" | `AdaptiveProtection-B.md` → Fix 7 (wrong system — that's Entra ID Protection, not Adaptive Protection) |
+| "What exactly does Adaptive Protection do / how is it different from plain Insider Risk Management?" | `AdaptiveProtection-A.md` → How It Works |
 
 ---
 
@@ -138,6 +147,13 @@ Get-MailboxAuditBypassAssociation -Identity <UPN> | Select-Object AuditBypassEna
 Get-UnifiedAuditLogRetentionPolicy | Select-Object Name, Priority, Workload, RetentionDuration
 # Search with paging — never trust a bare call past 100 results:
 Search-UnifiedAuditLog -StartDate <date> -EndDate <date> -ResultSize 5000 -HighCompleteness
+
+# Adaptive Protection — only the CA arm and upstream IRM signal have clean read cmdlets;
+# the master toggle, level definitions, DLP simulation-mode state, and DLM opt-in are portal-only
+Get-MgIdentityConditionalAccessPolicy | Where-Object { $_.Conditions.InsiderRiskLevels } | Select-Object DisplayName, State
+Get-InsiderRiskPolicy | Select-Object Name, IsEnabled
+# WRONG SYSTEM for Adaptive Protection troubleshooting — this is Entra ID Protection:
+# Get-MgRiskyUser
 ```
 
 ---
@@ -182,6 +198,23 @@ Priva has its own, separate chain — it reuses DLP's foundational SIT/classific
                           └── [Data subject identity resolved] → [Search: Exchange/SharePoint/
                                 OneDrive/Teams] → [auto Teams channel] → [Review] →
                                 [Report/Export or irreversible Delete]
+```
+
+Adaptive Protection sits between Insider Risk Management and three independent enforcement arms, each with its own safe-by-default state that must be separately promoted — see `AdaptiveProtection-A.md` for the full chain:
+
+```
+[Insider Risk Management policy — enabled, generating alerts/insights]
+        └── [Adaptive Protection master toggle: On] (portal-only, up to 36h propagation)
+              └── [Insider risk LEVEL assigned: Elevated/Moderate/Minor]
+                    │       (NOT the same scale as alert severity High/Medium/Low)
+                    │
+                    ├── [DLP arm] — Exchange/Teams/Devices only, ships in simulation mode
+                    ├── [Conditional Access arm] — Entra ID P2, ships Report-only
+                    │       (Graph: conditions.insiderRiskLevels — distinct from
+                    │        conditions.userRiskLevels/signInRiskLevels, Entra ID
+                    │        Protection's unrelated risk engine)
+                    └── [Data Lifecycle Management arm] — separate opt-in sub-toggle,
+                            120-day preserve, Elevated users only, not retroactive
 ```
 
 The Unified Audit Log is a foundational dependency underneath Priva, Insider Risk Management, and Communication Compliance (all three check `UnifiedAuditLogIngestionEnabled` before anything else works) — troubleshoot this layer first if any of those three show no signal:

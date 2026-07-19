@@ -100,12 +100,9 @@ Alert Queue → Triage → Case (if escalated) → eDiscovery (if legal hold nee
 
 ### Adaptive Protection
 
-When Adaptive Protection is enabled, IRM risk levels (Minor/Moderate/Elevated) feed directly into Conditional Access:
-- **Elevated** → Block or require strong auth for sensitive apps
-- **Moderate** → Require compliant device
-- **Minor** → Informational / light restriction
+When Adaptive Protection is enabled, IRM risk levels (Minor/Moderate/Elevated — a distinct scale from alert severity, see below) feed into three separate enforcement arms: Conditional Access, DLP (Exchange/Teams/Devices only), and Data Lifecycle Management (120-day deleted-content preservation for Elevated users). Each arm ships safe-by-default (CA in Report-only, DLP in simulation mode) and must be explicitly promoted to enforce.
 
-The mapping is configured in Purview → Adaptive Protection → Conditional Access integration.
+> **This section is intentionally brief.** For the full architecture — insider risk level vs. alert severity, Quick vs. Custom Setup, the DLP/CA/DLM three-way integration, the permissions model, and the disable/orphaned-policy lifecycle — see the dedicated **`AdaptiveProtection-A.md`** / **`AdaptiveProtection-B.md`** pair in this folder. Do not duplicate that depth here.
 
 </details>
 
@@ -307,10 +304,11 @@ Find the policy targeting Insider Risk. Confirm:
 **Step 13 — Test Adaptive Protection impact**
 ```powershell
 Connect-MgGraph -Scopes "Policy.Read.All","AuditLog.Read.All"
-# Check sign-in logs for a user with elevated risk
+# Check sign-in logs for a user with an assigned insider risk level
 Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@domain.com'" -Top 20 |
-    Select-Object CreatedDateTime, AppDisplayName, ConditionalAccessStatus, RiskLevelAggregated
+    Select-Object CreatedDateTime, AppDisplayName, ConditionalAccessStatus
 ```
+> **Caution:** `RiskLevelAggregated` on sign-in logs and `Get-MgRiskyUser` belong to **Entra ID Protection** (`userRiskLevels`/`signInRiskLevels`) — a separate risk engine, not Adaptive Protection's `insiderRiskLevels`. Confirm CA policy state via `AdaptiveProtection-A.md`'s Command Cheat Sheet instead of relying on Identity Protection fields for insider-risk conclusions — see `AdaptiveProtection-B.md` Fix 7 for the full gotcha.
 
 ---
 
@@ -523,7 +521,7 @@ Get-MgUser -All | Where-Object { $_.AssignedLicenses.SkuId -notcontains $compSku
 
 - **The 90-day calibration period matters.** IRM's machine learning model needs 90 days of baseline activity per user before anomaly detection is reliable. Alerts in the first 90 days skew high; expect tuning. [IRM analytics](https://learn.microsoft.com/en-us/purview/insider-risk-management-analytics)
 
-- **Adaptive Protection is the highest-value integration** — it converts a detected risk into an automatic access restriction within minutes, before an investigator even sees the alert. Set it up alongside any E5 IRM deployment. [Adaptive Protection docs](https://learn.microsoft.com/en-us/purview/insider-risk-management-adaptive-protection)
+- **Adaptive Protection is the highest-value integration** — it converts a detected risk into automatic DLP/CA/DLM enforcement within minutes, before an investigator even sees the alert. Set it up alongside any E5 IRM deployment. For full setup, troubleshooting, and the insider-risk-level-vs-alert-severity distinction, see `AdaptiveProtection-A.md`. [Adaptive Protection docs](https://learn.microsoft.com/en-us/purview/insider-risk-management-adaptive-protection)
 
 - **Pseudonymization is a double-edged sword.** Turned on by default to protect employee privacy during triage, it means analysts see obfuscated names. Only Insider Risk Management (Admin) role can de-anonymize. Communicate this to your SOC team before they escalate confused. [Privacy settings](https://learn.microsoft.com/en-us/purview/insider-risk-management-settings-policy-indicators)
 
