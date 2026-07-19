@@ -55,7 +55,8 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Windows Autopilot device preparation (APDP) — Entra-join-only enrollment mode | `Autopilot/` | `Intune/`, `EntraID/` |
 | Entra ID join, PRT issues, device registration | `EntraID/` | `Intune/`, `Security/ConditionalAccess/` |
 | Conditional Access policy conflicts, CA failures | `Security/ConditionalAccess/` | `EntraID/`, `Intune/` |
-| Hybrid join (HAADJ), Entra Connect sync | `EntraID/` | `Security/ConditionalAccess/` |
+| Hybrid join (HAADJ), Entra Connect Sync (legacy on-prem sync-engine model) | `EntraID/` | `Security/ConditionalAccess/` |
+| Entra Cloud Sync (provisioning-agent model — gMSA, multi-agent HA, disconnected forests, Group Provisioning to AD DS) | `EntraID/` | `ActiveDirectory/` (gMSA/schema prerequisites live in on-prem AD) |
 | Windows Update, WfUB, WSUS conflicts | `Windows/` | `Intune/` |
 | BitLocker, key escrow, recovery | `Windows/` | `Intune/`, `EntraID/` |
 | Power Automate flows, connectors, licensing | `PowerAutomate/` | `M365/SharePoint-OneDrive/`, `EntraID/` |

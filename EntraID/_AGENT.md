@@ -10,7 +10,8 @@ Covers:
 - **Conditional Access** — policy design, break-glass, legacy auth, named locations
 - **App registrations + service principals** — OAuth flows, client secrets, API permissions
 - **Workload identity federation + Conditional Access for workload identities** — federated credentials (GitHub Actions/Azure DevOps/Kubernetes OIDC trust), CA policies scoped to service principals, workload identity risk (leaked credentials/anomalous token)
-- **Entra Connect / Sync** — attribute conflicts, password hash sync, staging mode
+- **Entra Connect Sync** — attribute conflicts, password hash sync, staging mode (legacy on-prem sync-engine model)
+- **Entra Cloud Sync** — lightweight provisioning-agent model, gMSA auth, multi-agent HA, disconnected forest sync, quarantine handling, and Group Provisioning to AD DS (the reverse direction) — architecturally distinct from Entra Connect Sync, see `Troubleshooting/CloudSync-B.md`/`-A.md`
 - **Privileged Identity Management (PIM)** — role activation
 - **Access Reviews** — periodic recertification of group/app/access-package membership and Entra/Azure role assignments (distinct from PIM activation and from entitlement management delivery)
 - **Lifecycle Workflows** — Entra ID Governance joiner-mover-leaver (JML) task automation (welcome email, license/group assignment, account enable/disable/delete, Temporary Access Pass, custom Logic App tasks) — distinct from HR-driven provisioning (creates the account), Access Reviews (recertification), and PIM (role activation)
@@ -64,7 +65,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/EntraDomainServices-B.md` / `-A.md` | Hotfix + deep dive: managed domain (Entra DS) health, one-way sync architecture, password hash projection, flat OU model, LDAPS, VNet peering/DNS |
 | `Troubleshooting/AccessPackages-B.md` / `-A.md` | Hotfix + deep dive: entitlement management access package assignment/delivery failures, approval workflow, connected org sync |
 | `Troubleshooting/AppProxy-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Application Proxy connector health, pre-authentication failures, backend connectivity |
-| `Troubleshooting/Connect-Sync-B.md` / `-A.md` | Hotfix + deep dive: Entra Connect / Cloud Sync sync errors, attribute conflicts, staging mode |
+| `Troubleshooting/Connect-Sync-B.md` / `-A.md` | Hotfix + deep dive: Entra Connect Sync (legacy on-prem sync-engine model) — sync errors, attribute conflicts, staging mode |
+| `Troubleshooting/CloudSync-B.md` / `-A.md` | Hotfix + deep dive: Entra Cloud Sync — provisioning agent install/health, gMSA auth, multi-agent HA, quarantine handling, error-code mapping, Group Provisioning to AD DS scale limits |
 | `Troubleshooting/ExternalIdentities-B.md` / `-A.md` | Hotfix + deep dive: B2B guest invitation/redemption failures, external collaboration settings |
 | `Troubleshooting/IdentityProtection-B.md` / `-A.md` | Hotfix + deep dive: risk-based Conditional Access, user/sign-in risk detections, risk remediation |
 | `Troubleshooting/MFA-B.md` / `-A.md` | Hotfix + deep dive: MFA registration/challenge failures, method management, CA integration, token claims |
@@ -102,6 +104,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-AppRegistrationCredentialAudit.ps1` | Tenant-wide App Registration secret/cert expiry audit, zero-owner detection, Service Principal existence/enablement cross-check, per-app risk scoring |
 | `Scripts/Get-WorkloadIdentityAudit.ps1` | Tenant-wide federated credential inventory, non-standard audience detection, Conditional Access workload-identity targeting cross-check, Workload Identities Premium license consumption |
 | `Scripts/Get-AccessReviewAudit.ps1` | Access review definition/instance audit — auto-apply gaps, stalled instances, on-prem-synced-group remediation gaps, app reviewability gate, recent audit log activity |
+| `Scripts/Get-CloudSyncHealth.ps1` | Cloud Sync provisioning agent host health (services, OS/Server-2025-KB check, TLS/.NET/execution-policy prereqs, gMSA, network reachability, optional GPAD LDAP/GC check) plus optional cloud-side agent/job/quarantine status via AADCloudSyncTools |
 | `Troubleshooting/LifecycleWorkflows-B.md` / `-A.md` | Hotfix + deep dive: Lifecycle Workflows — enable-vs-scheduled two-switch gotcha, 3-day catch-up window, case-sensitive rule/custom-security-attribute matching, AD DS-synced Enable/Disable/Delete task prerequisites (provisioning agent version, extension mode, gMSA rights, AD Recycle Bin), Logic Apps task extensibility model |
 | `Scripts/Get-LifecycleWorkflowAudit.ps1` | Workflow inventory (enabled/scheduled state), recent run failure/no-run detection, AD DS account-task prerequisite risk flagging, deactivated custom security attribute detection, license check, optional per-user processing result lookup |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
@@ -114,7 +117,9 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Hybrid join not completing" → `Troubleshooting/HybridJoin-B.md`
 - "Device in Entra but Intune shows not enrolled" → `Intune/Troubleshooting/Enrollment-B.md`
 - "Conditional Access blocking access incorrectly" → `Security/ConditionalAccess/`
-- "Entra Connect attribute conflict / user not syncing" → `Troubleshooting/Connect-Sync-B.md`
+- "Entra Connect attribute conflict / user not syncing" (classic on-prem Entra Connect Sync server) → `Troubleshooting/Connect-Sync-B.md`
+- "Provisioning agent won't start / shows inactive in portal / job in quarantine" / "Cloud Sync" by name → `Troubleshooting/CloudSync-B.md` + `Scripts/Get-CloudSyncHealth.ps1`
+- "Cloud-created group needs to show up in on-prem AD for a legacy app" / "Group Provisioning to AD DS" / "GPAD" → `Troubleshooting/CloudSync-A.md` Playbook 4 (scoping-mode scale limits) + Dependency Stack (reverse-flow branch)
 - "Service principal client secret expired (flow/app broken)" / "AADSTS7000215 or AADSTS7000222" / "automation stopped authenticating overnight" → `Troubleshooting/AppRegistrations-B.md` + `Scripts/Get-AppRegistrationCredentialAudit.ps1`
 - "Multi-tenant app works in one customer tenant but fails with AADSTS500011 in another" / "AADSTS700027 certificate auth failing" → `Troubleshooting/AppRegistrations-B.md` Fix 3 / Fix 4
 - "GitHub Actions / Azure DevOps pipeline suddenly can't get a token, no secret involved" / "AADSTS700211, 700213, 70021, 700223, 700238, or 70025" → `Troubleshooting/WorkloadIdentity-B.md` + `Scripts/Get-WorkloadIdentityAudit.ps1`

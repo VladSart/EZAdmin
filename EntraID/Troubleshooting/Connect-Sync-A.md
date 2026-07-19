@@ -24,7 +24,7 @@
 - Hybrid identity models: on-premises AD → Entra ID
 
 **Out of scope:**
-- Entra Cloud Sync (different agent model — see separate runbook)
+- Entra Cloud Sync (different agent model — see `CloudSync-A.md`/`CloudSync-B.md`)
 - Cross-forest topologies (covered in detail in Microsoft's multi-forest docs)
 - Direct federation with third-party IdPs (ADFS-specific issues beyond initial triage)
 
