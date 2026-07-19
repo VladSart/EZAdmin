@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), and **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), and **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
 
 ---
 
@@ -38,6 +38,12 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/ADFS/ADFS-B.md` | Hotfix: farm-wide vs. extranet-only outage triage, certificate expiry/mismatch checks, relying party trust and WAP proxy trust fix paths |
 | `Troubleshooting/ADFS/ADFS-A.md` | Deep dive: token-signing/decrypting cert lifecycle and rollover mechanics, relying party trust and claims rule architecture, WAP proxy trust internals, farm topology/behavior level playbooks |
 | `Scripts/Get-ADFSHealth.ps1` | One-shot farm health check: certificate expiry/rollover state, relying party trust inventory, farm topology, recent AD FS/Admin log errors, optional WAP proxy trust event scan |
+| `Troubleshooting/gMSA/gMSA-B.md` | Hotfix: KDS root key convergence triage, authorization-vs-installation two-step diagnosis, service credential format fixes, forest-boundary dead ends |
+| `Troubleshooting/gMSA/gMSA-A.md` | Deep dive: KDS root key/GKDS password derivation architecture, two-step authorization model, rotation mechanics, forest-scoping limits, cluster-node and static-to-gMSA migration playbooks |
+| `Scripts/Get-GMSAHealth.ps1` | One-shot gMSA health check: KDS root key convergence, per-gMSA delegation resolution (direct + group), password interval, optional local Test-ADServiceAccount + GMSA event log scan via `-TestLocal` |
+| `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` | Hotfix: resultant-policy lookup, invalid OU-targeting triage, precedence-collision and direct-link-override fixes, PSO delegation gaps |
+| `Troubleshooting/FineGrainedPasswordPolicies/FGPP-A.md` | Deep dive: PSO/Password Settings Container architecture, precedence and direct-vs-group resolution rules, domain-wide GPO fallback, delegation model, new-tier and OU-to-group migration playbooks |
+| `Scripts/Get-FGPPAudit.ps1` | One-shot PSO audit: invalid target-type detection (OU/wrong-scope-group), precedence-collision detection across all PSOs, optional per-user resultant-policy + direct-link check via `-UserName` |
 
 ---
 
@@ -79,6 +85,19 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "One specific app's SSO broke, everything else including M365 works" → `Troubleshooting/ADFS/ADFS-B.md` (Fix 3 — relying party trust)
 - "AD FS certificate keeps expiring and breaking things repeatedly" → `Troubleshooting/ADFS/ADFS-B.md` (Fix 4 — enable AutoCertificateRollover)
 - "Quick AD FS farm health snapshot" → `Scripts/Get-ADFSHealth.ps1`
+- "A service/scheduled task using a gMSA won't start / logon failure" → `Troubleshooting/gMSA/gMSA-B.md`
+- "Test-ADServiceAccount returns False" → `Troubleshooting/gMSA/gMSA-B.md` (Fix 2/Fix 3 — authorization vs. local installation)
+- "gMSA worked fine for weeks, suddenly fails everywhere on the same day" → `Troubleshooting/gMSA/gMSA-B.md` (rotation-boundary correlation) or `Troubleshooting/gMSA/gMSA-A.md` (Phase 5)
+- "Setting up gMSA for the first time in this forest" → `Troubleshooting/gMSA/gMSA-A.md` (Playbook 1)
+- "Migrating a service off a static-password account onto a gMSA" → `Troubleshooting/gMSA/gMSA-A.md` (Playbook 2)
+- "New cluster node can't run the clustered gMSA-based service" → `Troubleshooting/gMSA/gMSA-A.md` (Playbook 3)
+- "Quick gMSA health snapshot" → `Scripts/Get-GMSAHealth.ps1`
+- "User has the wrong password policy / wrong complexity or lockout settings" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md`
+- "I linked a PSO to an OU and nothing happened" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` (Fix 1 — PSOs can't target OUs)
+- "Two password policies seem to conflict / wrong one is winning" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` (Fix 3/Fix 4 — precedence and direct-link resolution)
+- "Need to stand up a stricter password policy for admin/service accounts only" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-A.md` (Playbook 1)
+- "Non-Domain-Admin can't manage PSOs despite OU delegation" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` (Fix 5)
+- "Quick PSO / FGPP audit across the domain" → `Scripts/Get-FGPPAudit.ps1`
 
 ---
 
@@ -169,6 +188,33 @@ Active Directory reachable (service account/gMSA authentication)
                           └── (extranet only) Web Application Proxy — separate rolling proxy trust certificate
                                 └── Relying party (Entra ID) validates signature + claims → issues its own token
                                       └── (post-token) Conditional Access evaluated — see `Security/ConditionalAccess/`
+```
+
+**gMSA dependency chain** (see `Troubleshooting/gMSA/`):
+
+```
+Forest has >=1 Windows Server 2012+ DC able to serve KDS root key material
+  └── KDS Root Key created (Add-KdsRootKey) AND past its EffectiveTime (default 10h delay)
+        └── AD replication has carried the root key to every DC requesting hosts contact
+              └── gMSA object exists with PrincipalsAllowedToRetrieveManagedPassword delegation
+                    └── Target host authorized directly or via group (group membership replicated)
+                          └── Install-ADServiceAccount run locally on that host
+                                └── Service/task/app pool logs on as DOMAIN\gMSA$ with a BLANK password
+                                      └── msDS-ManagedPasswordInterval rotation (default 30 days), no manual sync
+```
+
+**FGPP / PSO precedence chain** (see `Troubleshooting/FineGrainedPasswordPolicies/`):
+
+```
+Domain functional level >= Windows Server 2012
+  └── Password Settings Container exists (hidden from default ADUC view)
+        └── PSO created with Name + Precedence, msDS-PSOAppliesTo targets USERS/GLOBAL SECURITY
+            GROUPS ONLY (never an OU — the #1 real-world misconfiguration)
+              └── Direct-linked PSOs beat group-linked PSOs; among group-linked, lowest
+                  msDS-PasswordSettingsPrecedence wins
+                    └── msDS-ResultantPSO on the user object reflects the actual winner
+                          └── If nothing applies: silent fallback to the domain-wide GPO-based
+                              Default Domain Policy password settings
 ```
 
 ---
