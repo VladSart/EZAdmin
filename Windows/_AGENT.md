@@ -13,6 +13,7 @@ Covers:
 - **Networking** — DNS, DHCP (client and Windows Server DHCP role), proxy, time sync, VPN coexistence
 - **DHCP Server role** — scope/superscope architecture, DHCP Failover (hot standby/load balance, MCLT/split-brain safety), DHCP Policies, secure dynamic DNS update credential, JET database backup/repair, audit logging
 - **NPS / RADIUS server** — Network Policy Server as RADIUS server/proxy for VPN (RRAS/AlwaysOnVPN) and 802.1X wired/wireless auth, connection request vs. network policy evaluation, NPS Extension for Entra MFA
+- **Hyper-V host & VM** — standalone/clustered Hyper-V role, VM state and Integration Services, checkpoints/differencing disks (AVHDX), virtual switches, Live Migration (auth modes, Event ID 21502 family), Failover Clustering integration (CSV, quorum), Hyper-V Replica DR
 - **USB / Peripherals** — policy-driven control, driver management
 - **Performance** — boot times, CPU/memory issues, storage health
 - **Event log analysis** — systematic log collection and interpretation
@@ -36,6 +37,7 @@ Covers:
 | `Troubleshooting/NetworkAdapters-A.md` / `B.md` | NIC/driver/NDIS stack, routing conflicts, LBFO teaming, MTU issues |
 | `Troubleshooting/AlwaysOnVPN-A.md` / `B.md` | Always On VPN device/user tunnel, IKEv2/SSTP negotiation |
 | `Troubleshooting/NPS-RADIUS-A.md` / `B.md` | Network Policy Server as RADIUS server/proxy — connection request vs. network policy evaluation, RADIUS client registration, cross-forest proxy requirements, NPS Extension for Entra MFA (PAP vs. CHAPv2/EAP method gating) |
+| `Troubleshooting/HyperV-A.md` / `B.md` | Hyper-V host & VM — VM state/Integration Services, checkpoint/AVHDX chain failures, virtual switch architecture, Live Migration (Kerberos/CredSSP, Event ID 21502 family), Failover Clustering (CSV, quorum, possible-owner nodes), Hyper-V Replica (HRL growth, resync) |
 | `Troubleshooting/RDP-A.md` / `B.md` | Remote Desktop connection failures |
 | `Troubleshooting/SMB-A.md` / `B.md` | File share access, SMB protocol issues |
 | `Troubleshooting/GPO-A.md` / `B.md` | Group Policy application and conflict diagnosis |
@@ -77,6 +79,7 @@ Covers:
 | `Scripts/Get-LSAProtectionStatus.ps1` | Diagnostic companion script to LSA-Protection — WinInit Event ID 12 ground-truth check (registry-independent), auto-enablement criteria evaluation, CodeIntegrity blocked/audit plug-in event scan, Smart App Control state |
 | `Scripts/Test-VPNConnectivity.ps1` | Companion script to AlwaysOnVPN |
 | `Scripts/Get-NPSHealthAudit.ps1` | Companion script to NPS-RADIUS — service/auditing state, RADIUS client and policy inventory, 6272/6273/6274/13/18 event summary, DC reachability, Entra MFA extension registry/connectivity check |
+| `Scripts/Get-HyperVHealth.ps1` | Companion script to HyperV — VMMS/VM/Integration Services state, checkpoint chain depth and orphan detection, virtual switch inventory, cluster/quorum/CSV health, VM cluster resource possible-owner check, Replica health, VMMS/Worker event scan |
 | `Scripts/WindowsUpdateModule.ps1` / `Update-AllWindows.ps1` / `WindowsUpdateTool-25h2-A.ps1` | Companion scripts to Windows Update topics |
 | `Scripts/Setup-Apps.ps1` / `USB-Diagnostics.ps1` | General utility scripts (not tied to a single topic) |
 
@@ -135,6 +138,7 @@ Get-WinEvent -LogName System |
 - "Name won't resolve / internal names fail but public works / DNS cache stale" → `Troubleshooting/DNS-Client-B.md` (hotfix) / `DNS-Client-A.md` (deep dive — resolver chain, NRPT, DoH) + `Scripts/Get-DNSClientDiagnostics.ps1`
 - "NTLM auth failing / trust relationship broken / 0x80070005 Access Denied" → `Troubleshooting/NTLM-B.md` (hotfix) / `NTLM-A.md` (deep dive — NTLM protocol, secure channel, LM level hardening) + `Scripts/Get-NTLMDiagnostics.ps1`
 - "VPN or 802.1X auth denied and it's not a client-side cert/ProfileXML problem, NPS event 6273/6274, RADIUS shared secret mismatch, Entra MFA extension error" → `Troubleshooting/NPS-RADIUS-B.md` (hotfix — start here, Reason Code lookup table) / `NPS-RADIUS-A.md` (deep dive — connection request vs. network policy model, RADIUS proxy/cross-forest requirements) + `Scripts/Get-NPSHealthAudit.ps1`
+- "VM won't start / stuck / crashed, Live Migration fails (Event ID 21502), checkpoint won't merge, CSV shows Event ID 5120, Hyper-V Replica health Critical, cluster quorum lost taking VMs offline" → `Troubleshooting/HyperV-B.md` (hotfix — start here, Compare-VM first for migration issues) / `HyperV-A.md` (deep dive — CSV/quorum architecture, Live Migration auth modes, HRL mechanics) + `Scripts/Get-HyperVHealth.ps1`
 
 ---
 
