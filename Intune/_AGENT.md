@@ -7,7 +7,7 @@ Microsoft Intune / Endpoint Manager — device management, compliance, configura
 Covers:
 - **Enrollment** — Windows Autopilot, manual MDM enrollment, co-management, enrollment restrictions
 - **Policy** — configuration profiles, compliance policies, settings catalog, GPO conflicts, assignment filters, scope tags/RBAC
-- **Apps** — Win32 app deployment, managed apps (LOB/VPP), app protection (MAM)
+- **Apps** — Win32 app deployment, managed apps (LOB/VPP), app protection (MAM), Enterprise App Management (Microsoft-curated Enterprise App Catalog — licensing, auto-update mechanics/limitations, content lifecycle, Autopilot ESP/Device Prep blocking-app integration)
 - **Updates** — Update rings (WUfB), feature updates, driver updates (WDfB), Autopatch
 - **Security & compliance controls** — LAPS, certificates (on-prem NDES/PKCS **and** cloud-native Cloud PKI), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
 - **Specialty device modes** — Kiosk / Assigned Access
@@ -34,6 +34,7 @@ Covers:
 | `Troubleshooting/Enrollment-B.md` / `-A.md` | Hotfix / deep dive: device enrollment failures, MDM authority, enrollment restrictions |
 | `Troubleshooting/Policy-Conflict-B.md` / `-A.md` | Hotfix / deep dive: policy not applying, compliance not resolving, CSP/GPO conflict model |
 | `Troubleshooting/App-Deployment-B.md` / `-A.md` | Hotfix / deep dive: Win32 app stuck in pending/failed, IME/AgentExecutor pipeline |
+| `Troubleshooting/EnterpriseAppManagement-B.md` / `-A.md` | Hotfix / deep dive: Enterprise App Catalog (EAM) — content-readiness stalls, auto-update rollback gap and its documented limitations, catalog removal lifecycle, dual catalog/Win32 deployment conflicts, ESP/Autopilot Device Prep blocking-app exclusion for auto-update apps — device-side pipeline is identical to App-Deployment, only catalog-specific lifecycle differs |
 | `Troubleshooting/AppProtection-B.md` / `-A.md` | Hotfix / deep dive: MAM policy not applying, "Open in" blocked, data-at-rest PIN issues |
 | `Troubleshooting/Autopatch-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopatch ring assignment, readiness, deployment failures |
 | `Troubleshooting/Certificates-B.md` / `-A.md` | Hotfix / deep dive: on-prem NDES/PKCS certificate profile delivery failures via Intune Certificate Connector |
@@ -62,6 +63,7 @@ Covers:
 | `Scripts/Get-EnrollmentDiagnostics.ps1` | Device-local enrollment diagnostic — join state, MDM URL, scheduled task, endpoint reachability |
 | `Scripts/Get-PolicyConflictScan.ps1` | Fleet-wide scan of every device+profile combination currently in Conflict/Error |
 | `Scripts/Get-AppDeploymentDiagnostics.ps1` | Device-local Win32 app diagnostic — IME/AgentExecutor logs, Delivery Optimization state |
+| `Scripts/Get-EnterpriseAppCatalogAudit.ps1` | Tenant-wide Enterprise App Catalog audit via Graph — content-readiness staleness, duplicate catalog/non-catalog deployments of the same app, stale/forgotten catalog apps, EAM/Intune Suite licensing confirmation |
 | `Scripts/Get-ManagedAppDeploymentStatus.ps1` | Device-local + fleet-wide managed app (Win32/LOB/VPP) deployment health incl. Apple VPP token |
 | `Scripts/Get-AppProtectionCoverageReport.ps1` | Fleet-wide App Protection Policy (MAM) coverage and health report |
 | `Scripts/Get-AutopatchReadiness.ps1` | Fleet-level Autopatch readiness and ring-assignment audit |
@@ -92,6 +94,7 @@ Covers:
 - "Device not enrolling in Intune" → `Troubleshooting/Enrollment-B.md` + `Scripts/Get-EnrollmentDiagnostics.ps1`
 - "Policy not applying to device" → `Troubleshooting/Policy-Conflict-B.md` + `Scripts/Get-PolicyConflictScan.ps1`
 - "App stuck at 'Pending install'" → `Troubleshooting/App-Deployment-B.md` + `Scripts/Get-AppDeploymentDiagnostics.ps1`
+- "Enterprise App Catalog app stuck 'content is still being prepared'" / "auto-update broke an app" / "app removed from the catalog" / "app fighting itself, two tiles for one product" / "can't add app as ESP or Autopilot Device Prep blocking app" → `Troubleshooting/EnterpriseAppManagement-B.md` + `Scripts/Get-EnterpriseAppCatalogAudit.ps1`
 - "Device shows non-compliant, user can't access resources" → `Troubleshooting/Policy-Conflict-B.md` + `Security/ConditionalAccess/`
 - "User can't see available apps" → check MDM scope + Company Portal; `Troubleshooting/Managed-Apps-B.md`
 - "Settings applied by GPO are conflicting with Intune" → `Troubleshooting/Policy-Conflict-B.md` / `Troubleshooting/GP-to-CSP-B.md`

@@ -110,6 +110,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-PIMAzureResourcesAudit.ps1` | Fleet-wide (multi-subscription) PIM for Azure Resources audit — MS-PIM permission health, scope onboarding state, no-expiry eligible assignments, expiring-soon active assignments, static-assignment-duplicates-eligible cross-reference |
 | `Troubleshooting/LifecycleWorkflows-B.md` / `-A.md` | Hotfix + deep dive: Lifecycle Workflows — enable-vs-scheduled two-switch gotcha, 3-day catch-up window, case-sensitive rule/custom-security-attribute matching, AD DS-synced Enable/Disable/Delete task prerequisites (provisioning agent version, extension mode, gMSA rights, AD Recycle Bin), Logic Apps task extensibility model |
 | `Scripts/Get-LifecycleWorkflowAudit.ps1` | Workflow inventory (enabled/scheduled state), recent run failure/no-run detection, AD DS account-task prerequisite risk flagging, deactivated custom security attribute detection, license check, optional per-user processing result lookup |
+| `Scripts/Get-ExternalIdentitiesAudit.ps1` | Read-only tenant-wide B2B guest audit — stuck-PendingAcceptance (default 14-day threshold), disabled, and stale/inactive (default 90-day threshold) guest flagging, plus full Cross-Tenant Access Settings partner-policy dump; defers all cleanup to `ExternalIdentities-A.md` Playbook 3 |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 
 ---
