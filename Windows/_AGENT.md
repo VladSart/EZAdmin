@@ -10,7 +10,8 @@ Covers:
 - **VBS / Credential Guard / HVCI** — enabling, conflicts with legacy apps/hypervisors
 - **LSA Protection (RunAsPPL)** — VBS-independent PPL protection for lsass.exe, Windows 11 22H2+ silent auto-enablement, blocked smart card/VPN/password-filter plug-ins
 - **AppLocker / WDAC** — application control, policy audit mode, blocking legitimate apps
-- **Networking** — DNS, DHCP, proxy, time sync, VPN coexistence
+- **Networking** — DNS, DHCP (client and Windows Server DHCP role), proxy, time sync, VPN coexistence
+- **DHCP Server role** — scope/superscope architecture, DHCP Failover (hot standby/load balance, MCLT/split-brain safety), DHCP Policies, secure dynamic DNS update credential, JET database backup/repair, audit logging
 - **NPS / RADIUS server** — Network Policy Server as RADIUS server/proxy for VPN (RRAS/AlwaysOnVPN) and 802.1X wired/wireless auth, connection request vs. network policy evaluation, NPS Extension for Entra MFA
 - **USB / Peripherals** — policy-driven control, driver management
 - **Performance** — boot times, CPU/memory issues, storage health
@@ -30,7 +31,8 @@ Covers:
 | `Troubleshooting/LSA-Protection-A.md` / `B.md` | LSA Protection (RunAsPPL) — VBS-independent PPL mechanism, Win11 22H2+ silent auto-enablement (no registry trace), blocked smart card/VPN/password-filter plug-ins, UEFI-locked recovery |
 | `Troubleshooting/AppLocker-A.md` / `B.md` | Application control policy, audit mode, blocked-app diagnosis |
 | `Troubleshooting/DNS-Client-A.md` / `B.md` | Resolver chain, NRPT, DoH, cache/HOSTS issues |
-| `Troubleshooting/DHCP-Client-A.md` / `B.md` | DHCP lease failure, APIPA, relay/scope architecture |
+| `Troubleshooting/DHCP-Client-A.md` / `B.md` | DHCP lease failure, APIPA, relay/scope architecture (client-side) |
+| `Troubleshooting/DHCP-Server-A.md` / `B.md` | Windows Server DHCP role — scope/superscope exhaustion, DHCP Failover (hot standby/load balance, MCLT), DHCP Policies, secure dynamic DNS update credential expiry, JET database corruption/backup/restore, audit logging (server-side) |
 | `Troubleshooting/NetworkAdapters-A.md` / `B.md` | NIC/driver/NDIS stack, routing conflicts, LBFO teaming, MTU issues |
 | `Troubleshooting/AlwaysOnVPN-A.md` / `B.md` | Always On VPN device/user tunnel, IKEv2/SSTP negotiation |
 | `Troubleshooting/NPS-RADIUS-A.md` / `B.md` | Network Policy Server as RADIUS server/proxy — connection request vs. network policy evaluation, RADIUS client registration, cross-forest proxy requirements, NPS Extension for Entra MFA (PAP vs. CHAPv2/EAP method gating) |
@@ -53,6 +55,7 @@ Covers:
 | `Scripts/Get-TimeSyncDiagnostics.ps1` | Companion script to Time/TimeSync — W32Time/policy/NTP reachability sweep, CSV export |
 | `Scripts/Get-DNSClientDiagnostics.ps1` | Companion script to DNS-Client |
 | `Scripts/Get-DHCPClientDiagnostics.ps1` | Companion script to DHCP-Client |
+| `Scripts/Get-DHCPServerHealth.ps1` | Companion script to DHCP-Server — authorization/service state, scope utilization exhaustion flagging, Failover relationship state, DHCP Policy inventory, DNS dynamic update credential password-expiry check, JET/database event log scan, audit log freshness check |
 | `Scripts/Get-RDPDiagnostics.ps1` | Companion script to RDP |
 | `Scripts/Get-SMBDiagnostics.ps1` | Companion script to SMB |
 | `Scripts/Get-FirewallDiagnostics.ps1` | Companion script to Firewall |
@@ -117,7 +120,8 @@ Get-WinEvent -LogName System |
 - "BitLocker still prompts for PIN on wired domain-joined desktops/servers even though Network Unlock is configured" → `Troubleshooting/BitLocker/NetworkUnlock-B.md` (hotfix) / `NetworkUnlock-A.md` (deep dive — on-prem AD/WDS only, no Entra equivalent) + `Scripts/Get-NetworkUnlockReadinessAudit.ps1`
 - "App blocked after WDAC/AppLocker deployed" → audit logs, policy mode check
 - "Time sync failing / source shows Local CMOS Clock / ping works but NTP doesn't" → `Troubleshooting/Time/TimeSync B.md` (hotfix) / `TimeSync A.md` (deep dive — W32Time architecture, policy layer, STS) + `Scripts/Get-TimeSyncDiagnostics.ps1`
-- "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture)
+- "Device on APIPA / no IP / DHCP not working" → `Troubleshooting/DHCP-Client-B.md` (hotfix) / `DHCP-Client-A.md` (deep dive, relay/scope architecture — client-side)
+- "DHCP scope exhausted, Failover partner shows PartnerDown/CommunicationInterrupted, DNS records not registering for new devices, DHCP database corrupt / jetpack repair, superscope/split-scope imbalance" → `Troubleshooting/DHCP-Server-B.md` (hotfix — start here) / `DHCP-Server-A.md` (deep dive — Failover MCLT model, DHCP Policies, DnsServerDnsCredential, JET database internals) + `Scripts/Get-DHCPServerHealth.ps1`
 - "NIC disabled/missing, adapter shows Limited Connectivity, VPN eating all traffic, MTU/jumbo frame issue" → `Troubleshooting/NetworkAdapters-B.md` (hotfix) / `NetworkAdapters-A.md` (deep dive — NDIS stack, LBFO teaming) + `Scripts/Get-NetworkAdapterDiagnostics.ps1`
 - "USB device being blocked by policy" → Intune Device Control policy + Windows event log
 - "VBS/Credential Guard not running, BSOD after enabling VBS, HVCI driver conflict" → `Troubleshooting/VBS-CredentialGuard-B.md` (hotfix) / `VBS-CredentialGuard-A.md` (deep dive) + `Scripts/Get-VBSCredentialGuardStatus.ps1` (diagnostic) / `Scripts/Enable-VBS.ps1` (legacy remediation-only registry snippet)

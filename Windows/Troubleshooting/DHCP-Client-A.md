@@ -21,7 +21,7 @@
 
 **In scope:**
 - Windows DHCP client behavior (Windows 10/11, Server 2016+) on wired and wireless adapters
-- Windows Server DHCP role as the authoritative server (scope design, options, relay/IP helper interaction)
+- Windows Server DHCP role as the authoritative server, covered here only at the basic scope-design/options/relay level needed to diagnose a client-side symptom — for Failover, DHCP Policies, the DNS dynamic update credential, and database internals, see `DHCP-Server-A.md`
 - Multi-VLAN environments requiring DHCP relay
 - Lease lifecycle: DORA handshake, renewal (T1/T2), release, conflict detection
 
@@ -447,3 +447,5 @@ Remove-DhcpServerv4Lease -ScopeId <scope-id> -IPAddress <ip>
 - **Scope options exist at three levels — server, scope, and reservation — and the most specific wins.** A device with a static reservation can have entirely different DNS/gateway options than the rest of the scope, which is a frequent source of "this one device is different" confusion. Always check all three levels when troubleshooting option mismatches.
 
 - **Client-side DHCPDECLINE (duplicate IP) is the client protecting itself, not a bug** — Windows performs a gratuitous ARP check after accepting a lease and will voluntarily decline and restart discovery if it detects a conflict. The real fix is almost always removing a statically-configured device from inside the DHCP scope's active range, or adding an exclusion for that address. [MS Docs: DHCP client troubleshooting](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/dhcp-server-issues)
+
+- **For server-side administration** — DHCP Failover (hot standby/load balance, MCLT split-brain safety), DHCP Policies, the secure dynamic DNS update credential (a common slow-burning failure independent of leasing health), and JET database backup/repair — see `DHCP-Server-A.md` / `DHCP-Server-B.md`.

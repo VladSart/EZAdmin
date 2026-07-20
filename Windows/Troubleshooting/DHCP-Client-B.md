@@ -318,3 +318,5 @@ Recent network changes:     _______________ (new switch, VLAN change, new DHCP s
 - **A second authorized DHCP server with an overlapping or misconfigured scope is indistinguishable from a rogue server without packet capture** — `ipconfig /all` on affected devices showing different `DHCP Server` values for the same subnet is the fastest client-side tell. Escalate rather than chasing this from a single endpoint.
 
 - **Static IP inside a DHCP scope's active range is the #1 cause of "random" duplicate IP tickets** — always check for statically configured infrastructure (printers, IoT devices, non-domain equipment) before assuming a software fault. [MS Docs: DHCP troubleshooting](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/dhcp-server-issues)
+
+- **If the problem is server-wide rather than one device** (scope exhaustion, Failover partner down, DNS records not registering for anyone) — that's a different runbook: `Troubleshooting/DHCP-Server-B.md` / `DHCP-Server-A.md`.
