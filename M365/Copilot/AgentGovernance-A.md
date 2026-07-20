@@ -29,6 +29,7 @@
 **Out of scope (see cross-references):**
 - Base Microsoft 365 Copilot licensing, tenant/per-app enablement, Conditional Access, and Graph grounding permission mechanics for using Copilot itself — see `Copilot-A.md`/`Copilot-B.md` (this file assumes Copilot works; the subject here is specifically *agent* governance layered on top)
 - Copilot Studio's own bot-authoring, topics/dialog design, and connector-building mechanics — only the governance/admin-control surface is covered here, not agent development
+- Copilot Studio's own security/governance surface — data (DLP) policies scoped to Copilot Studio connectors, per-agent authentication modes, customer-managed keys, sensitivity-label-aware knowledge grounding — see `PowerAutomate/PowerApps/CopilotStudio-Security-A.md`/`-B.md` (this file governs the Registry's oversight of an agent's existence/ownership; that file governs one Copilot Studio agent's own security configuration)
 - Power Platform DLP policy authoring in general (only referenced where it intersects agent publishing/access)
 - Microsoft 365 Copilot usage/adoption reporting for the base product (`Scripts/Get-CopilotUsageReport.ps1` covers general Copilot usage; this runbook's own Evidence Pack is agent-registry-specific)
 

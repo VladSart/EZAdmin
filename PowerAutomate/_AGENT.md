@@ -13,6 +13,7 @@ This module focuses on what MSPs actually use Power Automate for:
 - **Flow governance** — DLP policies, environment management, licence requirements
 - **Desktop flows (RPA)** — machine runtime registration, attended/unattended session model, capacity licensing — a distinct execution model from cloud flows (see `Desktop-RPA/`)
 - **Power Apps environments & Dataverse** — environment creation/licensing/capacity, Dataverse database provisioning, the three-portal (admin center/maker/Power Automate) visibility divergence, solution import missing-dependency resolution — a distinct admin surface from flow execution (see `PowerApps/`)
+- **Copilot Studio security & governance** — data (DLP) policies scoped to Copilot Studio's own connectors (authentication gate, knowledge sources, channels, HTTP, skills, event triggers), per-agent authentication modes, tenant-level generative-AI publish controls, customer-managed keys (CMK), and audit logging — a distinct governance surface from both flow DLP and the Microsoft 365 Agent Registry (see `PowerApps/`)
 
 ---
 
@@ -24,6 +25,8 @@ This module focuses on what MSPs actually use Power Automate for:
 - `Intune/` — if Power Automate Desktop flows are deployed via Intune
 - `Desktop-RPA/` — if the issue is a desktop flow's **machine/session runtime** (registration, RDP, service account, unattended capacity) rather than the cloud flow orchestrating it — the two have entirely separate failure domains
 - `PowerApps/` — if the issue is **environment/Dataverse admin** (can't create an environment, can't see an environment, database provisioning stuck, solution import failing) rather than a specific flow's execution — again, an entirely separate failure domain from the flow-focused topics in this folder
+- `PowerApps/CopilotStudio-Security-B.md`/`-A.md` — if the issue is **Copilot Studio agent security/governance** (publish blocked by a data policy, unauthenticated agent, knowledge-source restriction, CMK, audit) rather than a flow or environment issue
+- `M365/Copilot/AgentGovernance-B.md`/`-A.md` — if the issue is the **Microsoft 365 Agent Registry/Agent 365** cross-platform lifecycle (approve/reject/publish/ownership across all agent-creation platforms) rather than Copilot Studio's own DLP/authentication/CMK configuration
 
 ---
 
@@ -58,6 +61,9 @@ This module focuses on what MSPs actually use Power Automate for:
 | `PowerApps/Environment-Dataverse-B.md` | Hotfix: environment creation blocked (license/policy/capacity), environment "invisible" in a specific portal, Dataverse database provisioning stuck, solution import missing-dependency error |
 | `PowerApps/Environment-Dataverse-A.md` | Deep dive: environment/license/capacity model, Dataverse provisioning architecture, the three-portal (admin center/maker/Power Automate) visibility divergence, the irreversible "Enable Dynamics 365 apps" decision, solution import dependency resolution |
 | `PowerApps/Scripts/Get-PowerAppsEnvironmentAudit.ps1` | PS: tenant-wide environment inventory — flags stalled provisioning and Trial/Sandbox capacity-reclaim candidates |
+| `PowerApps/CopilotStudio-Security-B.md` | Hotfix: Copilot Studio agent publish blocked by a data policy, unauthenticated agent, channel/knowledge-source restriction, CMK, audit trail request |
+| `PowerApps/CopilotStudio-Security-A.md` | Deep dive: Copilot Studio's layered security model — tenant generative-AI controls, DLP data policies scoped to Copilot Studio connectors, per-agent authentication modes, CMK, sensitivity-label-aware knowledge grounding, audit logging |
+| `PowerApps/Scripts/Get-CopilotStudioDLPAudit.ps1` | PS: tenant-wide audit of Copilot Studio-relevant data policy connector classifications — flags missing unauthenticated-chat blocks and default-classification risk |
 
 ---
 
@@ -78,6 +84,9 @@ This module focuses on what MSPs actually use Power Automate for:
 - "Can't create a new environment / 'not enough capacity' / creation button greyed out" → `PowerApps/Environment-Dataverse-B.md`; use `Scripts/Get-PowerAppsEnvironmentAudit.ps1` to find reclaimable Trial/Sandbox capacity
 - "User can see the environment in [admin center/maker portal/Power Automate portal] but not the others" → `PowerApps/Environment-Dataverse-B.md` Fix 2 — the three portals have independent visibility rules, this is usually expected once the right role is assigned
 - "Dataverse database stuck provisioning" / "solution import fails with missing dependency" → `PowerApps/Environment-Dataverse-B.md`
+- "Copilot Studio agent won't publish / blocked by a data policy" → `PowerApps/CopilotStudio-Security-B.md`; use `Scripts/Get-CopilotStudioDLPAudit.ps1` to find the blocking connector/classification
+- "Copilot Studio agent has no login / anyone can chat with it" → `PowerApps/CopilotStudio-Security-B.md` Fix 2
+- "Client wants Copilot Studio conversation data encrypted with their own key" → `PowerApps/CopilotStudio-Security-B.md` Fix 5 / `PowerApps/CopilotStudio-Security-A.md` Playbook 3
 
 ---
 

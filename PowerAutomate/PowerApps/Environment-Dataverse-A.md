@@ -23,7 +23,7 @@
 |------|--------|
 | **Surface** | Power Platform admin center environment lifecycle: creation, licensing/policy gates, Dataverse database provisioning, environment visibility across the three Power Platform portals, solution import dependency resolution |
 | **Scope** | Environment creation and types, Dataverse database provisioning model, the three-portal visibility divergence, capacity model, solution import missing-dependency resolution |
-| **Out of scope** | Individual flow troubleshooting (connector auth, throttling, DLP — see `PowerAutomate/Troubleshooting/`), Dataverse table/column design, Power BI, Copilot Studio-specific environment behavior |
+| **Out of scope** | Individual flow troubleshooting (connector auth, throttling, DLP — see `PowerAutomate/Troubleshooting/`), Dataverse table/column design, Power BI, Copilot Studio-specific environment behavior (Copilot Studio's own security/governance surface — data policies, per-agent authentication, CMK, audit — is covered in `CopilotStudio-Security-A.md`/`-B.md`) |
 | **Assumed role** | L2/L3 engineer or MSP admin with Power Platform administrator or Dynamics 365 administrator role in the tenant |
 
 ---
