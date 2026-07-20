@@ -26,7 +26,7 @@
 
 **Out of scope:**
 - Configuration Manager (ConfigMgr) Software Update Point (SUP) design — this covers client-side WSUS pointer only, not SUP server administration
-- WSUS server health (SUSDB maintenance, IIS tuning, content store cleanup) — separate server-side runbook
+- WSUS server health (SUSDB maintenance, IIS tuning, content store cleanup) — see `WSUS-Server-A.md` for the dedicated server-side runbook
 - Autopatch (Windows Autopatch has its own ring/deployment model layered on top of WUfB — related but distinct)
 - Driver update policy specifics (covered under a separate Feature Updates / Driver Management runbook)
 
