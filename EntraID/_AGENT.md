@@ -27,6 +27,7 @@ Covers:
 - `Intune/` — most device compliance issues loop back to Entra join state
 - `Autopilot/` — Autopilot enrollment failures are almost always Entra + Intune combined
 - `EntraID/Graph/` — for automating anything against Entra via PowerShell or flows
+- `macOS/Troubleshooting/ManagedAppleID-Federation-A.md`/`-B.md` — if the question is about an Apple device's **Managed Apple Account** being backed by Entra ID (Apple Business/Apple Business Manager federation and directory sync), not device join/Entra registration itself — a distinct identity plane covered there, not here
 
 ---
 
