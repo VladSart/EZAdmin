@@ -31,6 +31,7 @@
 - Azure OpenAI Service / Copilot Studio agent-building specifics (separate product surface)
 - GitHub Copilot, Security Copilot, Sales/Service Copilot (different licensing SKUs entirely)
 - Billing and CSP-level SKU procurement disputes
+- Data security/oversharing risk assessment, prompt/response DLP, and AI-interaction monitoring for Copilot — see `Security/Purview/DSPM-for-AI-A.md`/`-B.md` (this file covers Copilot licensing/enablement/grounding; DSPM covers what Copilot can see and expose, and how that risk is monitored/remediated)
 
 **Assumptions:**
 - Global Reader or Global Administrator role for read operations; License Administrator + User Administrator for write operations

@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, **Adaptive Protection** (the ML-driven bridge routing IRM risk signal into DLP/Data Lifecycle Management/Conditional Access enforcement), Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments, and **Compliance Manager** — the risk-assessment/scoring layer that reads live configuration state from every other topic in this folder (plus Entra features like Conditional Access) and maps it to regulation/standard assessment templates. Compliance Manager never configures anything directly; it is a read layer over the rest of this folder. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, **Adaptive Protection** (the ML-driven bridge routing IRM risk signal into DLP/Data Lifecycle Management/Conditional Access enforcement), Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments, **Compliance Manager** — the risk-assessment/scoring layer that reads live configuration state from every other topic in this folder (plus Entra features like Conditional Access) and maps it to regulation/standard assessment templates, and **DSPM for AI / Data Security Posture Management (DSPM)** — the operational (not regulatory-scoring) data-security layer covering Copilot/agent oversharing and exfiltration risk, now converged (2026) into a single unified DSPM experience alongside two still-functional classic predecessors. Compliance Manager never configures anything directly; it is a read layer over the rest of this folder, and DSPM likewise creates default policies in DLP/Insider Risk Management/Communication Compliance/Collection policies but never owns them directly either. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -46,6 +46,9 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Audit-B.md` | Hotfix runbook for the silent 100/5,000/50,000 `Search-UnifiedAuditLog` result-count tiers, ingestion delay, mailbox audit bypass, missing Premium-only properties, and non-retroactive retention gaps |
 | `ComplianceManager-A.md` | Deep dive — assessment/template/control/improvement-action model, the "Managed by" (Microsoft/Your organization/Shared) responsibility split, point-weighted Compliance Score calculation, Compliance Manager's own distinct role group, custom assessment authoring, and the Compliance Score vs. Secure Score category distinction |
 | `ComplianceManager-B.md` | Hotfix runbook for scores not updating after real remediation, Microsoft-managed actions clients try to action themselves, missing templates (licensing), users who can't update actions (missing Compliance Manager role, not a directory role), and genuine score-drop investigation |
+| `DSPM-for-AI-A.md` | Deep dive — the 2026 convergence of DSPM for AI and general DSPM into one unified, Objectives-driven solution (with two still-functional classic predecessors coexisting), the Objectives model, data risk assessment architecture (default/custom-M365/Fabric, each with its own delay/limit profile), one-click default policies and their true owning solutions, and the separately-gated AI-interaction-content-visibility role |
+| `DSPM-for-AI-B.md` | Hotfix runbook for classic-vs-current surface confusion, Audit/licensing prerequisite gaps, the missing AI Content Viewer role (content invisible despite full admin access), stale/empty data risk assessments, failed item-level or Fabric assessment authentication, and content-capture-off collection policies |
+| `Scripts/Get-DSPMforAIAudit.ps1` | Audits DSPM prerequisites (Audit, Copilot licensing) and default DSPM-named DLP policy inventory (mode/enabled/legacy-naming), with best-effort Insider Risk signal and sensitivity label readiness checks — DSPM itself has no cmdlet surface, so this audits only the adjacent signals its Dependency Stack depends on |
 | `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
 | `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
 | `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
@@ -109,6 +112,13 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "User has Global Admin but can't update Compliance Manager actions" | `ComplianceManager-B.md` → Fix 4 (Compliance Manager has its own separate role group) |
 | "Compliance Score dropped with no apparent change" | `ComplianceManager-A.md` → Remediation Playbook 2 |
 | "Compliance Score vs. Secure Score — why don't they match?" | `ComplianceManager-A.md` → Scope & Assumptions / Remediation Playbook 4 (different tools, different signal domains) |
+| "Client's DSPM screen doesn't match the documentation/training we saw" | `DSPM-for-AI-B.md` → Fix 1 (they're likely in the classic experience, not the current unified one, or vice versa) |
+| "Compliance Administrator can see DSPM reports but not the actual prompt/response text" | `DSPM-for-AI-B.md` → Fix 4 (separate AI Content Viewer role, not implied by any general DSPM role) |
+| "DSPM data risk assessment shows nothing / hasn't updated" | `DSPM-for-AI-B.md` → Fix 5 (check the ~4-day default / ~48-hour custom stabilization window before assuming a fault) |
+| "Custom item-level or Fabric data risk assessment won't authenticate" | `DSPM-for-AI-B.md` → Fix 6/Fix 7 (two INDEPENDENT Entra app registrations with different permission sets — don't conflate them) |
+| "DSPM policy is detecting activity but showing no prompt/response content" | `DSPM-for-AI-B.md` → Fix 8 (content capture is opt-in per policy, off by default on several one-click policies) |
+| "Difference between DSPM and Compliance Manager?" | `DSPM-for-AI-A.md` → How It Works (DSPM = operational data-security action; Compliance Manager = regulatory scoring — same underlying signal, different purpose) |
+| "Want to get ahead of oversharing before a Copilot rollout" | `DSPM-for-AI-A.md` → Remediation Playbook 2 |
 
 ---
 
@@ -163,6 +173,13 @@ Get-MgIdentityConditionalAccessPolicy | Where-Object { $_.Conditions.InsiderRisk
 Get-InsiderRiskPolicy | Select-Object Name, IsEnabled
 # WRONG SYSTEM for Adaptive Protection troubleshooting — this is Entra ID Protection:
 # Get-MgRiskyUser
+
+# DSPM for AI / DSPM — NO dedicated cmdlet surface at all; Objectives, AI observability, Asset
+# explorer, and data risk assessments are Purview-portal-only. Only these adjacent prerequisite/
+# default-policy signals are cmdlet-reachable:
+Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
+Get-MgSubscribedSku | Where-Object { $_.SkuPartNumber -match "Copilot" }
+Get-DlpCompliancePolicy | Where-Object { $_.Name -like "*DSPM for AI*" -or $_.Name -like "*Microsoft AI Hub*" }
 ```
 
 ---

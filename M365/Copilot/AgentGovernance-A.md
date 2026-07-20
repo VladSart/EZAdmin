@@ -32,6 +32,7 @@
 - Copilot Studio's own security/governance surface — data (DLP) policies scoped to Copilot Studio connectors, per-agent authentication modes, customer-managed keys, sensitivity-label-aware knowledge grounding — see `PowerAutomate/PowerApps/CopilotStudio-Security-A.md`/`-B.md` (this file governs the Registry's oversight of an agent's existence/ownership; that file governs one Copilot Studio agent's own security configuration)
 - Power Platform DLP policy authoring in general (only referenced where it intersects agent publishing/access)
 - Microsoft 365 Copilot usage/adoption reporting for the base product (`Scripts/Get-CopilotUsageReport.ps1` covers general Copilot usage; this runbook's own Evidence Pack is agent-registry-specific)
+- Data oversharing risk assessment, AI-interaction content monitoring, and the AI Content Viewer role that gates prompt/response visibility — see `Security/Purview/DSPM-for-AI-A.md`/`-B.md` (DSPM's **AI observability** and **Asset explorer** surface per-agent sensitive-data-access risk; this file governs the Registry's lifecycle/ownership oversight of the agent itself, a different control plane)
 
 **Assumes:**
 - Microsoft Graph PowerShell SDK (`Microsoft.Graph`) v2.x installed for any Graph-based evidence collection
