@@ -177,7 +177,7 @@ Expected: engineers who should only trigger restores have `Backup Operator`, not
 1. Pull the specific error code via `Get-AzRecoveryServicesBackupJobDetail` — never troubleshoot from "Failed" alone.
 2. Check guest-level health first (VM Agent heartbeat, extension provisioning state) — the majority of real-world failures are guest-side, not vault-side.
 3. Check for a stuck/overlapping `InProgress` job before assuming the schedule is broken.
-4. If the error is VSS-related, isolate to a specific writer (`vssadmin list writers` via Run Command) rather than broadly restarting services.
+4. If the error is VSS-related, isolate to a specific writer (`vssadmin list writers` via Run Command) rather than broadly restarting services — for the full writer/provider architecture, shadow storage exhaustion, and SQL Server writer isolation (SQLWRITER/SQLVDI), see `Windows/Troubleshooting/VSS-A.md`/`VSS-B.md`.
 
 ### Phase 2 — Protection/Coverage Gaps
 1. Compare the full VM inventory (`Get-AzVM`) against protected items (`Get-AzRecoveryServicesBackupItem`) to find unprotected VMs — this drift happens silently when new VMs are provisioned outside the standard deployment process.
