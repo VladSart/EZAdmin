@@ -60,7 +60,7 @@ Unlike Windows, where a single onboarding script/GPO/Intune policy silently conf
 
 ### Why macOS onboarding looks nothing like Windows
 
-On Windows, "onboarding" is largely a registry-key/service-state operation performed by a script running as SYSTEM — no user-facing consent model exists to fight through. On macOS, Apple's privacy and security architecture (TCC/PPPC, System Extensions framework, Background Task Management since Ventura) requires **explicit approval for nearly every capability a security product needs**, and MDM can only pre-approve these silently if the device is **supervised** — meaning enrolled via Apple Business Manager/ADE, not manually/BYOD-enrolled. This is the single biggest source of confusion for engineers coming from a Windows-first MSP background: a config profile "delivered successfully" in Intune's per-device status does not mean the capability it grants is actually active — it means the *policy* was pushed; the *OS-level state* it's supposed to produce must be separately verified with `systemextensionsctl`, `profiles show`, or the TCC database.
+On Windows, "onboarding" is largely a registry-key/service-state operation performed by a script running as SYSTEM — no user-facing consent model exists to fight through. On macOS, Apple's privacy and security architecture (TCC/PPPC, System Extensions framework, Background Task Management since Ventura) requires **explicit approval for nearly every capability a security product needs**, and MDM can only pre-approve these silently if the device is **supervised** — meaning enrolled via Apple Business/ADE, not manually/BYOD-enrolled. This is the single biggest source of confusion for engineers coming from a Windows-first MSP background: a config profile "delivered successfully" in Intune's per-device status does not mean the capability it grants is actually active — it means the *policy* was pushed; the *OS-level state* it's supposed to produce must be separately verified with `systemextensionsctl`, `profiles show`, or the TCC database.
 
 ### The onboarding package vs. everything else
 
@@ -95,7 +95,7 @@ If a user has separately installed "Microsoft Defender for Individuals" (the con
 ## Dependency Stack
 
 ```
-Apple Business Manager (ADE/DEP token) ── device enrolled AND supervised
+Apple Business (ADE/DEP token) ── device enrolled AND supervised
     └── Intune MDM enrollment (silent profile approval requires supervision)
          └── Layer 1 — Capability approval profiles (steps 1–8, any order issues cause activation to hang)
               System Extensions ─┬─ Full Disk Access (PPPC/TCC)
@@ -424,7 +424,7 @@ cat "$OUTPUT"
 ## 🎓 Learning Pointers
 
 - **macOS onboarding is fundamentally a 12-artifact deployment, not a single onboarding action.** Coming from Windows (one SENSE service, one registry key), the biggest mental shift is that "onboarding" on macOS is really "satisfy Apple's consent model across 8 separate capabilities, then separately deliver a distinct licensing artifact." Treat each of the 12 components in the How It Works table as independently verifiable. [Deploy MDE on macOS with Intune](https://learn.microsoft.com/en-us/defender-endpoint/mac-install-with-intune).
-- **Supervision (ADE/DEP), not just enrollment, is the real gate on silent approval.** A device can be fully MDM-enrolled and still require manual user clicks for every capability if it wasn't enrolled through Apple Business Manager. Always check `profiles status -type enrollment` for the supervision flag before troubleshooting profile content.
+- **Supervision (ADE/DEP), not just enrollment, is the real gate on silent approval.** A device can be fully MDM-enrolled and still require manual user clicks for every capability if it wasn't enrolled through Apple Business. Always check `profiles status -type enrollment` for the supervision flag before troubleshooting profile content.
 - **The Network Filter is a single, system-wide OS resource.** This is an Apple platform limit, not something Microsoft (or any vendor) can configure around — running two full security products with competing network extensions in production will always result in one losing that slot. Plan AV migrations with this in mind, not as an afterthought.
 - **The onboarding package is a tenant-bound license token, never reusable across tenants** — a very common MSP mistake is re-imaging a device and re-running an old onboarding package from a prior client's tenant. Always download fresh from the target tenant's Defender portal, and check `org_id` when troubleshooting "not appearing" tickets on reused hardware.
 - **SSL-inspecting and authenticated proxies are explicitly and permanently unsupported** on the MDE cloud channel — this isn't a "not yet supported," it's a security design decision (certificate pinning). Any client's network/security team that inspects all outbound TLS by policy needs a documented bypass for the MDE FQDN list.

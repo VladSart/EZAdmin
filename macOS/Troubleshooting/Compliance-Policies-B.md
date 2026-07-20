@@ -170,7 +170,7 @@ sudo launchctl start com.apple.mdmd
 # Step 1 — Check if the MDM profile is just missing from System Preferences
 profiles -P | grep -i MDM
 
-# Step 2 — If ADE-enrolled device (check in Apple Business Manager):
+# Step 2 — If ADE-enrolled device (check in Apple Business):
 # - Device should re-enroll automatically on next Setup Assistant run
 # - Wipe and re-enroll is the clean path for ADE: System Settings → General → Transfer or Reset → Erase All Content
 
@@ -330,6 +330,6 @@ Last sync attempted:  ___________________
 
 - **APNs certificate expiry kills check-ins:** The Apple MDM Push Certificate in Intune renews annually. If it expires, no Apple device will check in. Check expiry at Intune Admin Center → Tenant Administration → Apple MDM Push Certificate. Renew before expiry — renewal must use the same Apple ID that created it. [APNs renewal](https://learn.microsoft.com/en-us/mem/intune/enrollment/apple-mdm-push-certificate-get)
 
-- **User-approved MDM vs Device enrollment:** If the device is User-Approved (not ADE), Intune can read compliance settings but can't install kernel extensions or apply some security settings. For full management capabilities (including FileVault key escrow), ADE (Apple Business Manager) enrollment is required. This matters when a compliance policy checks for things that require ADE-level permissions.
+- **User-approved MDM vs Device enrollment:** If the device is User-Approved (not ADE), Intune can read compliance settings but can't install kernel extensions or apply some security settings. For full management capabilities (including FileVault key escrow), ADE (Apple Business) enrollment is required. This matters when a compliance policy checks for things that require ADE-level permissions.
 
 - **Compliance state propagation delay:** Even after a device reports compliant, Conditional Access can take 5–20 minutes to unblock access. This is a common user escalation: "I fixed the issue but still can't access email." Ask the user to wait 15 minutes and try again before further escalation.

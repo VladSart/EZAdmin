@@ -17,7 +17,7 @@
 ---
 ## Scope & Assumptions
 
-This runbook covers two distinct, macOS 26-era Apple features that IT tickets frequently conflate because both are triggered from Setup Assistant and both are gated by Apple Business Manager (ABM) / Apple School Manager (ASM):
+This runbook covers two distinct, macOS 26-era Apple features that IT tickets frequently conflate because both are triggered from Setup Assistant and both are gated by Apple Business (ABM) / Apple School Manager (ASM):
 
 1. **Device Management Migration** — the ABM/ASM "Assign Device Management" workflow that re-enrolls an organization-owned device from one MDM to another **without a factory wipe**, for iOS 26, iPadOS 26, and macOS 26 or later.
 2. **Managed Migration Assistant** — an Intune-configured declarative policy (`com.apple.configuration.migration-assistant.settings`) that gives IT organizational control over which parts of a user's Home folder transfer from an old Mac to a new one during Setup Assistant, for a destination Mac on **macOS 26.4 or later**.
@@ -30,7 +30,7 @@ Both are configured and observed through **Microsoft Intune** in this repo's sco
 - iOS/iPadOS-specific migration behavior (app preservation via `await_device_configured`, Activation Lock handling) beyond what's needed to understand the shared architecture — the Mac-specific behaviors are the focus
 - Data migration between an on-prem AD-bound Mac and a cloud-native one — that's an identity/binding change, not a data-transport one; see `Platform-SSO-A.md` and `EntraID/Troubleshooting/HybridJoin-A.md` if identity is also changing as part of the device refresh
 
-**Assumed knowledge:** engineer understands Intune's macOS management model (ADE, Settings Catalog, DDM), has access to Apple Business Manager or Apple School Manager with sufficient role permissions, and understands the existing ADE dependency chain in `ADE-Enrollment-A.md`.
+**Assumed knowledge:** engineer understands Intune's macOS management model (ADE, Settings Catalog, DDM), has access to Apple Business or Apple School Manager with sufficient role permissions, and understands the existing ADE dependency chain in `ADE-Enrollment-A.md`.
 
 ---
 ## How It Works

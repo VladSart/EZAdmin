@@ -19,14 +19,14 @@
 
 This runbook covers **Automated Device Enrollment (ADE)** — formerly Apple DEP (Device Enrollment Program) — for macOS devices managed through **Microsoft Intune**. It applies to:
 
-- macOS devices assigned to an ADE token in Apple Business Manager (ABM) or Apple School Manager (ASM)
+- macOS devices assigned to an ADE token in Apple Business (ABM) or Apple School Manager (ASM)
 - Devices enrolled via Intune MDM profile (not JAMF, not direct Apple Profile Manager)
 - macOS 12 Monterey through macOS 15 Sequoia
 - Both user-affinity and user-affinity-less (device-based) enrollment
 
 **Out of scope:** iOS/iPadOS ADE (different flow), BYOD enrollment (no ADE), JAMF-managed devices.
 
-**Assumed knowledge:** Engineer understands Intune basics, has Global Admin or Intune Admin role, and has access to Apple Business Manager.
+**Assumed knowledge:** Engineer understands Intune basics, has Global Admin or Intune Admin role, and has access to Apple Business.
 
 ---
 ## How It Works
@@ -90,7 +90,7 @@ ADE enrollment is an out-of-box experience (OOBE) flow that runs during macOS Se
 ## Dependency Stack
 
 ```
-Apple Business Manager (ABM / ASM)
+Apple Business (ABM / ASM)
     │
     ├── ADE Token (MDM Server Token)
     │       ├── Downloaded from ABM, uploaded to Intune
@@ -154,7 +154,7 @@ macOS Device
 
 **Step 1 — Confirm device is in ABM and assigned to correct MDM server**
 ```bash
-# In Apple Business Manager portal:
+# In Apple Business portal:
 # Devices → search by serial → confirm "MDM Server" field shows your Intune server
 # Note: You can also check via Intune:
 # Devices → macOS → Enrollment → ADE Tokens → [Token] → Devices
@@ -224,7 +224,7 @@ Bad: Device not found (never enrolled), `ManagementState = RetirePending`
 
 ### Phase 1 — Pre-enrollment (device hasn't started Setup Assistant)
 
-1. Log into **Apple Business Manager** → Devices → Search serial
+1. Log into **Apple Business** → Devices → Search serial
 2. Confirm device is listed and "MDM Server" = your Intune ADE server
 3. If not assigned: Add device to ABM (purchase from ABM reseller, or use Apple Configurator 2 for existing devices)
 4. In Intune: Devices → macOS → Enrollment → ADE Tokens → [Token] → Sync
@@ -264,7 +264,7 @@ Get-MgDeviceManagementDepOnboardingSetting |
 ```
 
 **Manual steps (portal required):**
-1. Go to **Apple Business Manager** → Settings → MDM Servers → [Your Intune Server] → Download Token
+1. Go to **Apple Business** → Settings → MDM Servers → [Your Intune Server] → Download Token
 2. Save the `.p7m` file
 3. In Intune: Devices → macOS → Enrollment → ADE Tokens → [Expiring Token] → Renew token
 4. Upload the new `.p7m` file

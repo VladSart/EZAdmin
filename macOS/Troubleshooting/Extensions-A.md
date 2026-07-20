@@ -393,7 +393,7 @@ cat "$OUTPUT"
 
 - **System extensions are user-space, not kernel.** This is the fundamental architectural shift since Catalina. They cannot crash the kernel, but they also can't do everything kexts could — vendors must use Apple's EndpointSecurity, NetworkExtension, or DriverKit frameworks. See [Apple's System Extensions guide](https://developer.apple.com/documentation/systemextensions).
 
-- **Supervision is the key unlock.** Without Apple DEP/ADE supervision, MDM cannot silently approve system extensions. The user gets a notification and must approve manually in System Settings. For MSP environments, always ensure devices are enrolled via ADE — see [Apple Business Manager DEP docs](https://support.apple.com/guide/apple-business-manager/welcome/web).
+- **Supervision is the key unlock.** Without Apple DEP/ADE supervision, MDM cannot silently approve system extensions. The user gets a notification and must approve manually in System Settings. For MSP environments, always ensure devices are enrolled via ADE — see [Apple Business DEP docs](https://support.apple.com/guide/apple-business-manager/welcome/web).
 
 - **PPPC and extension approval are separate.** Getting the extension *running* (SystemExtensions profile) is different from granting it *permissions* (PPPC profile). Both must be present. Security tools that silently fail to detect threats are often missing the Full Disk Access PPPC grant.
 

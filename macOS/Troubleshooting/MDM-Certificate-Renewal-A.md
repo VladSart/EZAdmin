@@ -375,9 +375,9 @@ echo "[OK] Evidence pack: /tmp/MDMEvidence_$TIMESTAMP.zip"
 
 - **Two separate renewal windows:** APNs cert (server-side): renew annually, up to 30 days early, in Apple Push Certificates Portal. Device identity cert (device-side): auto-renews via mdmclient 30 days before expiry if the APNs channel is healthy. If APNs expired, device identity cert auto-renewal also stops — fix APNs first.
 
-- **ADE/DEP makes re-enrollment painless:** ADE (Automated Device Enrollment) devices automatically re-enroll on wipe because they're registered in Apple Business Manager. Non-ADE devices require user action. For MSPs managing mixed fleets, tracking ADE registration status is critical before any re-enrollment event.
+- **ADE/DEP makes re-enrollment painless:** ADE (Automated Device Enrollment) devices automatically re-enroll on wipe because they're registered in Apple Business. Non-ADE devices require user action. For MSPs managing mixed fleets, tracking ADE registration status is critical before any re-enrollment event.
 
-- **Apple Business Manager Apple ID management:** The Apple ID used for APNs should be a role-based account (e.g., `mdm-admin@company.com`), not tied to an individual employee. When staff leave, individual Apple IDs lose organisational access and cannot be transferred. See [Apple Business Manager User Guide](https://support.apple.com/guide/apple-business-manager/welcome/web).
+- **Apple Business Apple ID management:** The Apple ID used for APNs should be a role-based account (e.g., `mdm-admin@company.com`), not tied to an individual employee. When staff leave, individual Apple IDs lose organisational access and cannot be transferred. See [Apple Business User Guide](https://support.apple.com/guide/apple-business-manager/welcome/web).
 
 - **mdmclient is the macOS MDM agent:** Unlike Windows (where MDM is handled by the Enrollment Agent in the OS), macOS uses `/usr/libexec/mdmclient` as a launchd daemon. Understanding its log output is key to diagnosing why a device isn't checking in. Use `log stream --predicate 'process == "mdmclient"'` for live MDM activity.
 

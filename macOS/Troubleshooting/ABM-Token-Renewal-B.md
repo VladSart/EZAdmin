@@ -1,4 +1,4 @@
-# Apple Business Manager Token Renewal — Hotfix Runbook (Mode B: Ops)
+# Apple Business Token Renewal — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate in under 10 minutes.
 
 ---
@@ -15,7 +15,7 @@
 
 ## ⚠️ Not the same as MDM certificate renewal
 
-This runbook covers the **Apple Business Manager (ABM) / Apple School Manager (ASM) server token** used by Intune to sync device inventory (ADE) and VPP app licenses. This is a **completely separate credential** from the APNs push certificate (see `MDM-Certificate-Renewal-B.md`). Confusing the two wastes escalation time — check both, but they fail differently and are fixed in different places.
+This runbook covers the **Apple Business (ABM) / Apple School Manager (ASM) server token** used by Intune to sync device inventory (ADE) and VPP app licenses. This is a **completely separate credential** from the APNs push certificate (see `MDM-Certificate-Renewal-B.md`). Confusing the two wastes escalation time — check both, but they fail differently and are fixed in different places.
 
 | | ABM/ASM Server Token | APNs Push Certificate |
 |---|---|---|
@@ -36,7 +36,7 @@ Run these first (from the Intune admin center, not the device — this is a tena
    → Check "Token expires" date for the affected token
 
 2. Intune portal > Devices > Enrollment > Apple > Enrollment Program Tokens > [token] > Devices
-   → Confirm whether device count/sync is stale (compare against Apple Business Manager device count)
+   → Confirm whether device count/sync is stale (compare against Apple Business device count)
 
 3. Apps > Policies > App licenses (VPP)
    → Check if VPP token status shows "Active" or "Invalid"
@@ -63,7 +63,7 @@ Run these first (from the Intune admin center, not the device — this is a tena
 <details><summary>What must be true</summary>
 
 ```
-Apple Business Manager (business.apple.com) — organization account
+Apple Business (business.apple.com) — organization account
         │
 MDM Server registered in ABM (e.g. "Contoso Intune")
         │  generates a Server Token (.p7m file), valid 1 year
@@ -125,7 +125,7 @@ A gap here confirms the token has already stopped syncing correctly.
 
 **When to use:** Token shows expired or expiring soon in Intune; new device sync (ADE) is stale or stopped.
 
-**Step 1 — Download a new token from Apple Business Manager:**
+**Step 1 — Download a new token from Apple Business:**
 1. Sign in to [business.apple.com](https://business.apple.com) as an Administrator or the account with MDM Server Assignment access
 2. Go to **Preferences** > **MDM Server Assignment**
 3. Select the MDM server entry that matches your Intune tenant
@@ -201,7 +201,7 @@ Intune portal > Apps > Policies > App licenses (or Tenant administration > Conne
 ## Escalation Evidence
 
 ```
-TICKET: Apple Business Manager Token Renewal / ADE Sync Issue
+TICKET: Apple Business Token Renewal / ADE Sync Issue
 ========================================================
 Date/Time:                 _______________
 Raised by:                 _______________
@@ -214,7 +214,7 @@ ABM server entry name:     _______________
 Apple ID used for renewal: _______________ (must have MDM Server Assignment access)
 
 Device count comparison:
-  Apple Business Manager (assigned to this MDM server): _______________
+  Apple Business (assigned to this MDM server): _______________
   Intune (Enrollment Program Tokens > Devices):          _______________
   Gap:                                                    _______________
 
@@ -244,4 +244,4 @@ _______________________________________________
 
 - **Set a calendar reminder at 60 days before ABM/ASM token expiry, separate from any APNs cert reminder** — Intune's UI does show expiry dates for both, but there's no native proactive alert for either. Treat them as two separate recurring maintenance tasks, not one.
 
-- **A device count mismatch between Apple Business Manager and Intune's Enrollment Program Tokens view is the earliest warning sign of a sync problem** — often visible days before the token's hard expiry date, since sync can start degrading due to throttling or partial failures before the token is fully expired. Build this comparison into routine Intune health checks rather than only reacting to expiry-date warnings.
+- **A device count mismatch between Apple Business and Intune's Enrollment Program Tokens view is the earliest warning sign of a sync problem** — often visible days before the token's hard expiry date, since sync can start degrading due to throttling or partial failures before the token is fully expired. Build this comparison into routine Intune health checks rather than only reacting to expiry-date warnings.

@@ -1,4 +1,4 @@
-# Apple Business Manager Token Renewal — Reference Runbook (Mode A: Deep Dive)
+# Apple Business Token Renewal — Reference Runbook (Mode A: Deep Dive)
 > Engineering-grade reference. Explains why, not just what.
 
 ---
@@ -19,7 +19,7 @@
 
 ## Scope & Assumptions
 
-- **Scope:** The Apple Business Manager (ABM) / Apple School Manager (ASM) **server token** that Intune uses to (1) sync ADE/DEP device assignments and (2) manage VPP app licensing.
+- **Scope:** The Apple Business (ABM) / Apple School Manager (ASM) **server token** that Intune uses to (1) sync ADE/DEP device assignments and (2) manage VPP app licensing.
 - **Explicitly out of scope:** The APNs push certificate — a separate, differently-scoped credential covered in `MDM-Certificate-Renewal-A.md`. This document assumes you have already ruled out APNs cert expiry as the cause (existing enrolled devices still check in normally).
 - **Platforms:** macOS and iOS/iPadOS devices enrolled via ADE under the same ABM/ASM organization.
 - **Admin access required:** ABM/ASM Administrator or a user with **MDM Server Assignment** permission in business.apple.com; Intune Global Administrator or Intune Administrator role.
@@ -33,10 +33,10 @@
 
 ### What the token actually is
 
-The ABM/ASM server token is a `.p7m` file — a PKCS#7 signed message containing a public key and metadata that cryptographically links a specific **MDM server entry** inside Apple Business Manager to your **Intune tenant**. It is not a certificate in the X.509 sense used by APNs; it's an authorization artifact that lets Intune poll Apple's Device Enrollment Program (DEP) API on your organization's behalf.
+The ABM/ASM server token is a `.p7m` file — a PKCS#7 signed message containing a public key and metadata that cryptographically links a specific **MDM server entry** inside Apple Business to your **Intune tenant**. It is not a certificate in the X.509 sense used by APNs; it's an authorization artifact that lets Intune poll Apple's Device Enrollment Program (DEP) API on your organization's behalf.
 
 ```
-Apple Business Manager (business.apple.com)
+Apple Business (business.apple.com)
         │
         │  Organization admin creates/manages an "MDM Server" entry
         │  (e.g., "Contoso Intune Production")
@@ -63,7 +63,7 @@ Once uploaded, the token backs **two logically separate but co-located functions
 
 ```
                      ┌─────────────────────────┐
-                     │  Apple Business Manager │
+                     │  Apple Business │
                      │  Organization Account   │
                      └────────────┬────────────┘
                                   │
@@ -103,7 +103,7 @@ Apple does **not** send a push notification or webhook to Intune when a token is
 Apple ID (organizational role account, not personal)
         │
         ▼
-Apple Business Manager / Apple School Manager organization
+Apple Business / Apple School Manager organization
         │
         ├── MDM Server Assignment entry (1:1 with Intune tenant, usually)
         │        │
@@ -304,7 +304,7 @@ Intune portal > Devices > Enrollment > Apple > Enrollment Program Tokens > [toke
    assign them to the newly created MDM Server entry
 
 6. For large device counts, this bulk reassignment may need to be done via
-   Apple's DEP API directly or may require Apple Business Manager support
+   Apple's DEP API directly or may require Apple Business support
    if the device count is large enough that manual reassignment isn't practical
 
 7. Once devices are reassigned in ABM, allow the new token's sync cycle
@@ -408,7 +408,7 @@ Write-Host "Manually record the equivalent count from business.apple.com > Devic
 
 - **"Renew" vs "Add" is the single most consequential decision in this whole workflow.** Renew preserves the link between the token and every enrollment profile assignment built on top of it. Add creates a parallel, disconnected entry that requires manually rebuilding every profile assignment — turning a five-minute renewal into a multi-hour cleanup, especially at scale. Always default to Renew unless you have positively confirmed the original entry is unrecoverable.
 
-- **Device count parity between Apple Business Manager and Intune is a leading indicator, not a lagging one.** Sync degradation (partial failures, API throttling, or an in-progress token issue) tends to show up as a growing but non-total device count gap days before the token's hard expiry date. Build this comparison into routine health checks rather than only reacting to expiry-date warnings in Intune's UI.
+- **Device count parity between Apple Business and Intune is a leading indicator, not a lagging one.** Sync degradation (partial failures, API throttling, or an in-progress token issue) tends to show up as a growing but non-total device count gap days before the token's hard expiry date. Build this comparison into routine health checks rather than only reacting to expiry-date warnings in Intune's UI.
 
 - **VPP and device-sync tokens are logically separate even when they share the same underlying ABM entry — diagnose them independently.** A client can report "new Macs aren't showing up" while VPP licensing is completely healthy, or vice versa. Don't assume fixing one resolves the other; validate both explicitly (Validation Steps 3 and 5).
 

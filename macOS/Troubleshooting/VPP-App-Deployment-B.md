@@ -1,4 +1,4 @@
-# macOS VPP / Apple Business Manager App Deployment — Hotfix Runbook (Mode B: Ops)
+# macOS VPP / Apple Business App Deployment — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate volume-purchased (VPP) app deployment failures on managed Macs in under 10 minutes.
 
 ---
@@ -12,7 +12,7 @@
 ---
 ## Triage
 
-VPP (Volume Purchase Program) apps — now called **location tokens** inside Apple Business Manager,
+VPP (Volume Purchase Program) apps — now called **location tokens** inside Apple Business,
 still labeled "Apple VPP tokens" in the Intune UI — fail in one of a small number of ways: the token
 itself, license availability, or a licensing-type mismatch. Almost never the app or the Mac itself.
 Run these first, in this order:
@@ -46,7 +46,7 @@ sudo profiles -P | grep -i -B1 -A3 "<AppBundleID>"
 
 | Finding | Action |
 |---|---|
-| Token status Expired | Fix 1 — renew the location token from Apple Business Manager |
+| Token status Expired | Fix 1 — renew the location token from Apple Business |
 | Token status Invalid | Fix 1 — Managed Apple Account issue (password/domain/disabled), not the token file itself |
 | Token status Duplicate | Fix 1 — same Token Location uploaded twice, remove the duplicate |
 | Available licenses = 0, assignment group larger than purchased count | Fix 2 — oversubscription, purchase more licenses or shrink the group |
@@ -62,7 +62,7 @@ sudo profiles -P | grep -i -B1 -A3 "<AppBundleID>"
 <details><summary>What must be true</summary>
 
 ```
-Apple Business Manager (or Apple School Manager) account for the org
+Apple Business (or Apple School Manager) account for the org
         │
 Content/location token purchased & downloaded
    (ABM → Preferences → Payments and Billing → Apps and Books → Content Tokens → Download)
@@ -169,7 +169,7 @@ fail silently with no obvious error banner unless someone checks the app's licen
 ```
 # 1. Confirm: Apps → All apps → <app> → Overview → Available = 0
 # 2. Either:
-#    a) Purchase additional licenses in Apple Business Manager, then Sync the token in Intune, OR
+#    a) Purchase additional licenses in Apple Business, then Sync the token in Intune, OR
 #    b) Reduce the assignment group to fit the number of licenses actually owned
 # 3. An alert automatically appears under Intune's Enrollment alerts tab once usage crosses 50% —
 #    use that as an early warning before hitting 100% next time
@@ -281,7 +281,7 @@ Steps already attempted:
 
 - **VPP is being renamed "Apps and Books" and legacy tokens are being phased toward migration.**
   If a customer references "the old VPP portal" or a purchaser sees a prompt to move to a new location
-  in Apple Business Manager, that's the VPP → Apps and Books migration path — treat it as a planned
+  in Apple Business, that's the VPP → Apps and Books migration path — treat it as a planned
   change, not a fault, and follow Microsoft's migration steps rather than troubleshooting it as broken. [Manage Apple Volume-Purchased Apps — Migrate from VPP to Apps and Books](https://learn.microsoft.com/en-us/intune/app-management/deployment/manage-vpp-apple)
 
 - **Device and user licensing are mutually exclusive per target, by design — never assign both.**

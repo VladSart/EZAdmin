@@ -14,7 +14,7 @@
 
 ## Triage
 
-**Terminology note:** Apple rebranded **Apple Business Manager** to **Apple Business** (the same admin console at business.apple.com now covers what used to be ABM, Apple Business Essentials, and Apple Business Connect). This runbook uses "Apple Business" for the console and "Managed Apple Account" for the federated identity — both are the current Apple terms as of mid-2026. Existing repo content (`ABM-Token-Renewal-A.md`, etc.) still says "Apple Business Manager" — same product, same tenant, different marketing name. This topic is unrelated to the DEP/VPP tokens covered there.
+**Terminology note:** Apple rebranded **Apple Business Manager** to **Apple Business** (the same admin console at business.apple.com now covers what used to be ABM, Apple Business Essentials, and Apple Business Connect). This runbook uses "Apple Business" for the console and "Managed Apple Account" for the federated identity — both are the current Apple terms as of mid-2026. Existing repo content (`ABM-Token-Renewal-A.md`, etc.) now says "Apple Business" too, but keeps "ABM" as an established shorthand — same product, same tenant, different marketing name. This topic is unrelated to the DEP/VPP tokens covered there.
 
 Run these first to classify the issue:
 

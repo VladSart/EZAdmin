@@ -77,7 +77,7 @@ The **Bootstrap Token** is a cryptographic escrow mechanism that allows MDM to g
 Device Setup Flow (Automated Device Enrollment):
   1. Device enrolls in Intune via ADE
   2. Bootstrap Token is generated on device
-  3. Device escrowed Bootstrap Token → Apple Business Manager / Intune
+  3. Device escrowed Bootstrap Token → Apple Business / Intune
   4. When new user logs in: MDM presents Bootstrap Token → grants Secure Token to user
   5. User can now enable or receive FileVault
 ```
@@ -156,7 +156,7 @@ This means deferred MDM enablement on Apple Silicon is more complex than Intel a
         [MDM Enrollment (ADE preferred)]
                 │ (requires)
                 ▼
-        [Apple Business Manager + Intune ADE profile]
+        [Apple Business + Intune ADE profile]
 ```
 
 ---

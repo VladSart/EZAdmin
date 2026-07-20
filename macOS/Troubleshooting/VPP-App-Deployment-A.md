@@ -1,4 +1,4 @@
-# macOS VPP / Apple Business Manager App Deployment — Reference Runbook (Mode A: Deep Dive)
+# macOS VPP / Apple Business App Deployment — Reference Runbook (Mode A: Deep Dive)
 > Engineering-grade reference. Explains why, not just what.
 
 ---
@@ -18,17 +18,17 @@
 ## Scope & Assumptions
 
 **Covers:**
-- Location tokens (the current Apple Business Manager term for what's still labeled "Apple VPP
+- Location tokens (the current Apple Business term for what's still labeled "Apple VPP
   tokens" in the Intune UI) — upload, renewal, sync, and multi-tenant/multi-MDM exclusivity rules
 - App licensing models: Device licensing vs. User licensing, and their distinct install/update/
   revocation behavior on macOS specifically
 - Store apps (public App Store) and Custom Apps (privately distributed to your organization) acquired
-  via Apple Business Manager
+  via Apple Business
 - License lifecycle: assignment, revocation, the macOS-specific 30-day grace period, and deletion
 - Assignment scenarios that interact with licensing type: BYOD, Kiosk/Single App Mode, User Enrollment
 
 **Does not cover:**
-- Apple Business Manager device/DEP token sync for enrollment itself — see `ABM-Token-Renewal-A.md`
+- Apple Business device/DEP token sync for enrollment itself — see `ABM-Token-Renewal-A.md`
   for that (device enrollment tokens and VPP/content tokens are separate credentials that can be, but
   are not required to be, tied to the same Managed Apple Account)
 - eBooks purchased through the same volume-purchase mechanism — a related but distinct Intune workflow
@@ -38,7 +38,7 @@
   reclamation) except where explicitly contrasted against macOS behavior
 
 **Assumptions:**
-- The organization already has an active Apple Business Manager (or Apple School Manager) account and
+- The organization already has an active Apple Business (or Apple School Manager) account and
   Content Manager role assigned to at least one admin who can purchase and download tokens
 - Devices are Intune-enrolled via any supported macOS enrollment method (ADE, User-Approved MDM, etc.)
   — VPP app assignment does not itself require ADE/supervision, though some scenarios (Kiosk mode) do
@@ -54,7 +54,7 @@ What MSPs still colloquially call "VPP" (Volume Purchase Program) is, as of rece
 Manager changes, formally the **location token** system, itself in the process of being subsumed into
 a broader **Apps and Books** purchasing model. Functionally, for an Intune admin, none of this renaming
 changes the mechanics described below — Intune's UI still says "Apple VPP tokens," the file you
-download from Apple Business Manager is still referred to as a location token, and it's still valid for
+download from Apple Business is still referred to as a location token, and it's still valid for
 exactly one year. The one thing that does matter operationally: Apple is actively encouraging
 purchasers to migrate to the newer Apps and Books structure, and if a customer's Content Manager
 completes that migration, **the Intune-side token must be re-downloaded and re-uploaded** — see the
@@ -133,7 +133,7 @@ the way it functionally does on iOS/iPadOS.
 ## Dependency Stack
 
 ```
-Apple Business Manager / Apple School Manager account, Content Manager role
+Apple Business / Apple School Manager account, Content Manager role
         │
 Location token purchased, apps/licenses assigned to it in ABM
    (1-year validity; usable with exactly ONE MDM solution and ONE Intune tenant at a time)
@@ -249,7 +249,7 @@ behavior that required **Managed apps**); Intune for Education tenants still req
 1. For revocation tickets on macOS, remember the 30-day grace period before Apple actually removes an
    app whose license was revoked — don't treat "still installed" as a failure within that window.
 2. For deletion requests, confirm all licenses are revoked (assignment groups removed, intent set to
-   Uninstall) and reflected in Apple Business Manager before attempting to delete the app object in
+   Uninstall) and reflected in Apple Business before attempting to delete the app object in
    Intune, or the deletion will fail with an in-use error.
 
 ---
@@ -258,7 +258,7 @@ behavior that required **Managed apps**); Intune for Education tenants still req
 <details>
 <summary>Playbook 1 — Migrating a legacy VPP purchaser to Apps and Books</summary>
 
-**Scenario:** Apple Business Manager prompts (or the org proactively decides) to migrate a VPP
+**Scenario:** Apple Business prompts (or the org proactively decides) to migrate a VPP
 purchaser's content to the newer Apps and Books structure.
 
 ```
@@ -285,7 +285,7 @@ control — coordinate with the Content Manager before touching the Intune-side 
 <details>
 <summary>Playbook 2 — Recovering from a purchased-but-unassignable app due to a Duplicate token</summary>
 
-**Scenario:** An app's licenses show as purchased in Apple Business Manager but the app either doesn't
+**Scenario:** An app's licenses show as purchased in Apple Business but the app either doesn't
 sync into Intune correctly or license counts look wrong, and a token shows Duplicate status.
 
 ```
@@ -296,7 +296,7 @@ sync into Intune correctly or license counts look wrong, and a token shows Dupli
 4. Delete the redundant/unused token — this revokes ITS associated app licenses and assignments, so
    confirm you've identified the correct (unused) one first
 5. Trigger a manual Sync on the remaining, correct token
-6. Re-verify app and license visibility in Intune matches Apple Business Manager
+6. Re-verify app and license visibility in Intune matches Apple Business
 ```
 
 **Rollback:** If the wrong token was deleted, its app assignments must be manually recreated — Intune
@@ -389,7 +389,7 @@ Write-Host "for the specific app(s) in question, and check Total/Available/Used 
   timeline expectations, not just technical troubleshooting.
 
 - **VPP → Apps and Books migration is a live, ongoing Apple-side transition** as of 2026 — if a
-  customer mentions a new prompt or portal experience in Apple Business Manager, check whether it's
+  customer mentions a new prompt or portal experience in Apple Business, check whether it's
   this migration before assuming something broke. The Intune-side re-upload step is mandatory and easy
   to miss. [Manage Apple Volume-Purchased Apps — Migrate from VPP to Apps and Books](https://learn.microsoft.com/en-us/intune/app-management/deployment/manage-vpp-apple)
 

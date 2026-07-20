@@ -1,0 +1,4 @@
+# sed -i.bak and similar in-place-edit backups — this sandbox's FUSE mount blocks unlink()
+# on these files (documented recurring issue, see _BUILD/MANIFEST.md run notes), so they
+# can't always be cleaned up after creation. Ignore them rather than accidentally committing.
+*.bak

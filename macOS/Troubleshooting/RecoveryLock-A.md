@@ -42,7 +42,7 @@
 **Assumptions:**
 - Tenant is on a current Intune release (this feature reached general availability in stages during
   early-to-mid 2026 — see the Learning Pointers for the exact rollout timeline)
-- Devices are enrolled via Apple Business Manager / Automated Device Enrollment (ADE)
+- Devices are enrolled via Apple Business / Automated Device Enrollment (ADE)
 - You have at minimum Policy and Profile Manager (for policy configuration) and/or the two
   Recovery-Lock-specific "Remote tasks" permissions (for viewing/rotating the passcode) — these are
   separate grants, see the RBAC section below
@@ -143,7 +143,7 @@ Apple Silicon SoC (Secure Enclave present) — hardware gate, Intel Macs are per
         │
 macOS 11.5+
         │
-Apple Business Manager → Automated Device Enrollment (ADE) profile
+Apple Business → Automated Device Enrollment (ADE) profile
         │
 Device enrolls SUPERVISED (only possible via ADE — never via user-initiated Company Portal enrollment)
         │

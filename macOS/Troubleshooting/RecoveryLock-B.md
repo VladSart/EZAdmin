@@ -110,7 +110,7 @@ Intel Mac → stop here, feature not supported, no further diagnosis needed.
 ```
 Intune → Devices → <device> → Properties → Supervised: Yes/No
 ```
-`No` → the device was not enrolled via ADE. Recovery Lock cannot be applied without re-enrolling through Apple Business Manager/Automated Device Enrollment.
+`No` → the device was not enrolled via ADE. Recovery Lock cannot be applied without re-enrolling through Apple Business/Automated Device Enrollment.
 
 **Step 3 — Confirm policy assignment and processing status**
 ```
@@ -160,11 +160,11 @@ Intune → Devices → <device> → Sync
 
 <details><summary>Fix 2 — Device is Apple Silicon but not supervised</summary>
 
-**Cause:** The Mac was enrolled via Company Portal (user-initiated) rather than Automated Device Enrollment (ADE) through Apple Business Manager. Supervision is a one-way state set only at enrollment time — you cannot "upgrade" an unsupervised device to supervised without wiping and re-enrolling it.
+**Cause:** The Mac was enrolled via Company Portal (user-initiated) rather than Automated Device Enrollment (ADE) through Apple Business. Supervision is a one-way state set only at enrollment time — you cannot "upgrade" an unsupervised device to supervised without wiping and re-enrolling it.
 
 ```
 # There is no in-place fix. The remediation is:
-# 1. Confirm the device is (or can be) assigned to a DEP/ADE profile in Apple Business Manager
+# 1. Confirm the device is (or can be) assigned to a DEP/ADE profile in Apple Business
 # 2. Back up user data
 # 3. Wipe the device (Intune → Devices → <device> → Wipe, or erase locally in Recovery)
 # 4. Re-enroll via Setup Assistant so it picks up the ADE profile → device enrolls supervised

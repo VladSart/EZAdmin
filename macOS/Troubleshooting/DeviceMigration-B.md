@@ -1,5 +1,5 @@
 # Apple Device Migration (MDM-to-MDM + Managed Migration Assistant) — Hotfix Runbook (Mode B: Ops)
-> Fix or escalate in under 10 minutes. Covers macOS 26+ wipe-free MDM-to-MDM re-enrollment via Apple Business Manager/Apple School Manager ("Migrate Devices" / Assign Device Management) and Managed Migration Assistant (Mac-to-Mac user-data transfer, macOS 26.4+), both configured through Microsoft Intune.
+> Fix or escalate in under 10 minutes. Covers macOS 26+ wipe-free MDM-to-MDM re-enrollment via Apple Business/Apple School Manager ("Migrate Devices" / Assign Device Management) and Managed Migration Assistant (Mac-to-Mac user-data transfer, macOS 26.4+), both configured through Microsoft Intune.
 
 ---
 
@@ -46,7 +46,7 @@ sudo profiles status -type enrollment
 # Look at "MDM enrollment" and the organization name — confirms OLD vs NEW MDM currently in control
 ```
 
-In **Apple Business Manager / Apple School Manager**: Devices → Inventory → search serial → the device page shows a **pending migration** banner with target MDM and deadline if one is in flight, and the **Activity** log shows success/failure detail for a completed or attempted migration.
+In **Apple Business / Apple School Manager**: Devices → Inventory → search serial → the device page shows a **pending migration** banner with target MDM and deadline if one is in flight, and the **Activity** log shows success/failure detail for a completed or attempted migration.
 
 **Interpret immediately:**
 

@@ -29,7 +29,7 @@ Covers: client deployment, traffic forwarding profile design, Private Access con
 - Tenant licensed for Microsoft Entra Suite, or standalone Internet Access / Private Access add-on licenses
 - Devices are at minimum Entra ID registered (join type affects capability, not eligibility)
 
-**Not covered:** Microsoft Defender for Cloud Apps session policies (a different product, sometimes confused with GSA due to overlapping "access" terminology), non-Windows GSA client specifics (Android/iOS/macOS clients exist but have separate deployment mechanics), legacy on-prem App Proxy-only publishing (see `EntraID/Troubleshooting/AppProxy-B.md` — GSA Private Access and App Proxy are related but distinct publishing mechanisms that can coexist).
+**Not covered:** Microsoft Defender for Cloud Apps session policies (a different product, sometimes confused with GSA due to overlapping "access" terminology), macOS GSA client-specific installation/architecture/troubleshooting (system extension + transparent proxy activation, MDM allow-listing, the June 2025 bundle-identifier migration, macOS 26 compatibility — see `macOS/Troubleshooting/GlobalSecureAccess-macOS-A.md`/`-B.md`), Windows/Android/iOS GSA client specifics (each has separate deployment mechanics), legacy on-prem App Proxy-only publishing (see `EntraID/Troubleshooting/AppProxy-B.md` — GSA Private Access and App Proxy are related but distinct publishing mechanisms that can coexist).
 
 ---
 ## How It Works

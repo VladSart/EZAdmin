@@ -22,7 +22,7 @@
 This runbook covers **Intune-managed macOS compliance policies** — the mechanism by which a Mac device is evaluated against a set of rules and marked Compliant or NonCompliant. The result feeds directly into Entra ID Conditional Access, so a non-compliant Mac cannot reach protected resources until remediated.
 
 **Assumes:**
-- macOS enrolled via ADE (Apple Business Manager / Apple School Manager) with Intune MDM
+- macOS enrolled via ADE (Apple Business / Apple School Manager) with Intune MDM
 - Intune-managed apps or Platform SSO in use
 - Conditional Access policy requires device compliance for at least one app
 - Admin has Intune Admin or Intune Read-Only role

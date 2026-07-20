@@ -1,5 +1,5 @@
 # macOS ADE Enrollment — Hotfix Runbook (Mode B: Ops)
-> Fix or escalate in under 10 minutes. Covers Automated Device Enrollment (ADE/DEP) failures via Apple Business Manager + Intune.
+> Fix or escalate in under 10 minutes. Covers Automated Device Enrollment (ADE/DEP) failures via Apple Business + Intune.
 
 ---
 
@@ -34,7 +34,7 @@ $enrollments = Invoke-MgGraphRequest -Method GET -Uri "https://graph.microsoft.c
 # For specific device errors, check: Intune portal > Devices > macOS > macOS enrollment > Enrollment program tokens > [token] > Devices
 
 # 4. Check if device is visible in ABM and assigned to correct MDM server
-# Must be done in Apple Business Manager portal (appleid.apple.com/account/manage is deprecated)
+# Must be done in Apple Business portal (appleid.apple.com/account/manage is deprecated)
 # ABM > Devices > [serial number] > MDM Server = your Intune tenant
 
 # 5. Verify enrollment profile is assigned to the device/group
@@ -71,7 +71,7 @@ $profiles.value | Select id, tokenName | Format-Table
                        │ Device serial in ADE program?
                        ▼
 ┌──────────────────────────────────────────────────────┐
-│            Apple Business Manager (ABM)              │
+│            Apple Business (ABM)              │
 │   Device assigned to Intune MDM server               │
 └──────────────────────┬───────────────────────────────┘
                        │ ABM ↔ Intune token (valid, synced)
@@ -166,7 +166,7 @@ curl -s https://captive.apple.com/ | head -1
 
 1. In **Intune portal**: Devices > macOS > macOS enrollment > Enrollment program tokens > [expired token] > **Renew token**
 2. Download the new public key (.pem file) from Intune
-3. In **Apple Business Manager**: Settings > MDM Servers > [your Intune server] > Upload MDM Server Certificate > upload the .pem
+3. In **Apple Business**: Settings > MDM Servers > [your Intune server] > Upload MDM Server Certificate > upload the .pem
 4. Download the new server token (.p7m) from ABM
 5. Back in **Intune**: upload the .p7m to complete renewal
 6. Click **Sync** to force a device list refresh
@@ -303,7 +303,7 @@ FIXES ATTEMPTED
 
 ESCALATION TARGET:
   [ ] Microsoft Intune support (admin.microsoft.com > Support)
-  [ ] Apple Business Manager support (businessmanager.apple.com/help)
+  [ ] Apple Business support (businessmanager.apple.com/help)
   [ ] Network/proxy team
 ```
 
