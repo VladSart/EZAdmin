@@ -59,11 +59,14 @@ Result: ALL matching policies' controls must be satisfied
 | `Named-Locations-B.md` | Hotfix: named location / IP-based CA condition issues |
 | `TokenProtection-B.md` | Hotfix: token protection sign-in blocks — unsupported device/app/OS, statusCode triage |
 | `TokenProtection-A.md` | Deep dive: PoP token-binding architecture, supported platforms/apps/resources, unsupported combinations |
+| `AuthenticationStrengths-B.md` | Hotfix: sign-in blocked/re-challenged by a "Require authentication strength" grant — missing qualifying method, device-bound WHfB mismatch, custom combination gaps, federated MFA trust |
+| `AuthenticationStrengths-A.md` | Deep dive: built-in vs. custom strengths, allowed-combination vocabulary, claims-challenge timing, registration-coverage rollout playbooks |
 | `Scripts/Get-CASignInAnalysis.ps1` | Analyse sign-in logs for CA failures across users |
 | `Scripts/Get-NamedLocationAudit.ps1` | Named Location CIDR overlap/orphan/reference audit |
 | `Scripts/Get-CADeviceFilterAudit.ps1` | Device filter mode/expression risk, orphaned extensionAttribute, Autopilot coverage audit |
 | `Scripts/Get-CAPolicyDesignAudit.ps1` | Break-glass exclusion, pilot-scoping, legacy-auth-gap, recently-enabled, and cross-policy grant-conflict audit |
 | `Scripts/Get-TokenProtectionCoverageAudit.ps1` | Token protection policy design audit — browser client-app risk, Office 365 app-group targeting, missing device filter exclusions, stale report-only, non-Windows platform gap |
+| `Scripts/Get-AuthStrengthCoverageAudit.ps1` | Authentication strength policy design audit, CA policy reference report, tenant-wide phishing-resistant-method registration coverage gaps, federated domain MFA trust check |
 
 ---
 
@@ -79,6 +82,9 @@ Result: ALL matching policies' controls must be satisfied
 - "Device filter applying to wrong/no devices" → `CA-Filters-B.md` + `Scripts/Get-CADeviceFilterAudit.ps1`
 - "User/app suddenly blocked after a token protection policy rollout, AVD/Cloud PC users blocked" → `TokenProtection-B.md` + `Scripts/Get-TokenProtectionCoverageAudit.ps1`
 - "Designing/piloting token protection against token theft (AiTM phishing)" → `TokenProtection-A.md`
+- "User prompted for MFA but still blocked / re-challenged even after entering a code" → `AuthenticationStrengths-B.md` (likely a "Require authentication strength" grant, not plain MFA)
+- "Rolling out phishing-resistant MFA / FIDO2 / Windows Hello for Business enforcement" → `AuthenticationStrengths-A.md` Playbook 1 + `Scripts/Get-AuthStrengthCoverageAudit.ps1` (check registration coverage first)
+- "Federated (AD FS) users can't satisfy phishing-resistant MFA" → `AuthenticationStrengths-B.md` Fix 4
 
 ---
 
