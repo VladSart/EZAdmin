@@ -1,8 +1,10 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS) — Agent Instructions
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure networking**, covering four related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. **Azure Virtual WAN** — the Microsoft-managed global transit-network service: the Basic/Standard SKU capability boundary (one-way upgrade), the virtual hub and its embedded BGP router (with `ProvisioningState`/`RoutingState` as two independent health signals and a fixed ASN 65515 shared by VPN and ExpressRoute gateways), the connection association/propagation model, hub route tables and labels, and Routing Intent/Routing Policies (the declarative Internet/Private traffic-steering feature whose single biggest gotcha is silently taking over the Default route table on enable). NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, Virtual WAN spoke traffic, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that can, in preview, target a Virtual WAN hub as its "hub" type — that's AVNM orchestrating Virtual WAN, not a duplicate of Virtual WAN's own native hub-routing model documented in `VirtualWAN-A.md`/`VirtualWAN-B.md`.
+Runbooks and scripts for **Azure networking**, covering five related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. **Azure Virtual WAN** — the Microsoft-managed global transit-network service: the Basic/Standard SKU capability boundary (one-way upgrade), the virtual hub and its embedded BGP router (with `ProvisioningState`/`RoutingState` as two independent health signals and a fixed ASN 65515 shared by VPN and ExpressRoute gateways), the connection association/propagation model, hub route tables and labels, and Routing Intent/Routing Policies (the declarative Internet/Private traffic-steering feature whose single biggest gotcha is silently taking over the Default route table on enable). NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, Virtual WAN spoke traffic, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that can, in preview, target a Virtual WAN hub as its "hub" type — that's AVNM orchestrating Virtual WAN, not a duplicate of Virtual WAN's own native hub-routing model documented in `VirtualWAN-A.md`/`VirtualWAN-B.md`. **Private DNS zones** — the name-resolution layer that sits alongside all three connectivity topics above: the Azure-provided resolver (168.63.129.16), custom vs. `privatelink.*` reserved zones, the Virtual Network Link resource (resolution-only vs. registration-enabled — and the critical fact that peering never implies a link), Private Endpoint DNS Zone Group integration, and bridging custom/on-premises DNS into Azure zones via conditional forwarding or Azure DNS Private Resolver.
+
+Private DNS is why a Private Endpoint or AVD/Windows 365 host can be fully reachable at the network layer (NSG/UDR/peering all correct) and still fail for end users — resolution is a separate dependency chain from connectivity, and this folder is where both are documented side by side.
 
 Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User VPN/P2S gateway type embedded in a Virtual WAN hub is covered in `VirtualWAN-A.md`/`VirtualWAN-B.md`; a customer-managed P2S gateway on a traditional hub VNet is not separately documented), Azure Firewall/NVA **rule content or policy authoring** (covered only as Virtual WAN Routing Intent's Next Hop resource, or where it intersects GatewaySubnet behavior), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
 
@@ -32,6 +34,9 @@ Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User V
 | `VirtualWAN-B.md` | Virtual WAN hotfix runbook — hub/router health split (ProvisioningState vs. RoutingState), Basic-SKU capability gaps, Routing Intent's Default-route-table takeover on enable, shared-ASN (65515) VPN/ExpressRoute gateway conflicts, connection association checks |
 | `VirtualWAN-A.md` | Virtual WAN deep dive — Basic/Standard SKU architecture, virtual hub router, connection association/propagation/labels model, Routing Intent and secured virtual hub architecture, scale limits, greenfield/retrofit/SKU-upgrade/fleet-audit playbooks |
 | `Scripts/Get-VirtualWANHealth.ps1` | Read-only sweep across every Virtual WAN — hub/router health, Basic-SKU gateway anomalies, half-finished secured-hub builds (Firewall present, no Routing Intent), inconsistent branch/spoke route-table association, optional ExpressRoute prefix-count flag |
+| `PrivateDNS-B.md` | Private DNS hotfix runbook — Private Endpoint resolving to public IP (missing/broken Zone Group), peered VNet not linked to a zone, custom DNS not forwarding to 168.63.129.16, missing DNS suffix search list, stale autoregistered records |
+| `PrivateDNS-A.md` | Private DNS deep dive — zone/link/registration architecture, `privatelink.*` reserved zone naming, Zone Group mechanics, Azure DNS Private Resolver for hybrid forwarding, fleet-wide remediation playbooks |
+| `Scripts/Get-PrivateDNSZoneAudit.ps1` | Read-only sweep — orphaned zones with no links, peered-but-unlinked VNets, Private Endpoints missing or with unhealthy DNS Zone Groups, stale autoregistered records vs. current VM inventory |
 
 ---
 
@@ -63,6 +68,12 @@ Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User V
 - **"Some on-prem routes aren't reaching the other gateway type in the same hub"** → `VirtualWAN-B.md` Fix 6 — both VPN and ExpressRoute gateways share a fixed ASN 65515; check for an on-prem ASN collision
 - **"Should we move this client from traditional hub-and-spoke to Virtual WAN?"** → `VirtualWAN-A.md` Learning Pointers — a genuine trade-off conversation, not a strict upgrade; Virtual WAN earns its overhead mainly at 30+ spokes or 3+ regions
 - **"Fleet-wide Virtual WAN health check across clients"** → `Scripts/Get-VirtualWANHealth.ps1`
+- **"Our Private Endpoint resolves to the public IP, not the private one"** → `PrivateDNS-B.md` Fix 1 — check the DNS Zone Group first, not the zone or link
+- **"Resolution works from the hub VNet but not the peered spoke"** → `PrivateDNS-B.md` Fix 2 — peering never implies a DNS zone link; the spoke needs its own link
+- **"We pointed the VNet at our own DNS server and now private zone names don't resolve"** → `PrivateDNS-B.md` Fix 3 — custom DNS must forward the zone's suffix to 168.63.129.16, or deploy Azure DNS Private Resolver for hybrid
+- **"On-prem can't resolve our Azure private DNS names"** → `PrivateDNS-A.md` Playbook 3 — Azure DNS Private Resolver is the current recommended bridge, not a manual forwarder VM
+- **"A deleted VM's hostname still resolves to its old IP"** → `PrivateDNS-B.md` Fix 6 — stale autoregistered record, safe to remove manually
+- **"Fleet-wide Private DNS hygiene check across clients"** → `Scripts/Get-PrivateDNSZoneAudit.ps1`
 
 ---
 
@@ -110,6 +121,18 @@ Get-AzRoutingIntent -ResourceGroupName <rg> -ParentResourceId (Get-AzVirtualHub 
 
 # Virtual WAN — spoke connection status and routing configuration (association/propagation)
 Get-AzVirtualHubVnetConnection -ResourceGroupName <rg> -ParentResourceName <hubName> -Name <connectionName>
+
+# Private DNS — test resolution against Azure's resolver directly (bypasses local/custom DNS)
+Resolve-DnsName -Name <fqdn> -Type A -Server 168.63.129.16
+
+# Private DNS — which VNets are linked to a zone, and is autoregistration on?
+Get-AzPrivateDnsVirtualNetworkLink -ResourceGroupName <rg> -ZoneName <zoneName> | Select Name, VirtualNetworkId, RegistrationEnabled
+
+# Private DNS — does this Private Endpoint have DNS integration configured at all?
+(Get-AzPrivateEndpoint -ResourceGroupName <rg> -Name <peName>).PrivateDnsZoneGroup
+
+# Private DNS — is the VNet using Azure-provided DNS or a custom server?
+(Get-AzVirtualNetwork -ResourceGroupName <rg> -Name <vnetName>).DhcpOptions.DnsServers
 ```
 
 ---
@@ -169,6 +192,28 @@ Mesh → Connected Group (never a peering) | Hub-and-spoke → real peering | VW
     │
     ▼
 Effective state (Get-AzNetworkManagerEffectiveConnectivityConfiguration — the only authoritative view)
+```
+
+Private DNS resolution chain (PrivateDNS-A.md/PrivateDNS-B.md — a separate dependency chain from connectivity above; a resource can be fully reachable and still fail to resolve):
+
+```
+Azure-provided DNS (168.63.129.16) — default for every VNet unless overridden
+    │
+    ├─ VNet DNS = Default        → private zone resolution works automatically
+    └─ VNet DNS = Custom server  → must forward the zone's suffix to 168.63.129.16, or use DNS Private Resolver
+    ▼
+Private DNS Zone (custom, or reserved privatelink.* name — exact match required per service)
+    │
+    ▼
+Virtual Network Link (peering NEVER creates this — each VNet needs its own explicit link)
+    │  ├─ Resolution-only
+    │  └─ Registration-enabled (custom zones only)
+    ▼
+Records populated
+    │  ├─ Custom zone       → VM autoregistration
+    │  └─ privatelink.* zone → Private Endpoint's DNS Zone Group (unrelated to registration flag)
+    ▼
+Client resolves correctly (private IP) or falls through to public DNS (public IP / NXDOMAIN)
 ```
 
 ---
