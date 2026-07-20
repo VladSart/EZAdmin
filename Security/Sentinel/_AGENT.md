@@ -1,7 +1,7 @@
 # Microsoft Sentinel — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), and Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; and the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system). Does not yet cover hunting/KQL authoring — a future topic.
+Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), and UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); and UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above. Does not yet cover hunting/KQL authoring — a future topic.
 
 ## Before responding, also check
 - `EntraID/Graph/` — Entra ID sign-in/audit log connectors are actually diagnostic settings, not a distinct Sentinel object; cross-reference if the question is about Entra log gaps specifically
@@ -20,9 +20,12 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 | `AnalyticsRules-A.md` | Deep dive — full alert→incident→automation pipeline architecture, rule-kind comparison (Scheduled/NRT/Fusion/Anomaly/MS security), portal-mode (Azure vs Defender-onboarded) divergence, tuning/migration playbooks |
 | `LogicAppsPlaybooks-B.md` | Hotfix runbook — automation rule fires but playbook doesn't, playbook triggered but nothing happened, connector auth broke, 429 throttling |
 | `LogicAppsPlaybooks-A.md` | Deep dive — full automation-rule-to-workflow-run architecture, permission/trigger-type model, 3-layer throttling stack, MSP bulk-repair and managed-identity migration playbooks |
+| `UEBA-B.md` | Hotfix runbook — UEBA/IdentityInfo tables empty, data-flow stall, Detect Anomalies toggle confusion, on-prem AD sync gaps, BlastRadius/Manager data-hygiene, behaviors-layer tables missing, permission errors enabling/disabling UEBA |
+| `UEBA-A.md` | Deep dive — the three-independent-toggle architecture (base UEBA, Detect Anomalies, behaviors layer), data source table, entity enrichment/scoring model (InvestigationPriority vs. AnomalyScore), peer-group TF-IDF calculation, relationship to Anomaly-kind analytics rules and Fusion |
 | `Scripts/Get-SentinelConnectorHealth.ps1` | Audits workspace ingestion cap, per-table ingestion gaps, DCR/DCRA associations, and AMA extension state for supplied resources |
 | `Scripts/Get-SentinelAnalyticsRuleAudit.ps1` | Audits rule enabled/AUTO-DISABLED state, never-fired rules, entity mapping gaps, false-positive rate, alerts/incident ratio, and automation rules with no expiration on closing actions |
 | `Scripts/Get-SentinelPlaybookHealth.ps1` | Audits Sentinel's role assignment on each playbook, Logic App enabled state, and API Connection status; optionally correlates SentinelHealth automation events |
+| `Scripts/Get-SentinelUEBAAudit.ps1` | Audits UEBA core table health (data flow/staleness), resource-lock blockers, identity-sync coverage, and BlastRadius/Manager-attribute data-hygiene gaps for a workspace |
 
 ## Common entry points
 
@@ -48,6 +51,12 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 - "Playbook doesn't appear in the automation rule's picker at all" → `LogicAppsPlaybooks-A.md` Validation Step 3 (trigger-type mismatch)
 - "Need to bulk-fix playbook permissions across an MSP fleet" → `LogicAppsPlaybooks-A.md` Playbook 1
 - "Migrating a playbook off named-user auth onto managed identity" → `LogicAppsPlaybooks-A.md` Playbook 2
+- "UEBA/BehaviorAnalytics table is empty" → `UEBA-B.md` Triage + Fix 1
+- "I turned on UEBA but there are no anomalies" → `UEBA-B.md` Fix 3 (Detect Anomalies is a separate toggle)
+- "On-prem AD users missing from IdentityInfo" → `UEBA-B.md` Fix 4 (Defender for Identity sensor prerequisite)
+- "BlastRadius is empty/null for most users" → `UEBA-B.md` Fix 5 (Manager attribute in Entra ID)
+- "SentinelBehaviorInfo/SentinelBehaviorEntities tables don't exist" → `UEBA-B.md` Fix 6 (behaviors layer is a third, separate toggle)
+- "Why did the Anomaly-kind rule / Fusion never catch this" → `UEBA-A.md` How It Works (confirm UEBA + Detect Anomalies are healthy before tuning the rule)
 
 ## Key diagnostic commands
 
@@ -65,6 +74,14 @@ summarize max(TimeGenerated) by TableName
 
 # DCR association check for a resource
 Get-AzDataCollectionRuleAssociation -TargetResourceId <resource-id>
+```
+
+```kusto
+// UEBA core table health in one query
+union isfuzzy=true
+  (BehaviorAnalytics | summarize Table="BehaviorAnalytics", Count=count(), Last=max(TimeGenerated)),
+  (IdentityInfo | summarize Table="IdentityInfo", Count=count(), Last=max(TimeGenerated)),
+  (Anomalies | summarize Table="Anomalies", Count=count(), Last=max(TimeGenerated))
 ```
 
 ## Key dependency chain
@@ -92,6 +109,16 @@ Analytics rule / manual trigger produces incident or alert
                                             └── Each action authenticates via its own API Connection
                                                     └── Subject to 3 independent throttling layers:
                                                         Logic App resource limit → connector limit → destination limit
+```
+
+**UEBA chain** (three independently-toggled branches, not one switch — see `UEBA-A.md`):
+```
+Directory sync (Entra ID and/or on-prem AD via MDI) + data sources connected
+    └── Toggle 1: base UEBA enabled → BehaviorAnalytics / IdentityInfo / UserPeerAnalytics populate
+            └── Toggle 2 (separate): Detect Anomalies enabled → Anomalies table populates
+                    └── feeds: Anomaly-kind analytics rules, Fusion correlation
+    └── Toggle 3 (separate, own enablement flow): UEBA behaviors layer → SentinelBehaviorInfo /
+        SentinelBehaviorEntities populate
 ```
 
 ## Response format reminder
