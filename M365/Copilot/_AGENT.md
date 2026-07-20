@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission troubleshooting — covers Word, Excel, PowerPoint, Outlook, and Teams Copilot experiences.
+Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission troubleshooting — covers Word, Excel, PowerPoint, Outlook, and Teams Copilot experiences. Also covers **agent lifecycle governance** (approval, publishing, ownership, risk, access) for agents surfaced through Copilot — declarative agents, Copilot Studio agents, Agent Builder agents, SharePoint agents, and Frontier agents. For Copilot Studio's own security/governance controls (per-agent authentication, DLP, CMK), see `PowerAutomate/PowerApps/CopilotStudio-Security-A.md`/`-B.md` instead.
 
 ---
 
@@ -22,6 +22,8 @@ Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission tr
 |------|---------------|
 | `Copilot-B.md` | Hotfix runbook — license/policy/CA/grounding triage, diagnosis, and fix paths in under 10 minutes |
 | `Copilot-A.md` | Deep-dive reference — full architecture, Symptom → Cause map, phased troubleshooting, remediation playbooks |
+| `AgentGovernance-B.md` | Hotfix runbook — agent lifecycle governance triage (approval, publishing, ownership, risk, access) across declarative agents, Copilot Studio agents, Agent Builder agents, SharePoint agents, and Frontier agents. Assumes base Copilot already works |
+| `AgentGovernance-A.md` | Deep-dive reference — full agent governance architecture, Symptom → Cause map, phased troubleshooting, remediation playbooks |
 | `Scripts/Get-CopilotUsageReport.ps1` | Read-only tenant report: Copilot SKU pool, per-user license health (flags Copilot-without-base-license), Teams Copilot policy summary |
 
 ---
@@ -33,6 +35,7 @@ Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission tr
 - "Copilot missing from Word/Excel/Outlook ribbon" → `Copilot-B.md` § Fix 1/2 — license propagation or base license missing
 - "Copilot blocked entirely, can't sign in to it" → `Copilot-B.md` § Fix 5 — Conditional Access scoping
 - "We just tightened SharePoint sharing and now Copilot answers got worse" → `Copilot-B.md` § Learning Pointers — expected behavior, not a bug
+- "Who approved this agent / who owns it / can end users publish their own agents" → `AgentGovernance-B.md` § Triage — agent lifecycle governance, not a licensing issue
 
 ---
 

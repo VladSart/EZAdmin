@@ -123,6 +123,32 @@ For encrypted (HTTPS) traffic, IDPS depends on TLS inspection being enabled to s
 
 Both require TLS inspection to be enabled at the **application rule level** (not just the policy level) to work on HTTPS traffic — the policy-level toggle alone is necessary but not sufficient.
 
+### DNS Proxy: the dependency FQDN-based Network rules quietly have
+
+Application rules match on hostname/SNI directly out of the TLS handshake — they don't need DNS Proxy to work. **Network rules using FQDN filtering are different**: a Network rule has no visibility into SNI, so FQDN matching for a Network rule depends entirely on resolving that FQDN to an IP first. Without DNS Proxy, the firewall has no independent view of that resolution — it trusts whatever IP the client already connected to, which can silently drift from what the firewall itself would have resolved (split-horizon DNS, CDN edge selection, a client using a stale cache).
+
+**DNS Proxy** (Standard/Premium only) makes the firewall itself the DNS server for VNet clients, so the firewall's FQDN-to-IP resolution and the client's are guaranteed to match:
+
+```
+Client → sends DNS query to Azure Firewall's private IP (DNS Proxy listener, port 53)
+        │
+        ▼
+Firewall forwards the query to the configured upstream DNS server(s)
+  (Azure default DNS 168.63.129.16, or a customer-specified custom DNS server list)
+        │
+        ▼
+Firewall caches the resolution AND uses that exact resolution for its own
+FQDN-based Network rule matching — client and firewall now see the same IP
+```
+
+**Configuration is two independent settings, both required:**
+1. Enable **DNS Proxy** at the Firewall Policy level (Firewall Policy > DNS Settings) — inherited by child policies unless overridden. Optionally set custom upstream DNS servers; leaving this blank uses Azure-provided DNS.
+2. Point the VNet(s)/subnet(s) whose clients should actually use the firewall as their resolver — via the VNet's DNS server setting (or DHCP option) — at the firewall's **private IP**. DNS Proxy being enabled on the policy does nothing on its own if client VNets are still configured to use a different DNS server; this split is the single most common "I enabled DNS Proxy and nothing changed" ticket.
+
+Confirm end to end with a client-side `Resolve-DnsName`/`nslookup` and checking which server actually answered — not just that the policy setting shows enabled.
+
+This subsection covers only how DNS Proxy affects FQDN-based rule matching. How traffic reaches the firewall's private IP in the first place (VNet peering, custom routes, DHCP option 6 propagation) is a distinct network-layer concern — see `VirtualWAN-A.md`/`HybridConnectivity-A.md`.
+
 </details>
 
 ---
@@ -170,6 +196,8 @@ Subscription / Resource Group
 | Web category filtering behaves differently than expected for the "same" site | Standard SKU categorizes by FQDN only; Premium by full URL — a URL with multiple path-based categories can be treated differently per SKU | Confirm SKU tier and test with `Web Category Check` (Premium) |
 | Firewall deployed but a client asks "why can't we just get ExpressRoute/IDPS/TLS through the portal" | SKU or Virtual WAN type (Basic) ceiling — not a firewall configuration gap at all | Confirm both Firewall SKU and, if in a vWAN hub, the vWAN type per `VirtualWAN-A.md` |
 | Rule change made but old behavior persists briefly | Firewall Policy changes propagate asynchronously to the underlying instances; a large policy can take several minutes | Re-check after 5-10 minutes before assuming the change failed |
+| Network rule using FQDN filtering lets through (or blocks) traffic inconsistently | DNS Proxy not enabled at the policy, or enabled but the VNet's clients are still pointed at a different DNS server | Check `$policy.DnsSettings` AND the VNet's own DNS server configuration — both must point the same direction |
+| "I enabled DNS Proxy and nothing changed" | DNS Proxy toggle and VNet DNS-server assignment are two independent settings — only one was changed | Confirm client's effective DNS server via `Resolve-DnsName`, not just the policy setting |
 
 ---
 
@@ -248,6 +276,15 @@ $group.Properties.RuleCollection | Where-Object RuleCollectionType -eq 'Firewall
 
 ---
 
+**Step 8 — Confirm DNS Proxy is enabled AND the VNet actually uses the firewall as its resolver**
+```powershell
+$policy.DnsSettings
+```
+*Good:* `EnableProxy: True`, and a client `Resolve-DnsName <fqdn>` from inside the VNet shows the response coming from the firewall's private IP.
+*Bad:* `EnableProxy: True` but the client still resolves via a different server — the VNet/subnet DNS server setting hasn't been pointed at the firewall. Both settings are independent; check both.
+
+---
+
 ## Troubleshooting Steps (by phase)
 
 ### Phase 1: Feature Appears Unavailable
@@ -277,6 +314,12 @@ $group.Properties.RuleCollection | Where-Object RuleCollectionType -eq 'Firewall
 1. Run Step 5 and Step 6 together — DNAT is a two-part configuration (the NAT rule itself, plus IP binding and often a companion Network rule)
 2. Confirm the client is sending traffic to the exact Public IP bound to an `IpConfiguration` on the firewall
 3. Trace via Network Rules logs — a silently-dropped DNAT due to IP mismatch produces no denial log entry to explain itself, which is itself a diagnostic signal
+
+### Phase 6: FQDN-Based Network Rule Matching Looks Wrong
+
+1. Run Step 8 — confirm DNS Proxy is enabled at the policy level, then separately confirm the VNet's clients are actually configured to use the firewall as their DNS server
+2. If only one of the two settings is correct, this is a configuration gap, not a bug — both are required together
+3. Remember Application rules don't need DNS Proxy at all (they match on SNI); only Network rules using FQDN filtering depend on it — don't apply this troubleshooting path to an Application-rule symptom
 
 ---
 
@@ -337,6 +380,22 @@ Use during a periodic MSP health-check pass across multiple client firewalls.
 2. Cross-reference any Premium firewalls with Standard-tier policies (the most common silent-gap finding) and schedule policy recreation.
 3. Flag any TLS inspection certificates approaching their 1-year validity ceiling for proactive renewal before they lapse and break HTTPS tenant-wide.
 4. Document findings per client in the Evidence Pack format below for the account record.
+
+</details>
+
+---
+
+<details><summary>Playbook 5 — Enable DNS Proxy end-to-end for reliable FQDN-based Network rules</summary>
+
+Use when a client needs Network-rule FQDN filtering to be reliable (not just Application rules), or is troubleshooting inconsistent matching for a Network rule using FQDN filtering.
+
+1. Confirm the Firewall Policy SKU is Standard or Premium (DNS Proxy is not available on Basic).
+2. Enable DNS Proxy on the policy: Firewall Policy > DNS Settings > toggle **Enable DNS Proxy**. Leave upstream servers blank to use Azure-provided DNS, or specify custom upstream DNS servers if the org has internal-only resolvable names.
+3. Set the target VNet's DNS server setting to the firewall's **private IP** — this is a VNet-level setting, entirely separate from the policy toggle in step 2. For hub-and-spoke topologies, this typically means updating the DNS servers setting on every spoke VNet, not just the hub.
+4. On a test client in the affected VNet, confirm effective resolver with `Resolve-DnsName <fqdn>` or `nslookup` and verify the responding server is the firewall's private IP, not the previous DNS server.
+5. Re-test the Network rule's FQDN filtering behavior — matching should now be consistent between what the client connects to and what the firewall's rule evaluates against.
+
+**Rollback:** Revert the VNet's DNS server setting to its prior value; disabling the policy-level toggle alone without reverting the VNet setting will break name resolution for clients still pointed at the firewall.
 
 </details>
 
@@ -404,6 +463,8 @@ notepad $outPath
 | Create a new Premium policy | `New-AzFirewallPolicy -ResourceGroupName <rg> -Name <name> -Location <region> -SkuTier Premium` |
 | Re-point firewall to a different policy | `$fw.FirewallPolicy = $newPolicy.Id; Set-AzFirewall -AzureFirewall $fw` |
 | Check if firewall is Virtual WAN secured-hub-hosted | `(Get-AzFirewall -ResourceGroupName <rg> -Name <fw>).HubIPAddresses` |
+| Check DNS Proxy policy setting | `(Get-AzFirewallPolicy -ResourceGroupName <rg> -Name <policy>).DnsSettings` |
+| Confirm client's effective DNS resolver | `Resolve-DnsName <fqdn>` (check responding server) |
 | Fleet-wide policy hygiene audit | `Scripts/Get-AzureFirewallPolicyAudit.ps1` |
 
 ---
@@ -421,3 +482,5 @@ notepad $outPath
 - **IDPS false positives are meant to be tuned per-signature (up to 10,000 overrides per policy), never by dropping the policy-wide mode.** A policy-wide downgrade from `Deny` to `Alert` to silence one noisy signature removes enforcement from all 67,000+ signatures simultaneously — treat this the same as you would treat disabling an entire antivirus product to fix one false positive. [MS Docs: Azure Firewall Premium IDPS](https://learn.microsoft.com/en-us/azure/firewall/premium-features#idps)
 
 - **This runbook deliberately stops at the firewall's own rule/policy authoring.** The question of how traffic actually reaches the firewall — Routing Intent, Next Hop, secured virtual hub association — is a distinct architectural layer covered in `VirtualWAN-A.md`/`VirtualWAN-B.md`; don't debug rule logic on a firewall that traffic never reached in the first place.
+
+- **DNS Proxy is two independent settings, and only one of them lives on the Firewall Policy.** Enabling DNS Proxy on the policy does nothing by itself — the VNet's clients must also be pointed at the firewall's private IP as their DNS server. This split-setting design is the root cause behind nearly every "DNS Proxy doesn't seem to do anything" ticket, and it only matters for Network-rule FQDN filtering — Application rules already match on SNI and don't depend on it. [MS Docs: Azure Firewall DNS settings](https://learn.microsoft.com/en-us/azure/firewall/dns-details)

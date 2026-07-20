@@ -26,7 +26,7 @@ Covers **Intune Driver Management** (Windows Driver Update Management / WDfB Dri
 - Driver conflicts causing BSOD, hardware failure, or policy non-compliance
 - Manual driver suppression via Windows Update settings or Group Policy CSP
 
-**Not covered:** Legacy WSUS-based driver approval, ConfigMgr driver packages, or OEM driver deployment via Win32 apps (see App-Deployment runbooks).
+**Not covered:** Legacy WSUS-based driver approval, ConfigMgr driver packages, or OEM driver deployment via Win32 apps (see App-Deployment runbooks). Also not covered: **Windows Autopatch's own automatically-managed, per-ring driver policy** — on an Autopatch-registered device, Autopatch creates and manages its own driver update policy independently of the manual DUM model described here, and the two can silently conflict if both are scoped to the same device. See `Autopatch-A.md` § "Driver & Firmware Track — Ring Orchestration vs. Manual DUM Approval" before assuming this manual-approval model applies to an Autopatch-managed fleet.
 
 **Assumes:**
 - Devices are Azure AD Joined or Hybrid Joined, enrolled in Intune

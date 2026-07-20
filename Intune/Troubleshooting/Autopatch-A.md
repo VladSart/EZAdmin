@@ -92,6 +92,29 @@ Autopatch continuously monitors device update compliance and correlates with **W
 
 If the tenant still uses ConfigMgr for some workloads, Autopatch requires the **Windows Update workload** (and ideally Office Click-to-Run) to be switched to Intune/Autopatch under the co-management workload slider. ConfigMgr and Autopatch cannot both manage Windows Update policy for the same device simultaneously — conflicting instructions result in unpredictable update behavior (see `Intune/Troubleshooting/CoManagement-A.md`).
 
+### Driver & Firmware Track — Ring Orchestration vs. Manual DUM Approval
+
+The driver & firmware track behaves differently from the other three tracks in one important way that is a frequent source of confused escalations: Microsoft's Autopatch design **automatically creates and manages its own driver update policy for each ring** once a device is registered and ready — this runs on Autopatch's own gradual-rollout/circuit-breaker logic (the same ring-staggered, health-telemetry-driven pause behavior used for quality updates), and it does **not** require the per-driver manual review workflow that a standalone Intune Driver Update Management (DUM) policy uses (see `Intune/Troubleshooting/DriverManagement-A.md` for that manual model in isolation).
+
+```
+Device registered + Ready → assigned to Ring (Test/First/Fast/Broad)
+        │
+        ▼
+Autopatch auto-creates/manages a per-ring driver update policy
+  ├── Ring-staggered rollout, same auto-pause telemetry as quality updates
+  └── Does NOT require per-driver manual approval — designed to run "hands-off"
+        │
+        ▼
+If a separately-authored manual DUM policy is ALSO scoped to the same device:
+  ├── Two driver-update policy sources now target one device
+  ├── Same class of conflict as ConfigMgr + Autopatch both managing WU policy
+  │     (see Co-management Interaction above) — not a supported, predictable state
+  └── Resolve by scoping the manual DUM policy to exclude Autopatch-registered
+        devices, or by consolidating driver governance under Autopatch entirely
+```
+
+**Practical triage implication:** if a client reports "a driver got installed that nobody approved" on an Autopatch-registered device, don't assume DUM's manual-approval model applies — on a device Autopatch already manages, its own per-ring policy may be the one that approved and deployed it. Confirm which policy source actually pushed the driver (Intune portal: **Devices > Driver updates** blade shows the policy name responsible) before treating it as an unauthorized-change incident.
+
 ### Reporting
 
 Autopatch exposes a **Release health** dashboard and **Software update status** report in the Intune admin center, correlating Microsoft's own known-issue tracking (e.g., "Windows release health" known issues) against your fleet's actual update state — this is the single fastest way to determine "is this a known Microsoft-side issue or something specific to us."
@@ -126,7 +149,10 @@ Ring Assignment Layer
 
 Policy Deployment Layer
     └── Autopatch-managed WUfB CSP policies applied per ring
-    └── Autopatch-managed driver update policy
+    └── Autopatch-managed driver update policy (auto-created per ring —
+            distinct from a manually-authored Intune DUM policy; see
+            DriverManagement-A.md and the conflict this creates if both
+            target the same device)
     └── Autopatch-managed feature update policy (version target per ring)
     └── (Optional) Microsoft 365 Apps update policy
 
@@ -148,6 +174,8 @@ Monitoring & Health Layer
 | Autopatch shows device as "Not ready — license" despite license assigned recently | License propagation delay (up to a few hours) or license doesn't cover the device (user-based vs device-based licensing mismatch) | Re-check license assignment scope and wait for next readiness cycle |
 | Device duplicated across two rings | Manual override group membership conflicting with dynamic group assignment | Audit static vs dynamic group memberships for that device |
 | Office update channel not changing despite Autopatch M365 Apps policy | Office update policy pre-existing from GPO/registry taking precedence | Check `HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate` for conflicting local values |
+| Driver installed on an Autopatch-registered device that nobody approved in DUM | Autopatch's own per-ring driver policy auto-manages and auto-approves drivers independently of any manual DUM policy | Intune portal > Devices > Driver updates — check which policy name actually deployed it |
+| Manual DUM driver approval/decline has no visible effect on an Autopatch-registered device | Two competing driver-policy sources — Autopatch's auto-created per-ring policy may be taking precedence | Scope the manual DUM policy to exclude Autopatch-registered devices, or consolidate driver governance under Autopatch |
 
 ---
 ## Validation Steps
@@ -216,6 +244,13 @@ Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\CCM\CoManagementFlags" -ErrorAction S
 1. Confirm no legacy Group Policy or registry-based Office update configuration exists on the device that would take precedence over the Autopatch-managed Click-to-Run policy.
 2. Confirm the update channel configured in Autopatch's M365 Apps policy matches organizational expectation (Monthly Enterprise Channel is the Autopatch default).
 
+### Phase 6: Driver Policy Source Conflicts
+
+1. Confirm the device is Autopatch-registered and ready — if so, assume Autopatch's own per-ring driver policy is active by default, not a manual DUM workflow.
+2. In Intune portal, **Devices > Driver updates**, identify which policy (Autopatch-managed vs. a manually-authored DUM policy) is actually assigned to and deploying drivers for this device.
+3. If both a manual DUM policy and Autopatch's own policy are scoped to the same device, this is an unsupported dual-management state — resolve by excluding Autopatch-registered devices from the manual DUM policy's scope rather than trying to make the two coexist.
+4. Do not treat an Autopatch-approved driver as an "unauthorized change" without first confirming which policy source deployed it.
+
 ---
 ## Remediation Playbooks
 
@@ -272,6 +307,20 @@ Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\CCM\CoManagementFlags" -ErrorAction S
 ```
 
 **Rollback:** Slide the workload back to ConfigMgr — but note the device will then be ineligible for Autopatch management until switched back.
+
+</details>
+
+<details><summary>Playbook 5 — Resolve a manual DUM policy conflicting with Autopatch's own driver policy</summary>
+
+Use when a manually-authored Intune Driver Update Management (DUM) policy and Autopatch's auto-created per-ring driver policy are both scoped to the same device population, producing unpredictable approval/deployment behavior.
+
+1. In Intune portal, **Devices > Driver updates**, identify every policy (manual DUM and Autopatch-managed) currently in scope for the affected devices.
+2. Confirm which devices are Autopatch-registered and ready (Windows Autopatch > Devices) — these are the ones at risk of dual management.
+3. Edit the manual DUM policy's assignment to explicitly **exclude** the Autopatch-registered device group (or the dynamic group Autopatch uses for registration).
+4. Allow Autopatch's own per-ring driver policy to manage those devices exclusively going forward; use DUM only for any devices intentionally left outside Autopatch management.
+5. Re-check the Driver updates blade after the next policy sync cycle to confirm only one policy source shows as active per device.
+
+**Rollback:** Re-include the device group in the manual DUM policy's assignment — but this recreates the original dual-management conflict, so only do this if Autopatch registration itself is also being reversed for those devices.
 
 </details>
 
@@ -361,4 +410,5 @@ Remove-MgGroupMemberByRef -GroupId '<RingGroupId>' -DirectoryObjectId '<DeviceOb
 - **Safeguard holds are a Windows Update platform feature, not Autopatch-specific** — they exist independently to block known-bad device/update combinations. Never try to force past one in production; it's protecting you from a real, Microsoft-confirmed incompatibility.
 - **Static group membership always beats dynamic recalculation** — if you ever manually add a device to a ring group for a one-off reason, remember to remove it later, or it will never rejoin the dynamic rotation logic.
 - **Co-management conflicts are the most common "silent" Autopatch failure** — a device can appear enrolled and ready in Intune while ConfigMgr is still quietly issuing its own WU policy. Always confirm the workload slider explicitly rather than assuming Intune enrollment implies Intune is in control of updates.
-- **MS Docs:** [Windows Autopatch documentation](https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/) | [Prerequisites](https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/prepare/windows-autopatch-prerequisites) | [Safeguard holds](https://learn.microsoft.com/en-us/windows/deployment/update/safeguard-holds) | [Co-management workloads](https://learn.microsoft.com/en-us/mem/configmgr/comanage/workloads)
+- **Autopatch's driver track is "hands-off" by design — this surprises admins used to manual DUM approval.** Once a device is Autopatch-registered, its own per-ring driver policy auto-approves and rolls out drivers using the same circuit-breaker logic as quality updates. A pre-existing manual DUM policy scoped to the same device creates the same class of silent conflict as ConfigMgr/Autopatch competing for WU policy — always check which policy source actually deployed a driver before escalating it as unauthorized. See `Intune/Troubleshooting/DriverManagement-A.md` for the manual-approval model in isolation.
+- **MS Docs:** [Windows Autopatch documentation](https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/) | [Prerequisites](https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/prepare/windows-autopatch-prerequisites) | [Safeguard holds](https://learn.microsoft.com/en-us/windows/deployment/update/safeguard-holds) | [Co-management workloads](https://learn.microsoft.com/en-us/mem/configmgr/comanage/workloads) | [Autopatch driver and firmware updates](https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/operate/windows-autopatch-driver-firmware-updates)
