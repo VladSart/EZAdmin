@@ -27,7 +27,7 @@
 **Out of scope:**
 - DirectAccess (predecessor — separate runbook)
 - Third-party VPN gateway appliances (Palo Alto, Cisco, Fortinet)
-- Azure VPN Gateway (P2S scenarios)
+- Azure VPN Gateway (P2S scenarios) — a different technology entirely (client-to-Azure-VNet via VPN Gateway, not client-to-on-prem via RRAS); now its own dedicated topic, see `Azure/Networking/P2SVPN-A.md`/`P2SVPN-B.md`
 - Per-App VPN (separate profile type, different debug path)
 - NPS/RADIUS server administration and configuration in general (RADIUS client registration, connection
   request/network policy authoring, the NPS Extension for Entra MFA's own health) — this runbook covers

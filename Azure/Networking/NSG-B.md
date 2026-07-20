@@ -194,7 +194,7 @@ $nsg | Set-AzNetworkSecurityGroup
 
 Common ports for reference: RDP `3389`, SSH `22`, HTTP `80`, HTTPS `443`.
 
-**Better long-term fix for management ports (RDP/SSH):** don't open these permanently at all — use Azure Bastion or Defender for Cloud Just-In-Time (JIT) VM access instead, which opens the port only for a limited window with an audit trail. Flag this to the client if you find a permanently-open 3389/22 rule during triage.
+**Better long-term fix for management ports (RDP/SSH):** don't open these permanently at all — use Azure Bastion (see `Bastion-A.md`/`Bastion-B.md`) or Defender for Cloud Just-In-Time (JIT) VM access instead, which opens the port only for a limited window with an audit trail. Flag this to the client if you find a permanently-open 3389/22 rule during triage.
 
 **Rollback:** Remove the rule; non-destructive to existing connections until removed (existing sessions stay up per Azure's stateful flow-record behavior, only new connection attempts are affected).
 

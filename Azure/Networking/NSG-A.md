@@ -191,7 +191,7 @@ For an MSP taking over a new client environment or doing a periodic security rev
 
 1. Run `Scripts/Get-NSGRuleAudit.ps1 -AllNsgs` across the subscription to flag broad `Internet`/`Any` sources on management ports (3389, 22) and any rule with no description/tag indicating business justification.
 2. Cross-reference flagged rules against Microsoft Defender for Cloud's own NSG recommendations (`Get-AzSecurityTask` or the Defender for Cloud portal) — Defender already tracks a mature ruleset for "internet-facing NSG allows unrestricted access."
-3. For each broad management-port rule, propose either narrowing the source to a known management IP range, or replacing it entirely with Azure Bastion / Defender for Cloud Just-In-Time access.
+3. For each broad management-port rule, propose either narrowing the source to a known management IP range, or replacing it entirely with Azure Bastion (see `Bastion-A.md`/`Bastion-B.md` for deployment and its own required NSG rule set) / Defender for Cloud Just-In-Time access.
 4. Document findings and get client sign-off before making changes — don't silently tighten rules on a live production environment without a change window, since a too-narrow fix can cause an outage as easily as a too-broad rule caused an exposure.
 
 **Rollback:** Keep a pre-change export of every modified NSG (`Get-AzNetworkSecurityGroup | ConvertTo-Json -Depth 10`) so any rule can be restored exactly if the tightening breaks something unexpected.

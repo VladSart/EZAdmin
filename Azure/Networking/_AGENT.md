@@ -1,14 +1,18 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion) — Agent Instructions
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure networking**, covering seven related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **ExpressRoute (dedicated)** — a deeper, ExpressRoute-only layer on top of the combined circuit/BGP triage in Hybrid Connectivity: the two independent peering types (Azure Private Peering and Microsoft Peering, the latter requiring an attached Route Filter to deliver any routes at all), circuit SKU tier prefix ceilings, ExpressRoute Direct, Global Reach (circuit-to-circuit interconnection, distinct from Virtual WAN's own hub routing), FastPath (data-plane gateway bypass), and ExpressRoute Gateway SKU sizing independent of circuit bandwidth. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. **Azure Virtual WAN** — the Microsoft-managed global transit-network service: the Basic/Standard SKU capability boundary (one-way upgrade), the virtual hub and its embedded BGP router (with `ProvisioningState`/`RoutingState` as two independent health signals and a fixed ASN 65515 shared by VPN and ExpressRoute gateways), the connection association/propagation model, hub route tables and labels, and Routing Intent/Routing Policies (the declarative Internet/Private traffic-steering feature whose single biggest gotcha is silently taking over the Default route table on enable). NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, Virtual WAN spoke traffic, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that can, in preview, target a Virtual WAN hub as its "hub" type — that's AVNM orchestrating Virtual WAN, not a duplicate of Virtual WAN's own native hub-routing model documented in `VirtualWAN-A.md`/`VirtualWAN-B.md`. **Private DNS zones** — the name-resolution layer that sits alongside all three connectivity topics above: the Azure-provided resolver (168.63.129.16), custom vs. `privatelink.*` reserved zones, the Virtual Network Link resource (resolution-only vs. registration-enabled — and the critical fact that peering never implies a link), Private Endpoint DNS Zone Group integration, and bridging custom/on-premises DNS into Azure zones via conditional forwarding or Azure DNS Private Resolver.
+Runbooks and scripts for **Azure networking**, covering nine related but distinct topics. **Hybrid connectivity** — the VPN Gateway (site-to-site IPsec/BGP) and ExpressRoute (private circuit) paths that connect on-premises client networks to Azure: IPsec tunnel establishment, BGP peering and route propagation on both paths, ExpressRoute's three-zone (customer/provider/Microsoft) provisioning model, and the NSG/UDR data-plane checks that come after control-plane health is confirmed. **ExpressRoute (dedicated)** — a deeper, ExpressRoute-only layer on top of the combined circuit/BGP triage in Hybrid Connectivity: the two independent peering types (Azure Private Peering and Microsoft Peering, the latter requiring an attached Route Filter to deliver any routes at all), circuit SKU tier prefix ceilings, ExpressRoute Direct, Global Reach (circuit-to-circuit interconnection, distinct from Virtual WAN's own hub routing), FastPath (data-plane gateway bypass), and ExpressRoute Gateway SKU sizing independent of circuit bandwidth. **Network Security Groups (NSG)** — the general-purpose filtering layer itself: rule priority/evaluation order, the dual subnet-level+NIC-level enforcement model, service tags, Application Security Groups, augmented rules, and Security Admin Rules via Azure Virtual Network Manager. **Azure Virtual Network Manager (AVNM)** — the centralized governance control plane that deploys connectivity (mesh/hub-and-spoke), security admin, and routing configurations across many VNets/subscriptions at once: network manager scope/delegation, static vs. dynamic (Azure-Policy-based) network group membership, the connected-group construct behind mesh topologies, and the goal-state deployment model. **Azure Virtual WAN** — the Microsoft-managed global transit-network service: the Basic/Standard SKU capability boundary (one-way upgrade), the virtual hub and its embedded BGP router (with `ProvisioningState`/`RoutingState` as two independent health signals and a fixed ASN 65515 shared by VPN and ExpressRoute gateways), the connection association/propagation model, hub route tables and labels, and Routing Intent/Routing Policies (the declarative Internet/Private traffic-steering feature whose single biggest gotcha is silently taking over the Default route table on enable). NSG is the shared data-plane checkpoint that HybridConnectivity, AVNM's own Security Admin Rules, Virtual WAN spoke traffic, `Azure/AVD/AVD-Connectivity-A.md`, and `Azure/Windows365/Windows365-A.md` all converge on — this folder is where its mechanics are fully documented once rather than repeated in each of those files. AVNM's *connectivity configuration* topologies (mesh/hub-and-spoke) are a distinct, higher layer that can, in preview, target a Virtual WAN hub as its "hub" type — that's AVNM orchestrating Virtual WAN, not a duplicate of Virtual WAN's own native hub-routing model documented in `VirtualWAN-A.md`/`VirtualWAN-B.md`. **Private DNS zones** — the name-resolution layer that sits alongside all three connectivity topics above: the Azure-provided resolver (168.63.129.16), custom vs. `privatelink.*` reserved zones, the Virtual Network Link resource (resolution-only vs. registration-enabled — and the critical fact that peering never implies a link), Private Endpoint DNS Zone Group integration, and bridging custom/on-premises DNS into Azure zones via conditional forwarding or Azure DNS Private Resolver.
 
 Private DNS is why a Private Endpoint or AVD/Windows 365 host can be fully reachable at the network layer (NSG/UDR/peering all correct) and still fail for end users — resolution is a separate dependency chain from connectivity, and this folder is where both are documented side by side.
 
 **Azure Firewall (Standard/Premium)** — the firewall/NVA resource's own rule and policy authoring, a distinct layer from Virtual WAN's treatment of it purely as a Routing Intent Next Hop target: Firewall Policy architecture (its own SKU tier, separate from and not automatically matching the Firewall resource's SKU), rule collection groups/collections/rules and the two-layer evaluation order (fixed NAT→Network→Application type order, THEN priority number within type), and the Premium-only feature set — TLS inspection (a genuine two-hop proxy requiring Key Vault-backed CA certificates AND client-side trust deployment), IDPS (signature-based, 67,000+ rules, per-signature override tuning), URL filtering, and advanced web categories. This is the natural next stop once `VirtualWAN-A.md`/`VirtualWAN-B.md` has confirmed traffic is actually reaching the firewall via Routing Intent — this folder's Firewall coverage picks up from there and never re-litigates the routing question.
 
-Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User VPN/P2S gateway type embedded in a Virtual WAN hub is covered in `VirtualWAN-A.md`/`VirtualWAN-B.md`; a customer-managed P2S gateway on a traditional hub VNet is not separately documented), inbound reverse-proxy TLS termination (Web Application Firewall on Application Gateway — a distinct product referenced only as the supported pattern for inbound HTTPS inspection, since Azure Firewall itself only terminates outbound/East-West TLS), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
+**Point-to-Site (P2S) VPN** — a customer-managed VPN Gateway's individual-client-to-VNet configuration, architecturally distinct from the site-to-site path in Hybrid Connectivity above: the OpenVPN/SSTP/IKEv2 protocol layer, the three cross-constrained authentication types (Certificate, Microsoft Entra ID — OpenVPN-only, via the Azure VPN Client — and RADIUS pass-through), client address pool sizing, root certificate lifecycle and Azure's own periodic gateway certificate migration, and the Windows-vs-non-Windows client route-refresh asymmetry after topology changes. Does not cover the User VPN/P2S gateway type embedded in a Virtual WAN hub (a different, Microsoft-managed configuration surface — see `VirtualWAN-A.md`/`VirtualWAN-B.md`) or Always On VPN (a wholly different Windows-native, RRAS-based technology — see `Windows/Troubleshooting/AlwaysOnVPN-A.md`).
+
+**Azure Bastion** — browser/native-client RDP-SSH-over-TLS access to VMs without a public IP, agent, or exposed 3389/22: the four architecturally distinct SKU tiers (Developer's shared infrastructure vs. Basic/Standard/Premium's dedicated deployment), the all-or-nothing 8-rule NSG requirement on `AzureBastionSubnet`, the separate target-VM-subnet NSG requirement (the most common real-world connectivity gap), connection-method availability by SKU (native client/IP-Connect/shareable links/file transfer all require Standard+; session recording and private-only deployment require Premium), and the independent JIT (Just-In-Time) access role-assignment layer. `NSG-A.md`/`NSG-B.md` and `Windows/Troubleshooting/RDP-B.md` both reference Bastion as the recommended alternative to permanently-open management ports — this is where that recommendation's own mechanics are fully documented.
+
+Does not cover inbound reverse-proxy TLS termination (Web Application Firewall on Application Gateway — a distinct product referenced only as the supported pattern for inbound HTTPS inspection, since Azure Firewall itself only terminates outbound/East-West TLS), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
 
 ---
 
@@ -46,6 +50,12 @@ Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User V
 | `AzureFirewall-B.md` | Azure Firewall hotfix runbook — SKU/policy-SKU mismatch, priority/rule-type evaluation-order conflicts, TLS inspection certificate/trust issues, IDPS false-positive tuning, DNAT-without-matching-Network-rule |
 | `AzureFirewall-A.md` | Azure Firewall deep dive — SKU tier feature ceiling (Basic/Standard/Premium), Firewall Policy architecture and inheritance via Firewall Manager, two-layer rule evaluation order (type then priority), TLS inspection proxy architecture and certificate chain, IDPS signature model, greenfield/retrofit/SKU-migration/fleet-audit playbooks |
 | `Scripts/Get-AzureFirewallPolicyAudit.ps1` | Read-only sweep — Firewall vs. Policy SKU tier mismatches, TLS inspection certificate expiry/misconfiguration, IDPS posture and signature-override tuning-debt, Rule Collection Group priority collisions, DNAT-without-Network-rule heuristic flag |
+| `P2SVPN-B.md` | P2S VPN hotfix runbook — gateway SKU capability ceiling (Basic SKU + IKEv2/RADIUS), address pool exhaustion, missing/wrong root cert, stale client profile after topology change, RADIUS unreachable, Entra ID Audience mismatch |
+| `P2SVPN-A.md` | P2S VPN deep dive — protocol/auth cross-constraint matrix, client profile lifecycle, Windows-vs-non-Windows route-refresh asymmetry, greenfield/migration/diagnosis playbooks |
+| `Scripts/Get-P2SVPNGatewayHealth.ps1` | Read-only sweep — Basic SKU feature-gap detection, address pool/root-cert/RADIUS/Entra ID configuration presence, optional best-effort RADIUS reachability probe |
+| `Bastion-B.md` | Bastion hotfix runbook — AzureBastionSubnet NSG 8-rule completeness, target-VM-subnet NSG gap (most common real fault), black screen diagnosis, SKU feature ceiling, JIT role-assignment gap |
+| `Bastion-A.md` | Bastion deep dive — four-SKU architecture comparison, all-or-nothing NSG rule requirement, connection-method availability matrix, greenfield/SKU-upgrade/multi-VNet playbooks |
+| `Scripts/Get-AzureBastionHealth.ps1` | Read-only sweep — SKU/provisioning state, AzureBastionSubnet sizing compliance, NSG rule-completeness check against the full 8-rule set, optional target-VM-subnet NSG check |
 
 ---
 
@@ -95,6 +105,15 @@ Does not cover point-to-site VPN as a **standalone, non-vWAN** topic (the User V
 - **"IDPS is blocking something legitimate"** → `AzureFirewall-B.md` Fix 5 — override the specific Signature ID, never drop the policy-wide IDPS mode
 - **"DNAT rule configured but inbound traffic still fails"** → `AzureFirewall-B.md` Fix 6 — check for a missing companion Network rule and confirm the Public IP/IpConfiguration binding
 - **"Fleet-wide Azure Firewall policy hygiene audit across clients"** → `Scripts/Get-AzureFirewallPolicyAudit.ps1`
+- **"A remote user can't connect to our P2S VPN"** → `P2SVPN-B.md` Triage — confirm gateway SKU capability first (Basic silently doesn't support IKEv2/RADIUS)
+- **"P2S worked yesterday, some users broken today, others fine"** → `P2SVPN-B.md` Fix 3 — stale Windows client profile after a topology change; non-Windows clients refresh routes automatically, Windows doesn't
+- **"P2S users authenticating via RADIUS all failing at once"** → `P2SVPN-B.md` Fix 4 — check the gateway's own S2S tunnel to on-prem RADIUS first, not the P2S config itself
+- **"Fleet-wide P2S VPN Gateway configuration health check across clients"** → `Scripts/Get-P2SVPNGatewayHealth.ps1`
+- **"Can't create/apply an NSG on AzureBastionSubnet"** → `Bastion-B.md` Fix 1 — missing one or more of the 8 required rules, applied together not incrementally
+- **"Azure Bastion shows a black screen, no error"** → `Bastion-B.md` Fix 4 / Fix 2 — almost always the TARGET VM subnet's NSG, not the Bastion subnet's
+- **"Native RDP/SSH client / file transfer / IP-Connect not available in Bastion"** → `Bastion-B.md` Fix 3 — feature requires Standard or Premium SKU, not a bug
+- **"User can see the VM in the portal but Bastion connection is still blocked"** → `Bastion-B.md` Fix 6 — missing JIT role assignment, independent of Bastion/NSG configuration
+- **"Fleet-wide Azure Bastion SKU/subnet/NSG health check across clients"** → `Scripts/Get-AzureBastionHealth.ps1`
 
 ---
 
@@ -178,6 +197,18 @@ Get-AzFirewallPolicyRuleCollectionGroup -ResourceGroupName <rg> -PolicyName <pol
 
 # Azure Firewall — IDPS mode and signature overrides
 (Get-AzFirewallPolicy -ResourceGroupName <rg> -Name <policyName>).IntrusionDetection
+
+# P2S VPN — gateway SKU + VpnClientConfiguration in one shot (auth types, protocols, address pool)
+Get-AzVirtualNetworkGateway -ResourceGroupName <rg> -Name <gatewayName> | Select GatewayType, VpnType, Sku, VpnClientConfiguration
+
+# P2S VPN — regenerate the client profile package (required after ANY gateway-side config change)
+New-AzVpnClientConfiguration -ResourceGroupName <rg> -VirtualNetworkGatewayName <gatewayName> -AuthenticationMethod EAPTLS
+
+# Azure Bastion — resource state and SKU
+Get-AzBastion -ResourceGroupName <rg> -Name <bastionName> | Select Name, ProvisioningState, SkuText
+
+# Azure Bastion — AzureBastionSubnet sizing check (must be /26 or larger)
+Get-AzVirtualNetworkSubnetConfig -Name AzureBastionSubnet -VirtualNetwork (Get-AzVirtualNetwork -ResourceGroupName <rg> -Name <vnetName>)
 ```
 
 ---
@@ -259,6 +290,45 @@ Records populated
     │  └─ privatelink.* zone → Private Endpoint's DNS Zone Group (unrelated to registration flag)
     ▼
 Client resolves correctly (private IP) or falls through to public DNS (public IP / NXDOMAIN)
+```
+
+P2S VPN dependency chain (P2SVPN-A.md/P2SVPN-B.md — an individual-client path, NOT the S2S/ExpressRoute chain above):
+
+```
+Gateway SKU capability ceiling (Basic: no IKEv2/RADIUS/IPv6 — silent, not an error)
+    │
+    ▼
+VpnClientConfiguration: address pool + protocol(s) + auth type(s)
+    │  ├─ Certificate → root CA trust chain uploaded to gateway
+    │  ├─ Entra ID     → App ID/Audience, OpenVPN-only, Azure VPN Client required
+    │  └─ RADIUS       → pass-through; on-prem RADIUS needs a live S2S tunnel for reachability
+    ▼
+Client profile package (point-in-time snapshot — regenerate after ANY gateway-side change)
+    │  ├─ Windows     → routes baked in at generation time, does NOT auto-refresh
+    │  └─ non-Windows → routes refresh dynamically on topology change
+    ▼
+Tunnel established → routing (BGP-off: no transitive multi-hop; BGP-on: transitive, Windows still needs a profile refresh)
+```
+
+Azure Bastion dependency chain (Bastion-A.md/Bastion-B.md — the management-plane access path NSG-B.md/RDP-B.md point to as the Bastion alternative to open 3389/22):
+
+```
+SKU tier (Developer/Basic/Standard/Premium) — determines EVERY capability below, not just cost
+    │
+    ▼
+AzureBastionSubnet (/26+) + Public IP (dedicated SKUs; Premium can go private-only)
+    │
+    ▼
+AzureBastionSubnet NSG (if applied) — ALL 8 required rules together, or Azure rejects the NSG
+    │
+    ▼
+Target VM subnet NSG — a SEPARATE inbound allow for 3389/22 FROM AzureBastionSubnet (#1 real-world gap)
+    │
+    ▼
+[If JIT enabled] connecting user has BOTH jitNetworkAccessPolicies/read AND /write at scope
+    │
+    ▼
+Session over TLS 443 (browser: all SKUs | native client/IP-Connect/shareable link: Standard+ only)
 ```
 
 ---
