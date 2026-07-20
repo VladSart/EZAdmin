@@ -1,7 +1,7 @@
 # Microsoft Sentinel — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment), Hunting (the analyst-driven manual workflow — hunting query library, Bookmarks, the Hunts (Preview) end-to-end wrapper, and KQL jobs as the retired-livestream replacement), and Notebooks (Jupyter/MSTICPy code-first hunting and investigation, executed on a separate Azure Machine Learning workspace launched from Sentinel). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above; Hunting's Azure-portal-only bookmark creation constraint, the Hunts-clones-not-references model, and the KQL-jobs-are-persistence-not-alerting distinction that trips up livestream migrations; and Notebooks' dual-RBAC model (independent Sentinel-workspace and AML-workspace grants), the AML storage-account network posture that gates direct in-portal launch, and the MSTICPy config/auth layer (`msticpyconfig.yaml`, query providers, external TI/GeoIP enrichment) underneath the notebook runtime itself. Does not yet cover the broader Sentinel data lake architecture beyond KQL jobs (federated tables, data lake onboarding mechanics beyond the managed-identity permission already covered in `Hunting-A.md`) — a future topic candidate, not yet independently verified as a genuine gap.
+Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment), Hunting (the analyst-driven manual workflow — hunting query library, Bookmarks, the Hunts (Preview) end-to-end wrapper, and KQL jobs as the retired-livestream replacement), and Notebooks (Jupyter/MSTICPy code-first hunting and investigation, executed on a separate Azure Machine Learning workspace launched from Sentinel). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above; Hunting's Azure-portal-only bookmark creation constraint, the Hunts-clones-not-references model, and the KQL-jobs-are-persistence-not-alerting distinction that trips up livestream migrations; Notebooks' dual-RBAC model (independent Sentinel-workspace and AML-workspace grants), the AML storage-account network posture that gates direct in-portal launch, and the MSTICPy config/auth layer (`msticpyconfig.yaml`, query providers, external TI/GeoIP enrichment) underneath the notebook runtime itself; and the Sentinel **data lake** architecture — the cold, up-to-12-year storage tier, its own INDEPENDENT Entra-ID-directory-role access model (separate from Sentinel SIEM's Azure RBAC), one-time tenant-wide onboarding (DL102/DL103 errors, CMK incompatibility, permanent subscription/RG/region lock), the KQL-job/Summary-rule/Search-job tool-selection decision, and data federation to Azure Databricks/ADLS Gen 2/Microsoft Fabric.
 
 ## Before responding, also check
 - `EntraID/Graph/` — Entra ID sign-in/audit log connectors are actually diagnostic settings, not a distinct Sentinel object; cross-reference if the question is about Entra log gaps specifically
@@ -32,6 +32,9 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 | `Notebooks-B.md` | Hotfix runbook — Sentinel-role-vs-AML-role confusion, no AML workspace exists, private-endpoint/restricted-storage launch blocker, MSTICPy config warnings/init failures, TI/GeoIP enrichment returns null, kernel-switch package install breakage, kernel-restart state loss, wrong query provider/workspace active |
 | `Notebooks-A.md` | Deep dive — the Sentinel-launcher-vs-AML-workspace architecture split and its two independent RBAC systems, MSTICPy component autoload order (TILookup→GeoIP→AzureData→AzureSentinelAPI→Notebooklets→Pivot), msticpyconfig.yaml discovery/MSTICPYCONFIG env var, compute-instance-is-personal-per-user model, greenfield onboarding and network-restricted-workaround playbooks |
 | `Scripts/Get-SentinelNotebookReadinessAudit.ps1` | Audits Sentinel-workspace RBAC, AML-workspace RBAC (as an independent grant), AML default storage account network posture (PublicNetworkAccess/firewall — the direct-launch blocker), and compute instance presence for a given AML workspace/user |
+| `DataLake-B.md` | Hotfix runbook — tenant not onboarded/DL102/DL103, KQL job can't create a new custom table, Sentinel Contributor but no Entra ID role blocking job creation, KQL job error-message lookup table, auxiliary table missing from Advanced Hunting, offboarding request, CMK incompatibility |
+| `DataLake-A.md` | Deep dive — the dual Azure-RBAC/Entra-ID-directory-role access model, analytics-vs-data-lake-tier architecture, one-time onboarding permanence (subscription/RG/region lock), the KQL-job/Summary-rule/Search-job decision table, data federation (Databricks/ADLS Gen 2/Fabric) architecture and one-directional read-only model, greenfield onboarding and federation-setup playbooks |
+| `Scripts/Get-SentinelDataLakeReadinessAudit.ps1` | Audits data lake onboarding state (managed identity presence), the managed identity's Log Analytics Contributor grant on a target workspace, and a given user's Sentinel Azure RBAC role side-by-side with their Entra ID directory role — surfacing the dual-system access gap directly |
 
 ## Common entry points
 
@@ -77,6 +80,13 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 - "VirusTotal/GeoIP lookups return blank but Sentinel queries work fine" → `Notebooks-B.md` Fix 5 (separate enrichment-provider config)
 - "Notebook worked, now throws NameError after I restarted the kernel" → `Notebooks-B.md` Fix 7 (state including auth is wiped on restart)
 - "Onboarding a new analyst to Sentinel notebooks" → `Notebooks-A.md` Remediation Playbook 1
+- "User has Sentinel Contributor but can't create/schedule a KQL job" → `DataLake-B.md` Fix 3 (Entra ID directory role is a separate system from Sentinel Azure RBAC)
+- "Data lake onboarding failed with DL102 or DL103" → `DataLake-B.md` Fix 1
+- "KQL job can't create a new custom table" → `DataLake-B.md` Fix 2 (managed identity needs a manual Log Analytics Contributor grant)
+- "Auxiliary log table disappeared from Advanced Hunting" → `DataLake-B.md` Fix 5 (expected — moved to Data lake exploration, not lost)
+- "Should this be a KQL job, Summary rule, or Search job?" → `DataLake-A.md` How It Works comparison table
+- "Federated Databricks/ADLS/Fabric connection won't set up" → `DataLake-A.md` Remediation Playbook 3 (check public network accessibility first)
+- "Need to fully offboard the data lake" → `DataLake-B.md` Fix 6 / `DataLake-A.md` Remediation Playbook 4 (support-request only, no self-service)
 
 ## Key diagnostic commands
 
@@ -123,6 +133,14 @@ Get-AzRoleAssignment -Scope <AML-workspace-resource-id> -SignInName <user@domain
 
 # AML default storage account network posture — gates direct "Launch notebook" from Sentinel
 Get-AzStorageAccount -ResourceGroupName <rg> -Name <storage-account> | Select-Object PublicNetworkAccess, NetworkRuleSet
+```
+
+```powershell
+# Confirm data lake onboarding (managed identity presence)
+Get-AzADServicePrincipal -DisplayNameBeginsWith "msg-resources-"
+
+# Check a user's Entra ID directory role — INDEPENDENT of their Sentinel Azure RBAC role above
+Get-MgUserMemberOf -UserId <user@domain.com> | Where-Object { $_.AdditionalProperties.displayName -match "Security Operator|Security Administrator|Global Administrator" }
 ```
 
 ## Key dependency chain
@@ -193,6 +211,34 @@ Azure Machine Learning workspace RBAC (Contributor to run; RG Owner/Contributor 
                                 user folder, or via MSTICPYCONFIG env var elsewhere)
                                     ├── Query provider auth → required for ANY KQL query from the notebook
                                     └── External TI/GeoIP provider keys → enrichment only, not core queries
+```
+
+**Data lake chain** (dual RBAC systems on the SAME resource — see `DataLake-A.md`):
+```
+Onboarding (one-time, tenant-wide, Defender portal only — subscription/RG/region PERMANENT)
+    └── creates managed identity msg-resources-<guid>
+            ├── auto-granted: Azure Reader over onboarded subscriptions
+            └── NOT auto-granted: Log Analytics Contributor (manual, per-workspace — required
+                only for KQL jobs that create NEW custom tables)
+                    │
+    ┌───────────────┴───────────────────────────────────────────┐
+    │ TWO INDEPENDENT ACCESS SYSTEMS on the same tenant/resource  │
+    ├── Azure RBAC (Sentinel SIEM — unchanged)                    │
+    │       Sentinel Reader/Responder/Contributor                 │
+    │       → incidents/rules/workbooks/playbooks + read-only     │
+    │         interactive data lake queries on covered workspaces │
+    └── Entra ID directory roles (Data lake — separate system)     │
+            Read: Global Reader/Security Reader/+ the 3 below     │
+            Write: Security Operator/Administrator/Global Admin   │
+            → REQUIRED for ANY KQL job create/schedule/manage —   │
+              no Azure RBAC role substitutes for this             │
+    └───────────────────────────────────────────────────────────┘
+            └── Analytics tier (hot, 90d-2yr) ←mirrored→ Data lake tier (cold, up to 12yr,
+                ~15min latency / 90-120min for new tables)
+                    ├── KQL jobs (up to 12yr, joins, federated tables) vs. Summary rules
+                    │   (frequent, non-lake tiers OK) vs. Search jobs (single table, Archive OK)
+                    └── Federated tables (Databricks/ADLS Gen2/Fabric) — READ-ONLY,
+                        one-directional, external source must be PUBLICLY network-accessible
 ```
 
 ## Response format reminder
