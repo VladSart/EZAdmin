@@ -30,7 +30,7 @@ This runbook covers Windows 365 Cloud PC — Enterprise and Business editions �
 - Authenticated with `Connect-MgGraph` and `CloudPC.ReadWrite.All`, `DeviceManagementConfiguration.Read.All` scopes
 - Tenant has at least one active Windows 365 Enterprise or Business subscription
 
-**Not covered:** Windows 365 Frontline shared-pool licensing internals (see learning pointers for a reference), Windows 365 Government/GCC-specific network requirements, deep AVD broker internals (see `Azure/AVD/AVD-A.md`).
+**Not covered:** Windows 365 Flex (formerly Frontline, renamed 2026-05-08) pooled-licensing internals, Dedicated/Shared mode mechanics, and concurrency buffer — see `Flex-A.md`/`Flex-B.md` for full coverage; Windows 365 Government/GCC-specific network requirements; deep AVD broker internals (see `Azure/AVD/AVD-A.md`).
 
 ---
 ## How It Works
@@ -44,7 +44,7 @@ Windows 365 is a managed service layer on top of the same Azure Virtual Desktop 
 | Aspect | Windows 365 | Self-managed AVD |
 |--------|-------------|-------------------|
 | VM ownership | Microsoft-managed subscription (customer never sees the VM in their own Azure subscription, except with "Azure Network Connection" for domain join) | Customer's own Azure subscription |
-| Assignment model | 1:1 dedicated Cloud PC per user (except Frontline: shared pool) | 1:N pooled or 1:1 personal host pools |
+| Assignment model | 1:1 dedicated Cloud PC per user (except Windows 365 Flex, formerly Frontline: pooled — see `Flex-A.md`) | 1:N pooled or 1:1 personal host pools |
 | Profile management | OS disk itself persists — no FSLogix needed | FSLogix required for pooled; optional for personal |
 | Licensing | Per-user monthly SKU (fixed vCPU/RAM/storage tier) | Pay-as-you-go compute + separate AVD access rights |
 | Provisioning | Automatic on license assignment via Provisioning Policy | Manual VM deployment (ARM/Bicep/Portal) |
@@ -68,9 +68,9 @@ Windows 365 Enterprise and Business SKUs are named `Windows 365 <Enterprise|Busi
 
 Group-based licensing works exactly like any other Entra ID group-based license assignment — group membership changes must propagate through Entra ID's license processing pipeline before Windows 365 provisioning starts, which is a common source of "why hasn't the Cloud PC shown up yet" tickets.
 
-### Frontline shared-pool model (aside)
+### Windows 365 Flex (formerly Frontline) — aside
 
-Windows 365 Frontline uses a ratio-based licensing model — e.g., 1 license can serve 3 users across shifts, but only 1 active Cloud PC connection at a time per license. "No Cloud PC available" errors under Frontline reflect pool exhaustion, not per-user misconfiguration.
+Windows 365 Frontline was renamed to **Windows 365 Flex** on 2026-05-08 (same product, no functional change, no migration required — the Intune admin center's own "Frontline Type" device property column had not yet been renamed to match as of this writing). Flex uses a pooled, ratio-based licensing model across two modes — Dedicated (up to 3 Cloud PCs per license, 1 concurrent session, with a limited concurrency buffer) and Shared (1 Cloud PC per license, shared non-concurrently, no buffer, no persistence). "No Cloud PC available" errors under Flex reflect pool/concurrency exhaustion, not per-user misconfiguration. Full coverage: `Flex-A.md` (deep dive) and `Flex-B.md` (hotfix).
 
 </details>
 

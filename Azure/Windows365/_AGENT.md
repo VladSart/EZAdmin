@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Windows 365 Cloud PC troubleshooting runbooks and a fleet-wide diagnostic script for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business/Frontline), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity.
+Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`.
 
 ---
 
@@ -23,8 +23,11 @@ Windows 365 Cloud PC troubleshooting runbooks and a fleet-wide diagnostic script
 | File | What it covers |
 |---|---|
 | `Windows365-B.md` | Hotfix runbook — stuck/failed provisioning, ANC unhealthy, license missing, client can't connect, resize vs. reprovision |
-| `Windows365-A.md` | Deep-dive reference — provisioning policy pipeline, domain join models (Entra ID/Hybrid/AD DS), licensing model, Frontline shared-pool ratio licensing, Windows 365 vs. AVD ownership model |
-| `Scripts/Get-CloudPcFleetStatus.ps1` | Fleet-wide report: provisioning status (flags stuck/failed), ANC health, Intune enrollment gaps, and per-SKU license consumption — read-only, no remediation |
+| `Windows365-A.md` | Deep-dive reference — provisioning policy pipeline, domain join models (Entra ID/Hybrid/AD DS), Enterprise/Business licensing model, Windows 365 vs. AVD ownership model |
+| `Flex-B.md` | Hotfix runbook — Windows 365 Flex (formerly Frontline): Shared-mode pool exhaustion, Dedicated-mode concurrency buffer blocks, cold-start/power-state confusion, Resize-not-supported, naming confusion |
+| `Flex-A.md` | Deep-dive reference — Flex pooled licensing model, Dedicated mode (up to 3 Cloud PCs/license, concurrency buffer, intelligent prestart) vs. Shared mode (1 Cloud PC/license, no persistence, no buffer), the May 2026 Frontline→Flex rename, feature gaps vs. Enterprise/Business |
+| `Scripts/Get-CloudPcFleetStatus.ps1` | Fleet-wide report: provisioning status (flags stuck/failed), ANC health, Intune enrollment gaps, and per-SKU license consumption — read-only, no remediation. Enterprise/Business focused |
+| `Scripts/Get-Windows365FlexAudit.ps1` | Flex-specific audit: mode distribution, Shared-mode pool capacity signal, Dedicated-mode group-oversizing check, deprecated `provisioningType eq 'shared'` filter risk — read-only, no remediation |
 
 ---
 
@@ -42,6 +45,11 @@ Windows 365 Cloud PC troubleshooting runbooks and a fleet-wide diagnostic script
 | "How does Windows 365 provisioning actually work end to end" | `Windows365-A.md` → How It Works |
 | "Should this be Windows 365 or AVD for this client" | `Windows365-A.md` → How It Works comparison table |
 | "Fleet-wide Cloud PC health for a report or ticket" | `Scripts/Get-CloudPcFleetStatus.ps1` |
+| "Ticket says Frontline but nothing by that name exists in the portal" | `Flex-B.md` → Fix 6 — renamed to Windows 365 Flex on 2026-05-08, same product |
+| "Shared-mode Flex pool says no Cloud PC available" | `Flex-B.md` → Fix 1 (pool exhaustion — no concurrency buffer in Shared mode) |
+| "Dedicated-mode Flex user can't connect during shift overlap" | `Flex-B.md` → Fix 2 (concurrency buffer temporarily/permanently blocked) |
+| "Resize option missing/fails on a Flex Cloud PC" | `Flex-B.md` → Fix 4 — not a supported feature for Flex, unlike Enterprise/Business |
+| "Should this be Enterprise/Business or Flex for this client" | `Flex-A.md` → Remediation Playbooks → Playbook 4 (decision guide) |
 
 ---
 
@@ -66,9 +74,14 @@ Get-MgUserLicenseDetail -UserId "<user@domain.com>" | Select-Object SkuPartNumbe
 Get-MgDeviceManagementManagedDevice -Filter "deviceName eq '<cloudpc-name>'" |
     Select-Object DeviceName, ComplianceState, LastSyncDateTime
 
-# Resize (non-destructive) vs. Reprovision (destructive — wipes OS disk)
+# Resize (non-destructive) vs. Reprovision (destructive — wipes OS disk) — Enterprise/Business only,
+# Resize is NOT supported for Windows 365 Flex as of this writing (see Flex-A.md/Flex-B.md Fix 4)
 Invoke-MgBetaResizeDeviceManagementVirtualEndpointCloudPc -CloudPcId "<id>" -TargetServicePlanId "<plan-id>"
 Invoke-MgBetaReprovisionDeviceManagementVirtualEndpointCloudPc -CloudPcId "<id>"
+
+# Distinguish Flex (formerly Frontline) Cloud PCs from Enterprise/Business — see Flex-A.md Validation Steps
+Get-MgBetaDeviceManagementVirtualEndpointCloudPc -All | Select DisplayName,ProvisioningType
+Get-MgBetaDeviceManagementVirtualEndpointFrontLineServicePlan | Select DisplayName,VCpuCount,RamInGB
 ```
 
 ---
