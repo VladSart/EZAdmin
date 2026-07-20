@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), and **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), and **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
 
 ---
 
@@ -41,6 +41,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/gMSA/gMSA-B.md` | Hotfix: KDS root key convergence triage, authorization-vs-installation two-step diagnosis, service credential format fixes, forest-boundary dead ends |
 | `Troubleshooting/gMSA/gMSA-A.md` | Deep dive: KDS root key/GKDS password derivation architecture, two-step authorization model, rotation mechanics, forest-scoping limits, cluster-node and static-to-gMSA migration playbooks |
 | `Scripts/Get-GMSAHealth.ps1` | One-shot gMSA health check: KDS root key convergence, per-gMSA delegation resolution (direct + group), password interval, optional local Test-ADServiceAccount + GMSA event log scan via `-TestLocal` |
+| `Troubleshooting/dMSA/dMSA-B.md` | Hotfix: Windows Server 2025 platform-gate triage, `msDS-DelegatedMSAState` lookup table, client-side `DelegatedMSAEnabled` gap fix, migration undo/reset, BadSuccessor security-incident triage |
+| `Troubleshooting/dMSA/dMSA-A.md` | Deep dive: schema-vs-functional-level nuance, two-phase migration state machine internals, two-gate authorization model (AD delegation + client policy), BadSuccessor (CVE-2025-53779) architecture, standalone/migration/security-triage playbooks |
+| `Scripts/Get-DMSAHealth.ps1` | One-shot dMSA health check: Windows Server 2025 DC presence, KDS root key convergence, per-dMSA delegation resolution, migration-state interpretation with observation-window elapsed-time flagging, optional local `DelegatedMSAEnabled` + Kerberos event log scan via `-TestLocal` |
 | `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` | Hotfix: resultant-policy lookup, invalid OU-targeting triage, precedence-collision and direct-link-override fixes, PSO delegation gaps |
 | `Troubleshooting/FineGrainedPasswordPolicies/FGPP-A.md` | Deep dive: PSO/Password Settings Container architecture, precedence and direct-vs-group resolution rules, domain-wide GPO fallback, delegation model, new-tier and OU-to-group migration playbooks |
 | `Scripts/Get-FGPPAudit.ps1` | One-shot PSO audit: invalid target-type detection (OU/wrong-scope-group), precedence-collision detection across all PSOs, optional per-user resultant-policy + direct-link check via `-UserName` |
@@ -92,6 +95,13 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Migrating a service off a static-password account onto a gMSA" → `Troubleshooting/gMSA/gMSA-A.md` (Playbook 2)
 - "New cluster node can't run the clustered gMSA-based service" → `Troubleshooting/gMSA/gMSA-A.md` (Playbook 3)
 - "Quick gMSA health snapshot" → `Scripts/Get-GMSAHealth.ps1`
+- "A service/task using a dMSA won't log on, or dMSA creation fails outright" → `Troubleshooting/dMSA/dMSA-B.md` (Triage — confirm a Windows Server 2025 DC exists first, the #1 wrong-ticket cause)
+- "What does msDS-DelegatedMSAState mean / what state is this dMSA in" → `Troubleshooting/dMSA/dMSA-B.md` (Triage table)
+- "dMSA authorized in AD but the host still can't log on" → `Troubleshooting/dMSA/dMSA-B.md` (Fix 3 — client-side `DelegatedMSAEnabled` gate, disabled by default)
+- "Migrating a legacy service account to dMSA" / "Start-ADServiceAccountMigration" → `Troubleshooting/dMSA/dMSA-A.md` (Playbook 2 — full state-machine walkthrough with observation-window guidance)
+- "Can we convert our gMSA to a dMSA?" → No — `Troubleshooting/dMSA/dMSA-A.md` Scope & Assumptions and Learning Pointers explicitly state no conversion path exists
+- "Account was just created and immediately has Domain Admin-equivalent rights" → **Stop, security incident** — `Troubleshooting/dMSA/dMSA-B.md` (Fix 6) / `Troubleshooting/dMSA/dMSA-A.md` (Playbook 4, BadSuccessor/CVE-2025-53779)
+- "Quick dMSA health snapshot" → `Scripts/Get-DMSAHealth.ps1`
 - "User has the wrong password policy / wrong complexity or lockout settings" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md`
 - "I linked a PSO to an OU and nothing happened" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` (Fix 1 — PSOs can't target OUs)
 - "Two password policies seem to conflict / wrong one is winning" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` (Fix 3/Fix 4 — precedence and direct-link resolution)
@@ -201,6 +211,24 @@ Forest has >=1 Windows Server 2012+ DC able to serve KDS root key material
                           └── Install-ADServiceAccount run locally on that host
                                 └── Service/task/app pool logs on as DOMAIN\gMSA$ with a BLANK password
                                       └── msDS-ManagedPasswordInterval rotation (default 30 days), no manual sync
+```
+
+**dMSA dependency chain** (see `Troubleshooting/dMSA/` — builds on the gMSA chain above, adds a migration state machine and a client-side policy gate):
+
+```
+Forest schema extended to Windows Server 2025 level (adprep — independent of functional level)
+  └── >=1 Windows Server 2025 DC exists AND is discoverable by the requesting client/server
+        └── KDS Root Key created AND past its EffectiveTime (shared prerequisite with gMSA)
+              └── dMSA object created (New-ADServiceAccount -CreateDelegatedServiceAccount)
+                    └── PrincipalsAllowedToRetrieveManagedPassword grants the target machine identity
+                          ├── (standalone) msDS-DelegatedMSAState = 3 — ready to use directly
+                          └── (migration) Start-ADServiceAccountMigration links dMSA ↔ legacy account
+                                (state=1; AD auto-discovers consuming hosts)
+                                └── Observation window (~14d min, ~28d typical) → Complete-ADServiceAccountMigration
+                                    (state=2; legacy account disabled, SPNs/delegation transferred)
+  └── Client/server OS supports dMSA (Server 2025 or Windows 11 24H2+)
+        AND DelegatedMSAEnabled registry/GPO policy = 1 — DISABLED BY DEFAULT, separate gate from AD authorization
+              └── Service/task/app pool manually reconfigured to log on as the dMSA (never automatic)
 ```
 
 **FGPP / PSO precedence chain** (see `Troubleshooting/FineGrainedPasswordPolicies/`):
