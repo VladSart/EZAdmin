@@ -1,7 +1,7 @@
 # Microsoft Defender — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Azure-resource Secure Score, posture, multicloud/hybrid connectors), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, Defender for Office 365 Safe Links/Safe Attachments, and the tenant-wide **Microsoft Secure Score** (Identity/Device/Apps/Data — security.microsoft.com/securescore, explicitly distinct from Defender for Cloud's Azure-resource CSPM score of the same name) troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, real-time URL/attachment protection, tenant-wide security posture scoring, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
+Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Azure-resource Secure Score, posture, multicloud/hybrid connectors), CIEM (Cloud Infrastructure Entitlement Management — a Defender CSPM sub-feature covering multicloud identity/permission risk, and the successor to the now-retired standalone Microsoft Entra Permissions Management product), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, Defender for Office 365 Safe Links/Safe Attachments, and the tenant-wide **Microsoft Secure Score** (Identity/Device/Apps/Data — security.microsoft.com/securescore, explicitly distinct from Defender for Cloud's Azure-resource CSPM score of the same name) troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, identity entitlement/permission risk, real-time URL/attachment protection, tenant-wide security posture scoring, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
 
 ## Before responding, also check
 - `Security/ConditionalAccess/` — CA policies often interact with MDE compliance signals
@@ -30,6 +30,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `AttackSimulationTraining-B.md` / `-A.md` | Phishing simulation delivery, reporting, and training-assignment issues (Defender for Office 365 Plan 2) |
 | `SafeLinksAttachments-B.md` / `-A.md` | Defender for Office 365 Safe Links (URL rewrite/time-of-click) and Safe Attachments (detonation) — policy precedence, Teams/Office app coverage, SPO/OneDrive/Teams separate toggle, quarantine visibility |
 | `DefenderForCloud-B.md` / `-A.md` | Defender for Cloud (CSPM) — Secure Score, unhealthy recommendations, multicloud (AWS/GCP) connector onboarding, agentless scanning, regulatory compliance dashboard |
+| `CIEM-B.md` / `-A.md` | Cloud Infrastructure Entitlement Management — Defender CSPM sub-feature for multicloud (Azure/AWS/GCP) identity/permission risk, overprivileged/inactive identity recommendations, Cloud Security Explorer, Attack Path Analysis; also covers the Oct 2025 retirement of standalone Microsoft Entra Permissions Management and what that means for existing clients |
 | `DeviceControl-B.md` / `-A.md` | Device control (USB/removable media/printer/Bluetooth/WPD) — Policy→Rules→Groups→Entries model, fall-through to default enforcement, distinct from Windows Device Installation Restrictions and Purview Endpoint DLP |
 | `SecureScore-B.md` / `-A.md` | Microsoft Secure Score (tenant-wide, security.microsoft.com/securescore) — Identity/Device/Apps/Data scoring model, regression triage, EnabledServices licensing gate, manual override reconciliation, RBAC (Unified RBAC vs. legacy Entra roles vs. Graph API access), explicitly disambiguated from Defender for Cloud's Azure-resource CSPM Secure Score and from TVM's per-device exposure score |
 | `Scripts/Get-MDEDeviceStatus.ps1` | Graph-based MDE device health/risk/sensor report |
@@ -46,6 +47,7 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `Scripts/Get-DefenderForCloudPostureAudit.ps1` | Fleet-wide CSPM audit — plan tiers, Secure Score, unhealthy assessments, multicloud connector coverage, connector resource locks |
 | `Scripts/Get-DeviceControlPolicyAudit.ps1` | Local device control readiness audit — onboarding/AM version, policy delivery, PnP device Hardware ID/Instance Path inventory for group cross-referencing, Device Installation Restriction layer check |
 | `Scripts/Get-SecureScoreReport.ps1` | Graph-based tenant-wide Secure Score audit — regression/category-regression detection, EnabledServices-vs-license gap check, stale manual override flagging, quick-win candidate ranking, device-category informational routing |
+| `Scripts/Get-CIEMRecommendationAudit.ps1` | CIEM readiness audit — Defender CSPM plan tier, Azure CIEM recommendation state, multicloud connector inventory flagged for manual "was Configure access re-run" verification (the CIEM on/off toggle itself is portal-only and not read by this script) |
 
 ## Common entry points
 
@@ -72,6 +74,9 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "Third-party MFA/DLP tool covers this, why is it still unresolved" → `SecureScore-B.md` Fix 4 — manually set "Resolved through third party"
 - "Device category recommendation won't let me change status" → `SecureScore-B.md` Fix 5 — routes through Defender Vulnerability Management; Global exception updates the score, per-device-group exception does not
 - "Graph script gets 403 on Secure Score but the portal works fine for that user" → `SecureScore-B.md` Fix 6 — Graph API access is still legacy-Entra-role-gated, not yet covered by Unified RBAC custom roles
+- "Where did our Entra Permissions Management dashboard go?" / "we used to have CIEM, now it's missing" → `CIEM-B.md` Fix 4 — standalone product retired Oct 1 2025, this is a fresh onboarding into Defender for Cloud's CIEM sub-feature, not a migration
+- "Defender CSPM is enabled but we see no overprivileged/inactive identity recommendations" → `CIEM-B.md` Fix 1 — CIEM has its own sub-toggle separate from the Defender CSPM plan itself
+- "AWS/GCP shows no CIEM data" → `CIEM-B.md` Fix 2/3 — the connector's CIEM-specific access-configuration step (CloudFormation/Terraform) needs a separate re-run from base connector onboarding
 
 ## Key diagnostic commands
 

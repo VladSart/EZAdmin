@@ -377,6 +377,10 @@ Invoke-MgGraphRequest -Method GET -Uri "https://graph.microsoft.com/beta/admin/w
 
 # List active deployments
 Invoke-MgGraphRequest -Method GET -Uri "https://graph.microsoft.com/beta/admin/windows/updates/deployments"
+# Note: admin/windows/updates has no separately published service-specific throttling
+# limit (confirmed against Microsoft's own throttling-limits reference) — it falls back
+# to the general per-app/per-tenant global limit only. See EntraID/Graph/GraphAPI-BatchOperations-A.md
+# Symptom -> Cause Map for the full explanation before assuming it shares Intune's own quota.
 
 # Check device join state
 dsregcmd /status

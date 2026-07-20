@@ -27,6 +27,7 @@ Covers **Microsoft Defender for Cloud** as a Cloud Security Posture Management (
 - Defender for **Identity** (MDI) → `MDI-A.md` / `MDI-B.md`
 - Defender for **Servers** workload protection agent internals (EDR, AV) are adjacent — Defender for Cloud is the plan/posture layer that *enables* Defender for Servers, but agent-level troubleshooting belongs to MDE
 - Azure Arc agent connectivity/identity itself → `Azure/Arc/AzureArc-A.md` (this document assumes Arc is already healthy and covers what Defender for Cloud does once a machine is Arc-connected)
+- **CIEM (Cloud Infrastructure Entitlement Management)** — the identity/permission-risk sub-feature of the Defender CSPM plan (overprivileged/inactive identity detection, Cloud Security Explorer identity queries, Attack Path Analysis correlation, and the Oct 2025 retirement of standalone Microsoft Entra Permissions Management) is substantial and distinct enough to warrant its own file → `CIEM-A.md` / `-B.md`
 
 **Assumptions:**
 - At least one Azure subscription with Defender for Cloud accessible via `portal.azure.com` → Defender for Cloud, or the unified `security.microsoft.com` portal
