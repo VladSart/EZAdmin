@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, **Adaptive Protection** (the ML-driven bridge routing IRM risk signal into DLP/Data Lifecycle Management/Conditional Access enforcement), Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), and the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
+Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information Protection, Compliance, Insider Risk Management, **Adaptive Protection** (the ML-driven bridge routing IRM risk signal into DLP/Data Lifecycle Management/Conditional Access enforcement), Communication Compliance, Information Barriers, Microsoft Priva (Privacy Risk Management + Subject Rights Requests), the **Unified Audit Log (Audit Standard/Premium)** that underpins several of the above in M365 environments, and **Compliance Manager** — the risk-assessment/scoring layer that reads live configuration state from every other topic in this folder (plus Entra features like Conditional Access) and maps it to regulation/standard assessment templates. Compliance Manager never configures anything directly; it is a read layer over the rest of this folder. Targeted at L2/L3 MSP engineers supporting enterprise clients where data governance and regulatory compliance are requirements.
 
 ---
 
@@ -15,6 +15,7 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `EntraID/Troubleshooting/` | Purview uses Entra identity for scoping policies to users/groups |
 | `M365/Exchange/` | Exchange transport rules can conflict with or complement DLP rules |
 | `Security/Defender/` | MDE (Defender for Endpoint) is required for endpoint DLP enforcement |
+| `Security/Defender/SecureScore-A.md` | A different scoring tool (security posture) from Compliance Manager (regulatory posture) — confirm which one a client means before troubleshooting either |
 
 ---
 
@@ -43,6 +44,8 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Priva-B.md` | Hotfix runbook for Priva access/licensing/RBAC gates, policies stuck in Test mode, alert-storm tuning, stuck/incomplete Subject Rights Requests, and pre-execution review for irreversible Delete requests |
 | `Audit-A.md` | Deep dive — Unified Audit Log ingestion pipeline, Standard vs. Premium retention/licensing model, the four retrieval methods (portal/Graph/cmdlet/Management Activity API) and their limits, custom retention policies |
 | `Audit-B.md` | Hotfix runbook for the silent 100/5,000/50,000 `Search-UnifiedAuditLog` result-count tiers, ingestion delay, mailbox audit bypass, missing Premium-only properties, and non-retroactive retention gaps |
+| `ComplianceManager-A.md` | Deep dive — assessment/template/control/improvement-action model, the "Managed by" (Microsoft/Your organization/Shared) responsibility split, point-weighted Compliance Score calculation, Compliance Manager's own distinct role group, custom assessment authoring, and the Compliance Score vs. Secure Score category distinction |
+| `ComplianceManager-B.md` | Hotfix runbook for scores not updating after real remediation, Microsoft-managed actions clients try to action themselves, missing templates (licensing), users who can't update actions (missing Compliance Manager role, not a directory role), and genuine score-drop investigation |
 | `Scripts/Get-PurviewDLPReport.ps1` | Tenant-wide DLP policy + incident report |
 | `Scripts/Get-SensitivityLabelCoverage.ps1` | Sensitivity label publishing/coverage audit |
 | `Scripts/Get-InsiderRiskPolicyStatus.ps1` | IRM policy health, alert volume, and signal plumbing audit |
@@ -100,6 +103,12 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "Deleted files not being preserved for a risky user" | `AdaptiveProtection-B.md` → Triage #5 / Fix 5 (DLM opt-in sub-toggle, not retroactive) |
 | "Troubleshooting Adaptive Protection with `Get-MgRiskyUser` / sign-in risk finds nothing" | `AdaptiveProtection-B.md` → Fix 7 (wrong system — that's Entra ID Protection, not Adaptive Protection) |
 | "What exactly does Adaptive Protection do / how is it different from plain Insider Risk Management?" | `AdaptiveProtection-A.md` → How It Works |
+| "Our Compliance Score won't move even though we configured the policy" | `ComplianceManager-B.md` → Fix 1 (refresh-cycle lag, or the action needs a manual status update) |
+| "Client wants to mark a Compliance Manager action complete but there's no option to" | `ComplianceManager-B.md` → Fix 2 (action is Microsoft-managed — not customer-actionable by design) |
+| "Needed regulation template isn't showing up in Compliance Manager" | `ComplianceManager-B.md` → Fix 3 (licensing tier gate) |
+| "User has Global Admin but can't update Compliance Manager actions" | `ComplianceManager-B.md` → Fix 4 (Compliance Manager has its own separate role group) |
+| "Compliance Score dropped with no apparent change" | `ComplianceManager-A.md` → Remediation Playbook 2 |
+| "Compliance Score vs. Secure Score — why don't they match?" | `ComplianceManager-A.md` → Scope & Assumptions / Remediation Playbook 4 (different tools, different signal domains) |
 
 ---
 
