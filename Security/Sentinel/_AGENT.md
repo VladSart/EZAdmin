@@ -1,7 +1,7 @@
 # Microsoft Sentinel — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment), Hunting (the analyst-driven manual workflow — hunting query library, Bookmarks, the Hunts (Preview) end-to-end wrapper, and KQL jobs as the retired-livestream replacement), and Notebooks (Jupyter/MSTICPy code-first hunting and investigation, executed on a separate Azure Machine Learning workspace launched from Sentinel). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above; Hunting's Azure-portal-only bookmark creation constraint, the Hunts-clones-not-references model, and the KQL-jobs-are-persistence-not-alerting distinction that trips up livestream migrations; Notebooks' dual-RBAC model (independent Sentinel-workspace and AML-workspace grants), the AML storage-account network posture that gates direct in-portal launch, and the MSTICPy config/auth layer (`msticpyconfig.yaml`, query providers, external TI/GeoIP enrichment) underneath the notebook runtime itself; and the Sentinel **data lake** architecture — the cold, up-to-12-year storage tier, its own INDEPENDENT Entra-ID-directory-role access model (separate from Sentinel SIEM's Azure RBAC), one-time tenant-wide onboarding (DL102/DL103 errors, CMK incompatibility, permanent subscription/RG/region lock), the KQL-job/Summary-rule/Search-job tool-selection decision, and data federation to Azure Databricks/ADLS Gen 2/Microsoft Fabric.
+Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment), Hunting (the analyst-driven manual workflow — hunting query library, Bookmarks, the Hunts (Preview) end-to-end wrapper, and KQL jobs as the retired-livestream replacement), and Notebooks (Jupyter/MSTICPy code-first hunting and investigation, executed on a separate Azure Machine Learning workspace launched from Sentinel). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above; Hunting's Azure-portal-only bookmark creation constraint, the Hunts-clones-not-references model, and the KQL-jobs-are-persistence-not-alerting distinction that trips up livestream migrations; Notebooks' dual-RBAC model (independent Sentinel-workspace and AML-workspace grants), the AML storage-account network posture that gates direct in-portal launch, and the MSTICPy config/auth layer (`msticpyconfig.yaml`, query providers, external TI/GeoIP enrichment) underneath the notebook runtime itself; and the Sentinel **data lake** architecture — the cold, up-to-12-year storage tier, its own INDEPENDENT Entra-ID-directory-role access model (separate from Sentinel SIEM's Azure RBAC), one-time tenant-wide onboarding (DL102/DL103 errors, CMK incompatibility, permanent subscription/RG/region lock), the KQL-job/Summary-rule/Search-job tool-selection decision, and data federation to Azure Databricks/ADLS Gen 2/Microsoft Fabric. Also covers **Microsoft Sentinel graph** — a name spanning two unrelated products: zero-configuration built-in embedded graphs (Incident graph/Blast Radius, Hunting graph, Purview data risk graphs) that auto-provision alongside data lake onboarding, and Custom graphs (preview), a code-first VS Code/PySpark/GQL authoring workflow gated by three independent permission systems (XDR unified RBAC to model, an Entra ID directory role to persist, XDR unified RBAC to query) plus two silent architectural constraints (per-table data access, Sentinel scoping).
 
 ## Before responding, also check
 - `EntraID/Graph/` — Entra ID sign-in/audit log connectors are actually diagnostic settings, not a distinct Sentinel object; cross-reference if the question is about Entra log gaps specifically
@@ -35,6 +35,9 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 | `DataLake-B.md` | Hotfix runbook — tenant not onboarded/DL102/DL103, KQL job can't create a new custom table, Sentinel Contributor but no Entra ID role blocking job creation, KQL job error-message lookup table, auxiliary table missing from Advanced Hunting, offboarding request, CMK incompatibility |
 | `DataLake-A.md` | Deep dive — the dual Azure-RBAC/Entra-ID-directory-role access model, analytics-vs-data-lake-tier architecture, one-time onboarding permanence (subscription/RG/region lock), the KQL-job/Summary-rule/Search-job decision table, data federation (Databricks/ADLS Gen 2/Fabric) architecture and one-directional read-only model, greenfield onboarding and federation-setup playbooks |
 | `Scripts/Get-SentinelDataLakeReadinessAudit.ps1` | Audits data lake onboarding state (managed identity presence), the managed identity's Log Analytics Contributor grant on a target workspace, and a given user's Sentinel Azure RBAC role side-by-side with their Entra ID directory role — surfacing the dual-system access gap directly |
+| `SentinelGraph-B.md` | Hotfix runbook — disambiguating built-in vs. custom graph tickets, missing Entra ID role for persisting, silent data-access gaps, Sentinel-scoped-user block, on-demand graph expiry, rename-vs-overwrite confusion, Spark cold start, GQL query/schema mismatch |
+| `SentinelGraph-A.md` | Deep dive — the two-products-one-name architecture (built-in embedded graphs vs. Custom graphs preview), the three-independent-permission-system model for custom graphs, the ephemeral-vs-materialized graph lifecycle, and the Edit-vs-Create rename/overwrite distinction |
+| `Scripts/Get-SentinelGraphReadinessAudit.ps1` | Audits data lake onboarding (the shared foundation both graph types depend on) and a given user's Entra ID directory role eligibility to persist custom graphs |
 
 ## Common entry points
 
@@ -87,6 +90,11 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 - "Should this be a KQL job, Summary rule, or Search job?" → `DataLake-A.md` How It Works comparison table
 - "Federated Databricks/ADLS/Fabric connection won't set up" → `DataLake-A.md` Remediation Playbook 3 (check public network accessibility first)
 - "Need to fully offboard the data lake" → `DataLake-B.md` Fix 6 / `DataLake-A.md` Remediation Playbook 4 (support-request only, no self-service)
+- "Is this ticket about Blast Radius/Hunting graph, or about a custom graph in VS Code?" → `SentinelGraph-B.md` Triage Step 1 — these are two unrelated products, disambiguate first
+- "Custom graph builds fine in notebook but 'Persist'/schedule fails" → `SentinelGraph-B.md` Fix 2 (Entra ID role is a separate permission system from the modeling role)
+- "Custom graph is missing expected nodes/edges, no error shown" → `SentinelGraph-B.md` Fix 3 (per-table access fails silently)
+- "User can't create a custom graph despite having roles" → `SentinelGraph-B.md` Fix 4 (Sentinel-scoped users are hard-blocked)
+- "A materialized custom graph disappeared after about a month" → `SentinelGraph-B.md` Fix 5 (On-demand 30-day auto-expiry)
 
 ## Key diagnostic commands
 
@@ -141,6 +149,14 @@ Get-AzADServicePrincipal -DisplayNameBeginsWith "msg-resources-"
 
 # Check a user's Entra ID directory role — INDEPENDENT of their Sentinel Azure RBAC role above
 Get-MgUserMemberOf -UserId <user@domain.com> | Where-Object { $_.AdditionalProperties.displayName -match "Security Operator|Security Administrator|Global Administrator" }
+```
+
+```powershell
+# Same Entra ID role check, framed specifically as "eligible to persist a custom Sentinel graph"
+# (see SentinelGraph-A.md permission model — this is only ONE of three independent gates;
+# XDR unified RBAC for modeling/querying has no PowerShell/Graph surface as of this writing)
+Get-MgUserMemberOf -UserId <user@domain.com> -All |
+    Where-Object { $_.AdditionalProperties.displayName -in @("Security Operator","Security Administrator","Global Administrator") }
 ```
 
 ## Key dependency chain
@@ -239,6 +255,23 @@ Onboarding (one-time, tenant-wide, Defender portal only — subscription/RG/regi
                     │   (frequent, non-lake tiers OK) vs. Search jobs (single table, Archive OK)
                     └── Federated tables (Databricks/ADLS Gen2/Fabric) — READ-ONLY,
                         one-directional, external source must be PUBLICLY network-accessible
+```
+
+**Sentinel graph chain** (two unrelated products sharing one foundation — see `SentinelGraph-A.md`):
+```
+Sentinel data lake onboarded (shared prerequisite for BOTH branches below)
+    ├── Built-in embedded graphs (zero configuration, auto-provisioned)
+    │       └── Incident graph + Blast Radius / Hunting graph (Defender XDR)
+    │       └── Data risk graphs (Purview Insider Risk Management / Data Security Investigations)
+    └── Custom graphs (preview) — separate Fabric-powered authoring workflow
+            ├── VS Code + Sentinel extension + Jupyter -> Spark pool (~5min cold start)
+            ├── PySpark DataFrames -> GraphSpecBuilder (nodes/edges) -> Graph.build()
+            ├── THREE independent permission gates (none implies another):
+            │       Model (XDR RBAC "data (manage)") / Persist (Entra ID role) /
+            │       Query (XDR RBAC "security data basics (read)")
+            ├── Silent constraints: per-table read access; user must be UNSCOPED in Sentinel
+            └── Lifecycle: Ephemeral (session-only) vs. Materialized (graph job)
+                    └── On demand (30-day auto-expiry) vs. Recurring (scheduled refresh)
 ```
 
 ## Response format reminder

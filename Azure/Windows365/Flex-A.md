@@ -28,7 +28,7 @@ This runbook assumes familiarity with `Azure/Windows365/Windows365-A.md` (the En
 - Authenticated with `Connect-MgGraph` and `CloudPC.ReadWrite.All`, `DeviceManagementConfiguration.Read.All` scopes
 - Tenant has Windows 365 Flex licenses purchased and at least one provisioning policy configured
 
-**Not covered:** Windows 365 Enterprise/Business provisioning pipeline, domain join models, and ANC (see `Windows365-A.md`); Windows 365 Cloud Apps (published-application delivery inside Shared mode) beyond a brief mention — the app-publishing configuration surface is distinct enough to warrant its own future topic if usage grows; Windows 365 Government/GCC network requirements.
+**Not covered:** Windows 365 Enterprise/Business provisioning pipeline, domain join models, and ANC (see `Windows365-A.md`); Windows 365 Cloud Apps (published-application delivery inside Shared mode) beyond a brief mention — see `CloudApps-A.md`/`CloudApps-B.md` for the full app discovery/publish lifecycle, since it introduces no separate licensing/concurrency model of its own; Windows 365 Government/GCC network requirements.
 
 ---
 ## How It Works
@@ -61,7 +61,7 @@ Unlike Windows 365 Enterprise/Business (one license = one Cloud PC = one user, d
 - A single Flex license provisions **1 Cloud PC** shared non-concurrently by an entire assigned Entra ID group — 10 licenses assigned to a group means up to 10 concurrent Cloud PC sessions across however many users are in that group.
 - **No persistence by default**: when a user signs out, their profile is deleted and the Cloud PC is released for the next user in the group. If **User Experience Sync (UES)** is enabled, user-specific app data and Windows settings are stored in the cloud and reapplied on next sign-in, but the local Cloud PC state itself is still wiped.
 - **No concurrency buffer** — pool exhaustion in Shared mode is a hard stop, not a temporary excess. "No Cloud PC available" is the expected, correct behavior of a fully-utilized pool, not a bug.
-- Supports **Cloud Apps**: instead of streaming a full Cloud PC desktop, Shared mode can publish individual applications to users — out of deep scope here, flagged as a future topic.
+- Supports **Cloud Apps**: instead of streaming a full Cloud PC desktop, Shared mode can publish individual applications to users. Defined by a validated policy property pairing (`userExperienceType=cloudApp` + `provisioningType=sharedByEntraGroup`) with its own app discovery/publish lifecycle — see `CloudApps-A.md`/`CloudApps-B.md` for full coverage; out of deep scope in this file beyond this mention.
 - Shared mode is currently **only available in Azure Global Cloud** — not GCC/GCC High/DoD/sovereign clouds.
 
 ### Feature gaps vs. Enterprise/Business
@@ -99,7 +99,7 @@ Windows 365 Flex License Pool (tenant-level, pooled — NOT assigned per-user in
               ├── Entra ID group assignment (any member may use any available pool Cloud PC)
               ├── 1 Cloud PC/license, 1 concurrent session/license, NO concurrency buffer
               ├── Profile create-on-signin / delete-on-signout (unless UES enabled)
-              ├── Optional: Cloud Apps (published-app delivery, not full desktop)
+              ├── Optional: Cloud Apps (published-app delivery, not full desktop — see CloudApps-A.md)
               └── Azure Global Cloud only (no GCC/sovereign cloud support)
   └── Same underlying platform as Windows 365 Enterprise/Business below this point:
         ├── Cloud PC VM (Microsoft-managed subscription)
@@ -317,8 +317,8 @@ Decision guide (walk in order):
 
 3. Does the worker need short, task-specific access with no requirement to retain local
    state between sessions, potentially shared across many different individuals?
-   → Windows 365 Flex, Shared mode (consider Cloud Apps if only specific applications,
-     not a full desktop, are needed)
+   → Windows 365 Flex, Shared mode (consider Cloud Apps — see `CloudApps-A.md` — if only
+     specific applications, not a full desktop, are needed)
 
 4. Does the workload need GPU acceleration under Dedicated mode concurrency-buffer
    coverage? → Not supported — GPU-enabled Cloud PCs are excluded from the buffer

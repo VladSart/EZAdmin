@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`.
+Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`. Windows 365 Cloud Apps (published-application delivery layered on Flex Shared mode) is covered separately in `CloudApps-A.md`/`CloudApps-B.md` — it introduces no separate licensing/compute model of its own, only a policy property pairing and an app discovery/publish lifecycle.
 
 ---
 
@@ -28,6 +28,9 @@ Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts 
 | `Flex-A.md` | Deep-dive reference — Flex pooled licensing model, Dedicated mode (up to 3 Cloud PCs/license, concurrency buffer, intelligent prestart) vs. Shared mode (1 Cloud PC/license, no persistence, no buffer), the May 2026 Frontline→Flex rename, feature gaps vs. Enterprise/Business |
 | `Scripts/Get-CloudPcFleetStatus.ps1` | Fleet-wide report: provisioning status (flags stuck/failed), ANC health, Intune enrollment gaps, and per-SKU license consumption — read-only, no remediation. Enterprise/Business focused |
 | `Scripts/Get-Windows365FlexAudit.ps1` | Flex-specific audit: mode distribution, Shared-mode pool capacity signal, Dedicated-mode group-oversizing check, deprecated `provisioningType eq 'shared'` filter risk — read-only, no remediation |
+| `CloudApps-B.md` | Hotfix runbook — Windows 365 Cloud Apps: invalid policy property pairing, app discovery failures (custom image/APPX-MSIX/Autopilot), Failed/stuck publish states, concurrency exhaustion, expected cross-app launch behavior |
+| `CloudApps-A.md` | Deep-dive reference — Cloud Apps as a policy-property pairing on Flex Shared mode (not a separate product), app discovery/publish lifecycle, inherited Flex licensing/concurrency model, Application Control for Windows as the only launch-restriction mechanism |
+| `Scripts/Get-Windows365CloudAppsAudit.ps1` | Cloud Apps audit: invalid property-pairing detection, custom-image discovery risk flag, zero-provisioned-Cloud-PC detection, concurrency-at-capacity check — read-only, no remediation |
 
 ---
 
@@ -50,6 +53,10 @@ Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts 
 | "Dedicated-mode Flex user can't connect during shift overlap" | `Flex-B.md` → Fix 2 (concurrency buffer temporarily/permanently blocked) |
 | "Resize option missing/fails on a Flex Cloud PC" | `Flex-B.md` → Fix 4 — not a supported feature for Flex, unlike Enterprise/Business |
 | "Should this be Enterprise/Business or Flex for this client" | `Flex-A.md` → Remediation Playbooks → Playbook 4 (decision guide) |
+| "Cloud Apps policy won't create / property pairing error" | `CloudApps-B.md` → Fix 1 — `cloudApp` only pairs with `sharedByEntraGroup`, neither changeable after creation |
+| "No apps ever show up as Ready to publish" | `CloudApps-B.md` → Fix 2 (custom image discovery) or Fix 6 (Autopilot Device Prep checkbox) |
+| "App stuck in Failed or Preparing in All Cloud Apps" | `CloudApps-B.md` → Fix 4 (Failed — unpublish/republish) or Fix 5 (Preparing — reprovision) |
+| "Outlook opened Edge and nobody published Edge — is that a bug?" | `CloudApps-B.md` → Fix 8 — expected cross-app launch behavior, not a fault |
 
 ---
 
@@ -82,6 +89,10 @@ Invoke-MgBetaReprovisionDeviceManagementVirtualEndpointCloudPc -CloudPcId "<id>"
 # Distinguish Flex (formerly Frontline) Cloud PCs from Enterprise/Business — see Flex-A.md Validation Steps
 Get-MgBetaDeviceManagementVirtualEndpointCloudPc -All | Select DisplayName,ProvisioningType
 Get-MgBetaDeviceManagementVirtualEndpointFrontLineServicePlan | Select DisplayName,VCpuCount,RamInGB
+
+# Identify Cloud Apps policies and confirm the validated property pairing — see CloudApps-A.md How It Works
+Get-MgBetaDeviceManagementVirtualEndpointProvisioningPolicy -All |
+    Where-Object { $_.UserExperienceType -eq 'cloudApp' } | Select DisplayName,UserExperienceType,ProvisioningType
 ```
 
 ---

@@ -23,7 +23,7 @@ This covers the **Microsoft Sentinel data lake** — the cold-storage, long-rete
 - Jupyter notebook authoring and MSTICPy configuration — see `Notebooks-A.md`/`Notebooks-B.md`. "Notebooks on the lake" (running notebooks directly against data lake tables/federated sources rather than a Sentinel workspace) shares the same AML-workspace prerequisite documented there.
 - Hunting query authoring, Bookmarks, and the Hunts (Preview) wrapper — see `Hunting-A.md`. This topic covers KQL **jobs** specifically as a data lake tool, not the broader hunting query library.
 - Summary rules and Search jobs are covered here only as decision-table alternatives to KQL jobs, not in full operational depth — both predate the data lake and work independently of it.
-- Microsoft Sentinel graph (the unified graph capability, blast-radius analysis, hunting graph) — enabled automatically as part of data lake onboarding but is a distinct analyst-facing feature with its own UI, not covered in depth here.
+- Microsoft Sentinel graph (the unified graph capability, blast-radius analysis, hunting graph, and Custom graphs preview) — enabled automatically as part of data lake onboarding but is a distinct analyst-facing feature with its own UI, permission model, and lifecycle; see `SentinelGraph-A.md`/`SentinelGraph-B.md` for full coverage.
 - Microsoft Purview Data Security Investigations and Insider Risk Management's use of data lake/graph data — mentioned only as consumers of the same onboarding, not covered as their own topics.
 
 ---

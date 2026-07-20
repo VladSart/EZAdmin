@@ -198,7 +198,7 @@ Remove-Item "$env:APPDATA\Microsoft\Windows365" -Recurse -Force -ErrorAction Sil
 # Re-launch and re-authenticate
 ```
 
-**Also check:** Conditional Access policies scoped to "Windows 365" or "Azure Virtual Desktop" cloud apps — a CA policy requiring compliant device can block the *local* device from reaching the web client if it's unmanaged, even though the Cloud PC itself is compliant.
+**Also check:** Conditional Access policies scoped to "Windows 365" or "Azure Virtual Desktop" cloud apps — a CA policy requiring compliant device can block the *local* device from reaching the web client if it's unmanaged, even though the Cloud PC itself is compliant. If the ticket is specifically about published individual applications rather than a full desktop, see `CloudApps-B.md` — Windows 365 Cloud Apps (a Flex Shared-mode feature) has its own policy-validation and app-discovery failure modes.
 
 **Rollback:** Clearing client cache is non-destructive; user simply re-authenticates.
 
