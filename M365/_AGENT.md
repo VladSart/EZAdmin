@@ -14,7 +14,7 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 | `SharePoint-OneDrive/` | Permissions, sync client, migration, storage, external sharing |
 | `Teams/` | Calling plans, device policies, federation, meeting policies, guest access |
 | `Licensing/` | Group-based licensing, service plan conflicts, assignment automation |
-| `Copilot/` | Microsoft 365 Copilot licensing, policy, Conditional Access, and grounding/permission troubleshooting |
+| `Copilot/` | Microsoft 365 Copilot licensing, policy, Conditional Access, and grounding/permission troubleshooting (`Copilot-A/B.md`); agent lifecycle governance — Registry/Requests approval, ownership, risk signals, and the distinct admin surfaces per creation platform (Copilot Studio, Agent Builder, SharePoint, Foundry) — in `AgentGovernance-A/B.md` |
 | `UniversalPrint/` | Printer connector, printer shares, driverless print job diagnostics |
 | `Backup/` | Microsoft 365 Backup — protection policies/units, restore points, restore sessions, coverage-gap detection for SharePoint/OneDrive/Exchange |
 | `Apps/` | Microsoft 365 Apps desktop client stack — Click-to-Run install architecture, Office Deployment Tool, update channels (Current/Monthly Enterprise/Semi-Annual Enterprise), Shared Computer Activation and client-level activation/licensing. Distinct from `Exchange/Outlook-Client-*.md` (Outlook-specific profile/Autodiscover issues) and `Licensing/` (Entra ID license assignment) |
@@ -63,6 +63,8 @@ Get-MgUserLicenseDetail -UserId <UPN> | Select SkuPartNumber
 - "Office won't update / stuck on wrong update channel / GPO seems to override my change" → `Apps/Deployment-UpdateChannels-B.md` + `Apps/Scripts/Get-M365AppsHealth.ps1`
 - "Office activation failing / Unlicensed on a shared or kiosk device" → `Apps/Deployment-UpdateChannels-B.md` (Shared Computer Activation)
 - "Click-to-Run repair dialog does nothing" → `Apps/Deployment-UpdateChannels-B.md` Fix 3
+- "A Copilot agent is stuck pending approval / has no owner / is flagged at risk" → `Copilot/AgentGovernance-B.md`
+- "Our Copilot Studio agent works fine there but won't show up in Teams/M365 Copilot" → `Copilot/AgentGovernance-B.md` Fix 5
 
 ---
 
