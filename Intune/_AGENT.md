@@ -8,7 +8,7 @@ Covers:
 - **Enrollment** — Windows Autopilot, manual MDM enrollment, co-management, enrollment restrictions
 - **Policy** — configuration profiles, compliance policies, settings catalog, GPO conflicts, assignment filters, scope tags/RBAC
 - **Apps** — Win32 app deployment, managed apps (LOB/VPP), app protection (MAM), Enterprise App Management (Microsoft-curated Enterprise App Catalog — licensing, auto-update mechanics/limitations, content lifecycle, Autopilot ESP/Device Prep blocking-app integration)
-- **Updates** — Update rings (WUfB), feature updates, driver updates (WDfB), Autopatch
+- **Updates** — Update rings (WUfB), feature updates, driver updates (WDfB), Autopatch, and Windows 11 Hotpatch (restart-free monthly security updates delivered exclusively through Autopatch — the six-condition eligibility gate led by VBS-must-be-*Running*-not-just-enabled, the quarterly baseline/hotpatch release calendar, and the tenant-wide default-Allow behavior live since the May 2026 update cycle — architecturally distinct from Windows Server 2025 hotpatch, which is Azure Update Manager/Arc-managed, not Intune/Autopatch-managed)
 - **Security & compliance controls** — LAPS (steady-state rotation/retrieval **and** legacy Microsoft LAPS → Windows LAPS migration/coexistence, including the silent legacy-emulation-mode behavior — see `Troubleshooting/LAPS-Migration-A.md` for the precedence rules that decide which of the two products is actually governing an account at any given moment), certificates (on-prem NDES/PKCS **and** cloud-native Cloud PKI), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
 - **Specialty device modes** — Kiosk / Assigned Access
 - **Automation** — Platform scripts, Proactive Remediations
@@ -37,6 +37,8 @@ Covers:
 | `Troubleshooting/EnterpriseAppManagement-B.md` / `-A.md` | Hotfix / deep dive: Enterprise App Catalog (EAM) — content-readiness stalls, auto-update rollback gap and its documented limitations, catalog removal lifecycle, dual catalog/Win32 deployment conflicts, ESP/Autopilot Device Prep blocking-app exclusion for auto-update apps — device-side pipeline is identical to App-Deployment, only catalog-specific lifecycle differs |
 | `Troubleshooting/AppProtection-B.md` / `-A.md` | Hotfix / deep dive: MAM policy not applying, "Open in" blocked, data-at-rest PIN issues |
 | `Troubleshooting/Autopatch-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopatch ring assignment, readiness, deployment failures |
+| `Troubleshooting/Hotpatch-B.md` / `-A.md` | Hotfix / deep dive: Windows 11 hotpatch eligibility gate (VBS Running, baseline currency, Arm64 CHPE), the quarterly baseline/hotpatch calendar, May 2026 tenant-wide default-Allow change, manual rollback (no auto-rollback exists) |
+| `Scripts/Get-HotpatchReadinessAudit.ps1` | One-shot local device readiness check: OS build/architecture, VBS runtime status, baseline currency, Arm64 CHPE state, local enrollment signal, hotpatch-related Application log errors |
 | `Troubleshooting/Certificates-B.md` / `-A.md` | Hotfix / deep dive: on-prem NDES/PKCS certificate profile delivery failures via Intune Certificate Connector |
 | `Troubleshooting/CloudPKI-B.md` / `-A.md` | Hotfix / deep dive: Microsoft Cloud PKI (fully cloud-hosted PKI — no NDES/connector/on-prem CA) — CA status, BYOCA signing loop, trust chain delivery, 3-CA capacity cap |
 | `Troubleshooting/CoManagement-B.md` / `-A.md` | Hotfix / deep dive: ConfigMgr/Intune co-management workload authority conflicts |
@@ -110,6 +112,13 @@ Covers:
 - "Device stuck on old Windows version / feature update not installing" → `Troubleshooting/FeatureUpdates-B.md` + `Scripts/Get-FeatureUpdateDeploymentStatus.ps1`
 - "App Protection / MAM policy not applying, 'Open in' blocked" → `Troubleshooting/AppProtection-B.md` + `Scripts/Get-AppProtectionCoverageReport.ps1`
 - "Autopatch device not in expected ring / deployment stalled" → `Troubleshooting/Autopatch-B.md` + `Scripts/Get-AutopatchReadiness.ps1`
+- "Device keeps rebooting even though hotpatch is supposed to be on" → `Troubleshooting/Hotpatch-B.md` (Triage — check for a baseline month first, then VBS runtime status)
+- "Device never gets hotpatch, always the restart-requiring update" → `Troubleshooting/Hotpatch-B.md` (Fix 1 — VBS enabled vs. actually Running is the #1 cause)
+- "We never configured hotpatch but devices seem to have it" → `Troubleshooting/Hotpatch-B.md` (Fix 3 — tenant-wide default flipped to Allow in May 2026)
+- "A hotpatch update broke something, how do we roll it back" → `Troubleshooting/Hotpatch-B.md` (Fix 4 — no automatic rollback exists)
+- "Arm64 device won't get hotpatch" → `Troubleshooting/Hotpatch-B.md` (Fix 5 — CHPE disable requirement)
+- "Is Windows 11 hotpatch the same as Windows Server 2025 hotpatch?" → No — `Troubleshooting/Hotpatch-A.md` Scope & Assumptions explicitly disambiguates (Autopatch/Intune-managed vs. Azure Update Manager/Arc-managed)
+- "Quick hotpatch readiness check on a device" → `Scripts/Get-HotpatchReadinessAudit.ps1`
 - "Co-managed device workload going to wrong authority" → `Troubleshooting/CoManagement-B.md` + `Scripts/Get-CoManagementStatus.ps1`
 - "Custom compliance script marking devices non-compliant incorrectly" → `Troubleshooting/CustomCompliance-B.md` + `Scripts/Get-CustomComplianceScriptValidator.ps1`
 - "Startup performance / device experience score not showing, stuck at zero, or 'Insufficient data'" → `Troubleshooting/EndpointAnalytics-B.md` + `Scripts/Get-EndpointAnalyticsHealth.ps1`
