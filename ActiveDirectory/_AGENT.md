@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), and **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), and **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
 
 ---
 
@@ -11,7 +11,7 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - `DFS/` — if the symptom is a SYSVOL/DFSR replication backlog itself (not GPO processing behavior), that's a separate replication system layered on top of AD — `Troubleshooting/GroupPolicy/` here covers the GPO-processing side of that same dependency
 - `Intune/` — if the org has migrated or is migrating settings off Group Policy onto CSP/Intune configuration profiles (see `Intune/Troubleshooting/GP-to-CSP-B.md`)
 - `EntraID/` — if the symptom involves Entra Connect, hybrid join, cloud-side identity, or the org uses Password Hash Sync/Pass-through Auth instead of federation; on-prem AD health is a prerequisite dependency for all of it
-- `Windows/` — if the issue is Kerberos/NTLM auth failures on a client (not between DCs), DNS client-side resolver config, or time sync at the endpoint level (this folder's DNS coverage is the AD-integrated *server* side — zones, SRV records, scavenging)
+- `Windows/` — if the issue is Kerberos/NTLM auth failures on a client (not between DCs), DNS client-side resolver config, time sync at the endpoint level (this folder's DNS coverage is the AD-integrated *server* side — zones, SRV records, scavenging), or SMB signing/relay hardening (a parallel control on a different protocol from LDAP signing)
 - `Security/ConditionalAccess/` — if access is being blocked by policy rather than by a broken identity/replication chain; this includes the case where AD FS issued a valid token but Entra ID's Conditional Access still blocks the resulting sign-in
 
 ---
@@ -47,6 +47,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` | Hotfix: resultant-policy lookup, invalid OU-targeting triage, precedence-collision and direct-link-override fixes, PSO delegation gaps |
 | `Troubleshooting/FineGrainedPasswordPolicies/FGPP-A.md` | Deep dive: PSO/Password Settings Container architecture, precedence and direct-vs-group resolution rules, domain-wide GPO fallback, delegation model, new-tier and OU-to-group migration playbooks |
 | `Scripts/Get-FGPPAudit.ps1` | One-shot PSO audit: invalid target-type detection (OU/wrong-scope-group), precedence-collision detection across all PSOs, optional per-user resultant-policy + direct-link check via `-UserName` |
+| `Troubleshooting/LDAPSigning/LDAP-Signing-B.md` | Hotfix: current enforcement triage, unsigned-bind/channel-binding rejection diagnosis, client remediation vs. temporary-bridge fix paths, TLS-terminating-proxy conflict |
+| `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` | Deep dive: NTLM-relay-to-LDAP attack this hardening closes, signing vs. channel binding architecture, why TLS-terminating proxies break CBT by design, phased-rollout and legacy-device-exception playbooks |
+| `Scripts/Get-LDAPSigningAudit.ps1` | One-shot audit across every DC: LDAPServerIntegrity/LdapEnforceChannelBinding enforcement level, cross-DC consistency check, Event 2886/2887/3039 exposure counts, current diagnostics logging level |
 
 ---
 
@@ -108,6 +111,12 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Need to stand up a stricter password policy for admin/service accounts only" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-A.md` (Playbook 1)
 - "Non-Domain-Admin can't manage PSOs despite OU delegation" → `Troubleshooting/FineGrainedPasswordPolicies/FGPP-B.md` (Fix 5)
 - "Quick PSO / FGPP audit across the domain" → `Scripts/Get-FGPPAudit.ps1`
+- "App/service can't bind to AD after a DC patch or GPO push" → `Troubleshooting/LDAPSigning/LDAP-Signing-B.md` (Fix 1 — check LDAPServerIntegrity first)
+- "Bind fails over LDAPS/636 specifically but works fine over 389" → `Troubleshooting/LDAPSigning/LDAP-Signing-B.md` (Fix 2 — channel binding)
+- "We put a load balancer in front of the DCs and LDAPS auth broke" → `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` (Playbook 2 — TLS-terminating proxy breaks CBT by design)
+- "Need to safely roll out LDAP signing/channel binding enforcement domain-wide" → `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` (Playbook 1 — phased rollout)
+- "Legacy printer/scanner/appliance can't support signing or channel binding" → `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` (Playbook 3 — scoped exception)
+- "Quick LDAP signing/channel binding posture check across all DCs" → `Scripts/Get-LDAPSigningAudit.ps1`
 
 ---
 
@@ -243,6 +252,21 @@ Domain functional level >= Windows Server 2012
                     └── msDS-ResultantPSO on the user object reflects the actual winner
                           └── If nothing applies: silent fallback to the domain-wide GPO-based
                               Default Domain Policy password settings
+```
+
+**LDAP signing / channel binding chain** (see `Troubleshooting/LDAPSigning/`):
+
+```
+Client initiates an LDAP bind (port 389, or LDAPS/StartTLS on 636)
+  └── LDAPServerIntegrity governs signing requirement — 0/None, 1/Negotiate (unsigned still
+      accepted, Event 2887 counts it), 2/Require (unsigned REJECTED)
+        └── (LDAPS/StartTLS only) LdapEnforceChannelBinding governs CBT requirement — 0/Never,
+            1/When supported, 2/Always (bind REJECTED without a valid, matching CBT)
+              └── CBT is cryptographically tied to the exact TLS session — a TLS-terminating
+                  proxy/load balancer in the path invalidates it by design, not misconfiguration
+                    └── Kerberos/SASL-signed binds are unaffected by Require; simple/plaintext
+                        binds (legacy LOB apps, non-Windows clients, fixed-function devices)
+                        are what actually breaks when enforcement tightens
 ```
 
 ---
