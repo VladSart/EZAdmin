@@ -9,7 +9,7 @@ Covers:
 - **Policy** — configuration profiles, compliance policies, settings catalog, GPO conflicts, assignment filters, scope tags/RBAC
 - **Apps** — Win32 app deployment, managed apps (LOB/VPP), app protection (MAM), Enterprise App Management (Microsoft-curated Enterprise App Catalog — licensing, auto-update mechanics/limitations, content lifecycle, Autopilot ESP/Device Prep blocking-app integration)
 - **Updates** — Update rings (WUfB), feature updates, driver updates (WDfB), Autopatch
-- **Security & compliance controls** — LAPS, certificates (on-prem NDES/PKCS **and** cloud-native Cloud PKI), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
+- **Security & compliance controls** — LAPS (steady-state rotation/retrieval **and** legacy Microsoft LAPS → Windows LAPS migration/coexistence, including the silent legacy-emulation-mode behavior — see `Troubleshooting/LAPS-Migration-A.md` for the precedence rules that decide which of the two products is actually governing an account at any given moment), certificates (on-prem NDES/PKCS **and** cloud-native Cloud PKI), custom compliance scripts, security baselines, Endpoint Privilege Management (EPM)
 - **Specialty device modes** — Kiosk / Assigned Access
 - **Automation** — Platform scripts, Proactive Remediations
 - **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries, Endpoint analytics (Startup performance / Application reliability / Work from anywhere scoring)
@@ -49,6 +49,7 @@ Covers:
 | `Troubleshooting/GP-to-CSP-B.md` / `-A.md` | Hotfix / deep dive: Group Policy Analytics migration to CSP, coverage gaps |
 | `Troubleshooting/Kiosk-B.md` / `-A.md` | Hotfix / deep dive: Kiosk/Assigned Access configuration and lockdown issues |
 | `Troubleshooting/LAPS-B.md` / `-A.md` | Hotfix / deep dive: Windows LAPS rotation/retrieval failures, legacy LAPS conflicts |
+| `Troubleshooting/LAPS-Migration-B.md` / `-A.md` | Hotfix / deep dive: migrating FROM legacy Microsoft LAPS TO Windows LAPS — immediate vs. side-by-side coexistence paths, the silent legacy-emulation-mode precedence behavior, dual-account requirement, legacy software removal — distinct from `LAPS-A/B.md`'s steady-state operation scope |
 | `Troubleshooting/Managed-Apps-B.md` / `-A.md` | Hotfix / deep dive: managed app (Win32/LOB/VPP) deployment health |
 | `Troubleshooting/Platform-Scripts-B.md` / `-A.md` | Hotfix / deep dive: Platform Scripts not running, IME health |
 | `Troubleshooting/Policy-Conflict-B.md` / `-A.md` | Hotfix / deep dive: policy conflicts across profile types |
@@ -78,6 +79,7 @@ Covers:
 | `Scripts/Get-GPtoCSPCoverageReport.ps1` | Fleet-wide Group Policy Analytics coverage report via Graph |
 | `Scripts/Get-KioskDeviceHealthReport.ps1` | Device-local health snapshot for Kiosk/Assigned Access devices |
 | `Scripts/Get-LAPSPasswordStatus.ps1` | Audit LAPS rotation/retrieval status + legacy LAPS conflict check |
+| `Scripts/Get-LAPSMigrationStatus.ps1` | Classifies a device's legacy-vs-Windows-LAPS migration state (WindowsLapsActive / LegacyLapsActive / EmulationMode / EmulationSuppressed); optional `-ADSweep` for fleet-wide legacy/modern AD attribute progress reporting |
 | `Scripts/Get-PlatformScriptRunStatus.ps1` | IME health locally and/or fleet-wide Platform Script run status via Graph |
 | `Scripts/Get-RemediationRunHistory.ps1` | Fleet-wide Proactive Remediations run-state report via Graph |
 | `Scripts/Get-RemoteHelpReadinessAudit.ps1` | Tenant-wide Remote Help readiness audit (enablement, RBAC combo completeness, scope-group gaps, app deployment) + optional local client/IME/WebView2/event-log diagnostics |
@@ -101,6 +103,7 @@ Covers:
 - "Bulk compliance report needed" → `Reporting/Get-NonCompliantDevices.ps1`
 - "Need a full picture of what's assigned to a device/group" → `Scripts/Get-IntuneAssignmentReport.ps1`
 - "LAPS password not showing / rotation not happening" → `Troubleshooting/LAPS-B.md` + `Scripts/Get-LAPSPasswordStatus.ps1`
+- "Migrating off legacy LAPS to Windows LAPS" / "device seems to be managing a password but we never deployed LAPS there" / "can both LAPS products run at once" / "how do we retire the old LAPS agent safely" → `Troubleshooting/LAPS-Migration-B.md` + `Scripts/Get-LAPSMigrationStatus.ps1`
 - "Cert profile stuck Pending/Failed for a device or fleet (on-prem NDES/PKCS)" → `Troubleshooting/Certificates-B.md` + `Scripts/Get-CertificateProfileStatus.ps1`
 - "Cloud PKI CA stuck 'Signing required' / SCEP cert not issuing / hit the 3-CA limit" → `Troubleshooting/CloudPKI-B.md` + `Scripts/Get-CloudPKIHealth.ps1`
 - "Security baseline shows Error/Conflict" → `Troubleshooting/Security-Baselines-B.md` + `Scripts/Get-SecurityBaselineDrift.ps1`
