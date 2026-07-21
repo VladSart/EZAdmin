@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), and **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), and not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design), and **Certificate-Based Authentication Mapping / KB5014754** (the PKINIT/Schannel certificate-to-account binding hardening — the SID extension, `altSecurityIdentities` weak-vs-strong mapping types, Event 39/40/41 diagnostics, and why Full Enforcement is now permanent and unbypassable on any DC patched since September 9, 2025) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`), and not Entra ID's own cloud-side Certificate-Based Authentication (a separate, non-KDC mechanism — see `EntraID/Troubleshooting/CBA-A.md`).
 
 ---
 
@@ -50,6 +50,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/LDAPSigning/LDAP-Signing-B.md` | Hotfix: current enforcement triage, unsigned-bind/channel-binding rejection diagnosis, client remediation vs. temporary-bridge fix paths, TLS-terminating-proxy conflict |
 | `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` | Deep dive: NTLM-relay-to-LDAP attack this hardening closes, signing vs. channel binding architecture, why TLS-terminating proxies break CBT by design, phased-rollout and legacy-device-exception playbooks |
 | `Scripts/Get-LDAPSigningAudit.ps1` | One-shot audit across every DC: LDAPServerIntegrity/LdapEnforceChannelBinding enforcement level, cross-DC consistency check, Event 2886/2887/3039 exposure counts, current diagnostics logging level |
+| `Troubleshooting/CertificateMapping/Certificate-Mapping-B.md` | Hotfix: Event 39/40/41 lookup table, SID-extension vs. explicit altSecurityIdentities diagnosis, weak-vs-strong mapping fix paths, third-party CA and Schannel/IIS fix paths |
+| `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` | Deep dive: CVE-2022-34691/26931/26923 vulnerability this hardening closes, SID extension and altSecurityIdentities architecture, why the Compatibility-mode registry bypass is now permanently retired (Sept 9 2025+), PKINIT-vs-Schannel/S4U2Self distinction, fleet-wide and third-party-CA remediation playbooks |
+| `Scripts/Get-CertificateMappingAudit.ps1` | One-shot audit across every DC: patch-level-derived effective enforcement state, KDC/Schannel registry values, Event 39/40/41 counts, optional fleet-wide altSecurityIdentities weak/strong classification via `-AuditUserMappings` |
 
 ---
 
@@ -117,6 +120,13 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Need to safely roll out LDAP signing/channel binding enforcement domain-wide" → `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` (Playbook 1 — phased rollout)
 - "Legacy printer/scanner/appliance can't support signing or channel binding" → `Troubleshooting/LDAPSigning/LDAP-Signing-A.md` (Playbook 3 — scoped exception)
 - "Quick LDAP signing/channel binding posture check across all DCs" → `Scripts/Get-LDAPSigningAudit.ps1`
+- "Smart card/WHfB/cert-based logon suddenly denied after a DC patch" → `Troubleshooting/CertificateMapping/Certificate-Mapping-B.md` (Triage — check patch date first, Full Enforcement is permanent on Sept 2025+ DCs)
+- "Event ID 39, 40, or 41 in the System log (Kdcsvc source)" → `Troubleshooting/CertificateMapping/Certificate-Mapping-B.md` (interpretation table)
+- "Certificate looks valid but the SID doesn't match the account (Event 41)" → `Troubleshooting/CertificateMapping/Certificate-Mapping-B.md` (Fix 3 — investigate before remediating, possible security event)
+- "Certificates from our third-party/public CA keep failing authentication" → `Troubleshooting/CertificateMapping/Certificate-Mapping-B.md` (Fix 4) or `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` (Playbook 2 — bulk altSecurityIdentities rollout)
+- "IIS client-certificate mapping broke but smart-card logon still works fine" → `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` (Playbook 3 — this is the separate Schannel/S4U2Self path, not PKINIT)
+- "Tried resetting StrongCertificateBindingEnforcement and it did nothing" → `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` — the key is retired on any DC patched Sept 9 2025+, not a permissions issue
+- "Quick certificate mapping posture check across all DCs / accounts" → `Scripts/Get-CertificateMappingAudit.ps1`
 
 ---
 
@@ -267,6 +277,25 @@ Client initiates an LDAP bind (port 389, or LDAPS/StartTLS on 636)
                     └── Kerberos/SASL-signed binds are unaffected by Require; simple/plaintext
                         binds (legacy LOB apps, non-Windows clients, fixed-function devices)
                         are what actually breaks when enforcement tightens
+```
+
+**Certificate mapping (KB5014754) chain** (see `Troubleshooting/CertificateMapping/`):
+
+```
+Client presents a certificate for PKINIT (smart card/WHfB/cert VPN) or TLS client auth (Schannel)
+  ├── PKINIT path — KDC checks, in order:
+  │     1. Does the cert carry the SID extension (OID 1.3.6.1.4.1.311.25.2)? Only added by
+  │        Microsoft Enterprise CAs on online templates, unless msPKI-Enrollment-Flag
+  │        0x00080000 suppresses it
+  │           └── SID matches account → success | SID mismatch → Event 41, DENIED
+  │     2. No extension → does the account have an explicit STRONG altSecurityIdentities
+  │        mapping (X509IssuerSerialNumber/X509SKI/X509SHA1PublicKey)?
+  │           └── YES → success | NO (or weak-only) → Event 39/40
+  │                 └── DC patched Sept 9 2025+? → Full Enforcement is PERMANENT, DENIED
+  │                     (the StrongCertificateBindingEnforcement registry key has no effect)
+  └── Schannel/TLS path — separate registry key (CertificateMappingMethods), separate
+        mechanism (Kerberos S4U2Self), and the relevant event log lives on the APPLICATION
+        SERVER, not the client — do not conflate with the PKINIT path above
 ```
 
 ---
