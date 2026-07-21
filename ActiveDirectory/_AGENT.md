@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design), and **Certificate-Based Authentication Mapping / KB5014754** (the PKINIT/Schannel certificate-to-account binding hardening — the SID extension, `altSecurityIdentities` weak-vs-strong mapping types, Event 39/40/41 diagnostics, and why Full Enforcement is now permanent and unbypassable on any DC patched since September 9, 2025) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`), and not Entra ID's own cloud-side Certificate-Based Authentication (a separate, non-KDC mechanism — see `EntraID/Troubleshooting/CBA-A.md`).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design), **Certificate-Based Authentication Mapping / KB5014754** (the PKINIT/Schannel certificate-to-account binding hardening — the SID extension, `altSecurityIdentities` weak-vs-strong mapping types, Event 39/40/41 diagnostics, and why Full Enforcement is now permanent and unbypassable on any DC patched since September 9, 2025), and **Kerberos Armoring (FAST)** (the pre-authentication-exchange hardening and Dynamic Access Control/compound-authentication/AD FS-device-claims prerequisite — the domain-functional-level gate that silently no-ops stricter enforcement below Windows Server 2012, the independent KDC-side/client-side GPO pairing, and down-level-DC-driven intermittent failures) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), not NTLM relay to AD CS/PetitPotam/ESC8 (a related but architecturally distinct relay-to-certificate-issuance attack chain, see `Windows/Troubleshooting/NTLMRelayADCS-A.md`), not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`), not Entra ID's own cloud-side Certificate-Based Authentication (a separate, non-KDC mechanism — see `EntraID/Troubleshooting/CBA-A.md`), and not Windows Hello for Business Cloud Kerberos Trust (an unrelated feature that shares only the word "Kerberos" with the armoring topic here).
 
 ---
 
@@ -53,6 +53,9 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/CertificateMapping/Certificate-Mapping-B.md` | Hotfix: Event 39/40/41 lookup table, SID-extension vs. explicit altSecurityIdentities diagnosis, weak-vs-strong mapping fix paths, third-party CA and Schannel/IIS fix paths |
 | `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` | Deep dive: CVE-2022-34691/26931/26923 vulnerability this hardening closes, SID extension and altSecurityIdentities architecture, why the Compatibility-mode registry bypass is now permanently retired (Sept 9 2025+), PKINIT-vs-Schannel/S4U2Self distinction, fleet-wide and third-party-CA remediation playbooks |
 | `Scripts/Get-CertificateMappingAudit.ps1` | One-shot audit across every DC: patch-level-derived effective enforcement state, KDC/Schannel registry values, Event 39/40/41 counts, optional fleet-wide altSecurityIdentities weak/strong classification via `-AuditUserMappings` |
+| `Troubleshooting/KerberosArmoring/KerberosArmoring-B.md` | Hotfix: domain-functional-level gate triage (the #1 root cause), down-level-DC intermittent-failure diagnosis, KDC-side/client-side policy-pair fix paths, legacy-device scoped exceptions |
+| `Troubleshooting/KerberosArmoring/KerberosArmoring-A.md` | Deep dive: FAST armor-key/pre-authentication protection architecture, the three-GPO independent-policy model, DAC/compound-authentication/AD FS-device-claims prerequisite relationship, domain-functional-level-raise and down-level-DC-decommission playbooks |
+| `Scripts/Get-KerberosArmoringAudit.ps1` | One-shot prerequisite audit: domain functional level, DC OS-version homogeneity (down-level DC detection), optional local gpresult Kerberos/KDC policy scan via `-IncludeLocalPolicy` |
 
 ---
 
@@ -127,6 +130,12 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "IIS client-certificate mapping broke but smart-card logon still works fine" → `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` (Playbook 3 — this is the separate Schannel/S4U2Self path, not PKINIT)
 - "Tried resetting StrongCertificateBindingEnforcement and it did nothing" → `Troubleshooting/CertificateMapping/Certificate-Mapping-A.md` — the key is retired on any DC patched Sept 9 2025+, not a permissions issue
 - "Quick certificate mapping posture check across all DCs / accounts" → `Scripts/Get-CertificateMappingAudit.ps1`
+- "I configured 'Fail unarmored authentication requests' / 'Always provide claims' and nothing changed" → `Troubleshooting/KerberosArmoring/KerberosArmoring-B.md` (Fix 1 — check domain functional level first, the #1 cause)
+- "DAC/claims-based file access denied but NTFS/share permissions look correct" → `Troubleshooting/KerberosArmoring/KerberosArmoring-B.md` (Fix 3 — confirm armoring transport before investigating DAC policy)
+- "Armoring failures seem random / intermittent, no consistent pattern by user" → `Troubleshooting/KerberosArmoring/KerberosArmoring-B.md` (Fix 2 — down-level DC in the mix)
+- "AD FS device claims never fire even though the token itself is issued" → `Troubleshooting/KerberosArmoring/KerberosArmoring-A.md` (transport prerequisite, isolate before AD FS claims-rule troubleshooting)
+- "Is this the same thing as Windows Hello for Business Cloud Kerberos Trust?" → No — `Troubleshooting/KerberosArmoring/KerberosArmoring-A.md` Scope & Assumptions explicitly disambiguates
+- "Quick Kerberos armoring prerequisite check (domain functional level, DC OS versions)" → `Scripts/Get-KerberosArmoringAudit.ps1`
 
 ---
 
@@ -296,6 +305,27 @@ Client presents a certificate for PKINIT (smart card/WHfB/cert VPN) or TLS clien
   └── Schannel/TLS path — separate registry key (CertificateMappingMethods), separate
         mechanism (Kerberos S4U2Self), and the relevant event log lives on the APPLICATION
         SERVER, not the client — do not conflate with the PKINIT path above
+```
+
+**Kerberos armoring (FAST) chain** (see `Troubleshooting/KerberosArmoring/`):
+
+```
+Domain functional level >= Windows Server 2012 (hard gate — stricter KDC options are
+  silent no-ops below this level, the #1 real-world "configured but not working" cause)
+  └── Every DC a client might reach is Server 2012+ (a single down-level DC causes
+      per-DC intermittent failures, not a hard domain-wide break)
+        └── KDC-side GPO (Support Dynamic Access Control and Kerberos armoring):
+            Not Configured/Supported (opportunistic) — Always provide claims
+            (opportunistic + claims) — Fail unarmored authentication requests (hard reject)
+              └── Client-side GPO (independently configured): Kerberos client support for
+                  claims, compound authentication, and Kerberos armoring — must be
+                  separately enabled for a client to ever request armoring at all
+                    └── (Optional, stricter) Client-side: Fail authentication requests
+                        when Kerberos armoring is not available
+                          └── Consumers requiring a working armored exchange: Dynamic
+                              Access Control (claims, compound auth), AD FS device claims
+                                (architecturally UNRELATED to Windows Hello for Business
+                                Cloud Kerberos Trust, despite the shared "Kerberos" name)
 ```
 
 ---

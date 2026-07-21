@@ -21,6 +21,7 @@ Covers:
 - **USB / Peripherals** — policy-driven control, driver management
 - **Performance** — boot times, CPU/memory issues, storage health
 - **Event log analysis** — systematic log collection and interpretation
+- **NTLM Relay to AD CS (PetitPotam / ESC8)** — NTLM authentication coercion (PetitPotam and related MS-EFSRPC/MS-RPRN/MS-DFSNM/MS-FSRVP techniques) relayed to an unprotected AD CS HTTP(S) enrollment endpoint (Certificate Authority Web Enrollment / CES), yielding a legitimately-issued certificate for the coerced identity — Extended Protection for Authentication (EPA) as the primary, non-negotiable mitigation, HTTPS-only enrollment, NTLM restriction as defense-in-depth, and certificate template exposure as a severity multiplier; architecturally distinct from certificate-to-account mapping validation (see `ActiveDirectory/Troubleshooting/CertificateMapping/`)
 
 ---
 
@@ -56,6 +57,7 @@ Covers:
 | `Troubleshooting/EventLog-A.md` / `B.md` | Event log collection, corruption, sizing |
 | `Troubleshooting/CredentialManager-A.md` / `B.md` | Stored credential issues |
 | `Troubleshooting/CertificateServices-A.md` / `B.md` | Certificate enrollment/renewal issues |
+| `Troubleshooting/NTLMRelayADCS-A.md` / `B.md` | NTLM relay to AD CS HTTP(S) enrollment endpoints (PetitPotam / ESC8) — coercion-to-certificate-issuance attack chain, EPA/HTTPS-only/NTLM-restriction/template-hardening remediation playbooks |
 | `Troubleshooting/UserProfile-A.md` / `B.md` | Profile corruption, load failures |
 | `Troubleshooting/PrintSpooler-A.md` / `B.md` | Print spooler crashes, queue issues |
 | `Troubleshooting/DeliveryOptimization-A.md` / `B.md` | Peer-to-peer update distribution issues |
@@ -77,6 +79,7 @@ Covers:
 | `Scripts/Get-EventLogDiagnostics.ps1` | Companion script to EventLog |
 | `Scripts/Get-CredentialManagerDiagnostics.ps1` | Companion script to CredentialManager |
 | `Scripts/Get-CertificateServicesDiagnostics.ps1` | Companion script to CertificateServices |
+| `Scripts/Get-NTLMRelayADCSAudit.ps1` | Companion script to NTLMRelayADCS — AD CS role inventory, HTTP/HTTPS reachability, best-effort EPA read (flags manual verification when unconfirmable), NTLM restriction posture, client-authentication-capable certificate template inventory |
 | `Scripts/Get-UserProfileDiagnostics.ps1` | Companion script to UserProfile |
 | `Scripts/Get-PrinterDiagnostics.ps1` | Companion script to PrintSpooler |
 | `Scripts/Get-DeliveryOptimizationDiagnostics.ps1` | Companion script to DeliveryOptimization |
@@ -156,6 +159,9 @@ Get-WinEvent -LogName System |
 - "Backup fails with a VSS error, vssadmin list writers shows a Failed writer, SQLWRITER/SQLVDI errors in the Application log, Previous Versions empty, shadow storage full" → `Troubleshooting/VSS-B.md` (hotfix — start here, restart the OWNING app service not VSS) / `VSS-A.md` (deep dive — requestor/writer/provider architecture, freeze/thaw timeout mechanics) + `Scripts/Get-VSSWriterHealth.ps1`
 - "Cluster down / won't form quorum, a node is stuck Quarantined, witness resource offline, cluster network shows Partitioned, CAU run failing" → `Troubleshooting/FailoverClustering-B.md` (hotfix — start here) / `FailoverClustering-A.md` (deep dive — quorum voting math, witness types, node quarantine architecture) + `Scripts/Get-FailoverClusterHealth.ps1`
 - "WSUS console won't open / unexpected error, clients stuck scanning or timing out (0x8024401C etc.), Cleanup Wizard always times out, content directory nearly full" → `Troubleshooting/Windows Update/WSUS-Server-B.md` (hotfix — start here, check WsusPool before SUSDB) / `WSUS-Server-A.md` (deep dive — SUSDB engine/maintenance, content/metadata consistency) + `Scripts/Get-WSUSServerHealth.ps1`
+- "Pentest/security tooling flagged PetitPotam or ESC8 against an AD CS server" → `Troubleshooting/NTLMRelayADCS-B.md` (hotfix — Fix 1, enable/require EPA, the primary mitigation) + `Scripts/Get-NTLMRelayADCSAudit.ps1`
+- "Is disabling/patching PetitPotam enough to close this?" → No — `Troubleshooting/NTLMRelayADCS-A.md` explains why EPA at the relay destination, not blocking one coercion technique, is the durable fix
+- "AD CS Web Enrollment or CES role discovered running on a server nobody remembers configuring" → `Troubleshooting/NTLMRelayADCS-B.md` (Triage — inventory and assess before assuming it's unused)
 
 ---
 
