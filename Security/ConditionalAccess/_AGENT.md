@@ -61,12 +61,15 @@ Result: ALL matching policies' controls must be satisfied
 | `TokenProtection-A.md` | Deep dive: PoP token-binding architecture, supported platforms/apps/resources, unsupported combinations |
 | `AuthenticationStrengths-B.md` | Hotfix: sign-in blocked/re-challenged by a "Require authentication strength" grant — missing qualifying method, device-bound WHfB mismatch, custom combination gaps, federated MFA trust |
 | `AuthenticationStrengths-A.md` | Deep dive: built-in vs. custom strengths, allowed-combination vocabulary, claims-challenge timing, registration-coverage rollout playbooks |
+| `AuthenticationContext-B.md` | Hotfix: Authentication Context (`c1`–`c99`) step-up not firing — unpublished context, no consumer surface tagging anything, SharePoint label/direct-tag confusion, PIM backup-protection fallback, non-claims-aware apps |
+| `AuthenticationContext-A.md` | Deep dive: claims-challenge architecture, opportunistic/implicit ACRS evaluation, the four native consumer surfaces compared, PIM backup-protection gap across all four policy states, SharePoint's dual tagging paths + permanent app-compatibility limitations, safe context retirement |
 | `Scripts/Get-CASignInAnalysis.ps1` | Analyse sign-in logs for CA failures across users |
 | `Scripts/Get-NamedLocationAudit.ps1` | Named Location CIDR overlap/orphan/reference audit |
 | `Scripts/Get-CADeviceFilterAudit.ps1` | Device filter mode/expression risk, orphaned extensionAttribute, Autopilot coverage audit |
 | `Scripts/Get-CAPolicyDesignAudit.ps1` | Break-glass exclusion, pilot-scoping, legacy-auth-gap, recently-enabled, and cross-policy grant-conflict audit |
 | `Scripts/Get-TokenProtectionCoverageAudit.ps1` | Token protection policy design audit — browser client-app risk, Office 365 app-group targeting, missing device filter exclusions, stale report-only, non-Windows platform gap |
 | `Scripts/Get-AuthStrengthCoverageAudit.ps1` | Authentication strength policy design audit, CA policy reference report, tenant-wide phishing-resistant-method registration coverage gaps, federated domain MFA trust check |
+| `Scripts/Get-AuthContextAudit.ps1` | Authentication Context audit — unpublished/unreferenced contexts, risky CA-policy states (Off/Report-only/user-excluded) that defeat PIM's backup protection, SharePoint tenant + direct site-tag check, PIM role Activation-setting cross-reference |
 
 ---
 
@@ -85,6 +88,11 @@ Result: ALL matching policies' controls must be satisfied
 - "User prompted for MFA but still blocked / re-challenged even after entering a code" → `AuthenticationStrengths-B.md` (likely a "Require authentication strength" grant, not plain MFA)
 - "Rolling out phishing-resistant MFA / FIDO2 / Windows Hello for Business enforcement" → `AuthenticationStrengths-A.md` Playbook 1 + `Scripts/Get-AuthStrengthCoverageAudit.ps1` (check registration coverage first)
 - "Federated (AD FS) users can't satisfy phishing-resistant MFA" → `AuthenticationStrengths-B.md` Fix 4
+- "Step-up doesn't fire when opening a sensitive SharePoint doc / activating a privileged role / hitting a specific custom app action" → `AuthenticationContext-B.md` (likely nothing is actually tagged with the context, not a broken CA policy)
+- "SharePoint label says protected but the site still opens fine" (or vice versa) → `AuthenticationContext-B.md` Fix 4 — check BOTH the label AND direct `Set-SPOSite` tagging paths
+- "PIM role activation only asked for plain MFA, we configured a stronger method" → `AuthenticationContext-B.md` Fix 6 (Cause B) — check the paired CA policy's State/exclusions, not the PIM setting itself
+- "User says they were never prompted for anything extra but the sign-in log shows the policy applied" → `AuthenticationContext-A.md` "Opportunistic (implicit) ACRS evaluation" — expected behavior, not a bug
+- "One SharePoint feature (OneDrive sync, Outlook, mobile app, Teams webinar) broke after we tagged a site with a context" → `AuthenticationContext-A.md` "SharePoint's specific, permanent app-compatibility limitations" before treating as a bug
 
 ---
 

@@ -24,7 +24,7 @@
 - Rollback, monitoring, and self-healing (automatic LCU fallback) behavior
 
 **Out of scope:**
-- **Windows Server 2025 hotpatch** — an architecturally separate product surface managed via Azure Update Manager and an optional Azure Arc subscription, with its own licensing model (free as of May 2026 for Arc-connected Server 2025 Standard/Datacenter). Shares terminology and general mechanics with this topic but a different admin plane entirely — see `Azure/UpdateManager/UpdateManager-A.md`.
+- **Windows Server 2025 hotpatch** — an architecturally separate product surface managed via Azure Update Manager and an optional Azure Arc subscription, with its own licensing model (free as of May 2026 for Arc-connected Server 2025 Standard/Datacenter). Shares terminology and general mechanics with this topic but a different admin plane entirely — see `Azure/UpdateManager/ServerHotpatch-A.md`.
 - General Windows Autopatch deployment ring / update orchestration mechanics not specific to hotpatch — see `Intune/Troubleshooting/Autopatch-A.md`
 - Windows Update for Business policy mechanics underlying quality/feature update deferral in general — see `Intune/Troubleshooting/WUfB-A.md` and `Intune/Troubleshooting/FeatureUpdates-A.md`
 - Virtualization-based Security's own deployment/hardware-readiness troubleshooting beyond the "is it Running" check hotpatch depends on — see `Windows/Troubleshooting/LSA-Protection-A.md` for adjacent VBS-dependent feature context

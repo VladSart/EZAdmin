@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure Update Manager** — the current, native, non-Automation-dependent patch management service for Azure VMs and Azure Arc-enabled servers: on-demand assessment/install, periodic assessment, scheduled patching via maintenance configurations and configuration assignments, the patch-extension model, and the guest-OS-side update-client dependencies (Windows Update Agent / WSUS, Linux package manager + sudo) that account for most real-world "patching isn't working" tickets. Explicitly out of scope: Azure Automation's legacy Update Management solution (retired 31 August 2024 — see `Azure/Automation/`), Automatic VM Guest Patching/Hotpatching as standalone Compute features, on-premises WSUS server administration itself, and Azure Arc onboarding/connectivity (a hard prerequisite, covered in `Azure/Arc/`).
+Runbooks and scripts for **Azure Update Manager** — the current, native, non-Automation-dependent patch management service for Azure VMs and Azure Arc-enabled servers: on-demand assessment/install, periodic assessment, scheduled patching via maintenance configurations and configuration assignments, the patch-extension model, the guest-OS-side update-client dependencies (Windows Update Agent / WSUS, Linux package manager + sudo) that account for most real-world "patching isn't working" tickets, and **Windows Server 2025 Hotpatch delivered via Azure Arc/Update Manager** (eligibility gate, license/enrollment lifecycle, quarterly baseline cadence). Explicitly out of scope: Azure Automation's legacy Update Management solution (retired 31 August 2024 — see `Azure/Automation/`), Automatic VM Guest Patching (`patchMode: AutomaticByPlatform`) as a standalone Compute feature — a different mechanism from Hotpatch despite the naming overlap, **Windows 11 client Hotpatch via Windows Autopatch** — an architecturally separate product/admin plane, see `Intune/Troubleshooting/Hotpatch-A.md`, on-premises WSUS server administration itself, and Azure Arc onboarding/connectivity (a hard prerequisite, covered in `Azure/Arc/`).
 
 ---
 
@@ -22,6 +22,9 @@ Runbooks and scripts for **Azure Update Manager** — the current, native, non-A
 | `UpdateManager-B.md` | Hotfix runbook — extension missing/stuck, HRESULT update-agent errors, missing/broken schedule assignment after a VM move, maintenance-window-exceeded failures, Linux sudo/root privilege failures |
 | `UpdateManager-A.md` | Deep dive — extension/agent architecture, on-demand vs. periodic vs. scheduled patching model, maintenance-window arithmetic, Resource Graph retention limits, fleet onboarding and legacy-migration playbooks |
 | `Scripts/Get-AzureUpdateManagerHealth.ps1` | Read-only fleet sweep — VM power state, extension-operations eligibility, patch extension health, optional Arc connection check, optional per-machine schedule-assignment check, orphaned-schedule detection |
+| `ServerHotpatch-B.md` | Hotfix — Windows Server 2025 Hotpatch (Arc) eligibility/enrollment triage: VBS not running, Arc agent unhealthy, stuck "Pending" enrollment (October 2025 feature-licensing bug), baseline drift forcing monthly reboots |
+| `ServerHotpatch-A.md` | Deep dive — eligibility-gate/license-plane/delivery-plane architecture, quarterly baseline+hotpatch cadence, May 2026 free-tier billing change, the two distinct October 2025 incidents (feature-licensing bug vs. mistaken WSUS OOB update KB5070881), Datacenter: Azure Edition's built-in-hotpatch divergence |
+| `Scripts/Get-ServerHotpatchReadiness.ps1` | Read-only local/fleet readiness audit — OS build/edition eligibility, VBS running state, Arc agent presence, baseline-drift sanity check, October 2025 bug-workaround artifact detection |
 
 ---
 
@@ -35,6 +38,9 @@ Runbooks and scripts for **Azure Update Manager** — the current, native, non-A
 - **"Onboarding a new client's VM/Arc estate to scheduled patching"** → `UpdateManager-A.md` Playbook 1
 - **"Client still has Automation-based Update Management — how do we move them"** → `UpdateManager-A.md` Playbook 2
 - **"Fleet-wide patching coverage audit for a ticket/report"** → `Scripts/Get-AzureUpdateManagerHealth.ps1 -IncludeArc -CheckVMAssignments`
+- **"Hotpatch won't enable / stuck Pending / server reboots every month despite hotpatch being on"** → `ServerHotpatch-B.md` — check VBS running state and Arc health before assuming a licensing bug
+- **"Client asking why they're still being billed for hotpatch"** → `ServerHotpatch-A.md` Symptom→Cause Map — free since 19 May 2026, likely stale billing data
+- **"Is this the Windows Server hotpatch or the Windows 11 client one"** → confirm the admin plane first (Azure Arc/Update Manager = `ServerHotpatch-A.md`; Intune/Autopatch = `Intune/Troubleshooting/Hotpatch-A.md`) — they share terminology but nothing else
 
 ---
 
