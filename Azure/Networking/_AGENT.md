@@ -1,4 +1,4 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway) — Agent Instructions
 
 ## What's in this folder
 
@@ -12,7 +12,9 @@ Private DNS is why a Private Endpoint or AVD/Windows 365 host can be fully reach
 
 **Azure Bastion** — browser/native-client RDP-SSH-over-TLS access to VMs without a public IP, agent, or exposed 3389/22: the four architecturally distinct SKU tiers (Developer's shared infrastructure vs. Basic/Standard/Premium's dedicated deployment), the all-or-nothing 8-rule NSG requirement on `AzureBastionSubnet`, the separate target-VM-subnet NSG requirement (the most common real-world connectivity gap), connection-method availability by SKU (native client/IP-Connect/shareable links/file transfer all require Standard+; session recording and private-only deployment require Premium), and the independent JIT (Just-In-Time) access role-assignment layer. `NSG-A.md`/`NSG-B.md` and `Windows/Troubleshooting/RDP-B.md` both reference Bastion as the recommended alternative to permanently-open management ports — this is where that recommendation's own mechanics are fully documented.
 
-Does not cover inbound reverse-proxy TLS termination (Web Application Firewall on Application Gateway — a distinct product referenced only as the supported pattern for inbound HTTPS inspection, since Azure Firewall itself only terminates outbound/East-West TLS), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
+**Azure Application Gateway (Standard_v2/WAF_v2)** — the inbound reverse-proxy/WAF layer Azure Firewall's own scope note above points to: the dedicated-subnet requirement and v2's GatewayManager 65200-65535 control-plane NSG dependency (missing it produces blank/Unknown backend health, not an explicit deny — the #1 real-world "backend health won't show" cause), listener/routing-rule/backend-HTTP-settings request path, health probe default-200-399-healthy matching (the most common false "backend down" cause), and WAF policy precedence across three association levels — gateway, listener, and path — where the most specific always fully overrides rather than merges with a broader policy. Distinct from Azure Firewall (outbound/East-West TLS only) and from Azure Front Door (a separate global-edge L7 service, referenced only for the disambiguation).
+
+Does not cover Application Gateway v1 (legacy, flagged for migration rather than troubleshot on its own terms), Application Gateway for Containers (a different, Kubernetes-native product sharing only the name), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
 
 ---
 
@@ -22,6 +24,7 @@ Does not cover inbound reverse-proxy TLS termination (Web Application Firewall o
 - **Windows/Troubleshooting/AlwaysOnVPN-A.md** — a different VPN technology entirely (client-to-Azure/on-prem via Windows' native VPN client), not to be confused with the site-to-site VPN Gateway covered here
 - **Security/ConditionalAccess** — if the underlying complaint is "users can't reach an app" rather than "sites can't reach each other," confirm this isn't actually a CA/identity issue before assuming a network-path fault
 - **VirtualWAN-A.md/VirtualWAN-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — if a client's Azure Firewall sits inside a Virtual WAN secured hub, "traffic isn't reaching the firewall" is a Routing Intent/Next Hop question (VirtualWAN files); "traffic reaches the firewall but is allowed/denied unexpectedly, or a Premium feature isn't working" is a rule/policy question (AzureFirewall files) — don't debug rule content on a firewall traffic never reached
+- **AppGateway-A.md/AppGateway-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — Application Gateway is the inbound reverse-proxy/WAF layer (HTTP/HTTPS, terminates client-facing TLS, Layer 7 routing to a backend pool); Azure Firewall is a general-purpose outbound/East-West filter that does not do inbound reverse-proxying. A "site returns 403/502/504" ticket belongs in AppGateway files even if an Azure Firewall also sits somewhere in the path
 
 ---
 
@@ -56,6 +59,9 @@ Does not cover inbound reverse-proxy TLS termination (Web Application Firewall o
 | `Bastion-B.md` | Bastion hotfix runbook — AzureBastionSubnet NSG 8-rule completeness, target-VM-subnet NSG gap (most common real fault), black screen diagnosis, SKU feature ceiling, JIT role-assignment gap |
 | `Bastion-A.md` | Bastion deep dive — four-SKU architecture comparison, all-or-nothing NSG rule requirement, connection-method availability matrix, greenfield/SKU-upgrade/multi-VNet playbooks |
 | `Scripts/Get-AzureBastionHealth.ps1` | Read-only sweep — SKU/provisioning state, AzureBastionSubnet sizing compliance, NSG rule-completeness check against the full 8-rule set, optional target-VM-subnet NSG check |
+| `AppGateway-B.md` | Application Gateway hotfix runbook — backend health Unknown-for-all (GatewayManager NSG gap) vs. Unhealthy-for-specific-servers (probe misconfiguration), WAF 403 false-positive tuning, 502/504 with healthy backend (timeout/Proxy Protocol), WAF policy precedence override diagnosis, SNAT/capacity exhaustion |
+| `AppGateway-A.md` | Application Gateway deep dive — v2 dedicated-subnet and control-plane architecture, listener/routing-rule/backend-HTTP-settings request path, health probe default-match behavior, three-level WAF policy precedence (gateway/listener/path, full override not merge), autoscale/SNAT capacity model, Front-Door/Azure-Firewall disambiguation |
+| `Scripts/Get-AppGatewayHealth.ps1` | Read-only sweep across every Application Gateway — provisioning state and legacy-v1-SKU flag, dedicated-subnet GatewayManager 65200-65535 NSG rule check, per-server backend health (flags all-Unknown as a likely NSG issue distinct from real per-server Unhealthy), WAF policy mode and precedence at all three association levels, backend HTTP settings timeout/HostName flags, diagnostic settings presence, autoscale configuration |
 
 ---
 
@@ -114,6 +120,13 @@ Does not cover inbound reverse-proxy TLS termination (Web Application Firewall o
 - **"Native RDP/SSH client / file transfer / IP-Connect not available in Bastion"** → `Bastion-B.md` Fix 3 — feature requires Standard or Premium SKU, not a bug
 - **"User can see the VM in the portal but Bastion connection is still blocked"** → `Bastion-B.md` Fix 6 — missing JIT role assignment, independent of Bastion/NSG configuration
 - **"Fleet-wide Azure Bastion SKU/subnet/NSG health check across clients"** → `Scripts/Get-AzureBastionHealth.ps1`
+- **"Application Gateway backend health shows blank/Unknown for every server"** → `AppGateway-B.md` Fix 2 — check the GatewayManager 65200-65535 NSG rule on the gateway's own subnet before assuming a real backend outage
+- **"Some Application Gateway backend servers show Unhealthy, others fine"** → `AppGateway-B.md` Fix 2 — check the probe path/expected match; a 401/403/302 response is outside the default 200-399 healthy range
+- **"Users see a 403 with a WAF-branded error page"** → `AppGateway-B.md` Fix 3 — WAF Prevention-mode block, add a targeted rule exclusion, don't disable the whole managed rule set
+- **"502/504 errors but backend health shows Healthy"** → `AppGateway-B.md` Fix 4 — check RequestTimeout and, on HTTPS backend settings with client IP preservation, whether the backend parses the Proxy Protocol header
+- **"One path or site on the gateway behaves differently than the rest"** → `AppGateway-B.md` Fix 5 — check for a listener- or path-level WAF policy override; most specific fully overrides, doesn't merge with the gateway-level policy
+- **"Client wants to know why WAF rule updates seem to have stopped applying"** → `AppGateway-A.md` Learning Pointers — confirm outbound Internet isn't blocked on the gateway subnet, WAF_v2 needs it for engine/signature updates
+- **"Fleet-wide Application Gateway backend health / WAF policy precedence audit across clients"** → `Scripts/Get-AppGatewayHealth.ps1`
 
 ---
 
@@ -209,6 +222,19 @@ Get-AzBastion -ResourceGroupName <rg> -Name <bastionName> | Select Name, Provisi
 
 # Azure Bastion — AzureBastionSubnet sizing check (must be /26 or larger)
 Get-AzVirtualNetworkSubnetConfig -Name AzureBastionSubnet -VirtualNetwork (Get-AzVirtualNetwork -ResourceGroupName <rg> -Name <vnetName>)
+
+# Application Gateway — state, SKU, backend health (the #1 first check for any "site is down" ticket)
+Get-AzApplicationGateway -ResourceGroupName <rg> -Name <gwName> | Select ProvisioningState, OperationalState, Sku
+Get-AzApplicationGatewayBackendHealth -ResourceGroupName <rg> -Name <gwName>
+
+# Application Gateway — WAF policy mode/association at gateway, listener, and path level (most specific wins)
+(Get-AzApplicationGateway -ResourceGroupName <rg> -Name <gwName>).FirewallPolicy
+(Get-AzApplicationGateway -ResourceGroupName <rg> -Name <gwName>).HttpListeners | Select Name, FirewallPolicy
+(Get-AzApplicationGateway -ResourceGroupName <rg> -Name <gwName>).UrlPathMaps.PathRules | Select Paths, FirewallPolicy
+
+# Application Gateway — control-plane NSG rule required by v2 SKU (GatewayManager, TCP 65200-65535)
+Get-AzNetworkSecurityGroup -ResourceGroupName <rg> -Name <nsgName> | Get-AzNetworkSecurityRuleConfig |
+    Where-Object { $_.SourceAddressPrefix -match "GatewayManager" }
 ```
 
 ---
@@ -329,6 +355,28 @@ Target VM subnet NSG — a SEPARATE inbound allow for 3389/22 FROM AzureBastionS
     │
     ▼
 Session over TLS 443 (browser: all SKUs | native client/IP-Connect/shareable link: Standard+ only)
+```
+
+Application Gateway request path (AppGateway-A.md/AppGateway-B.md — the inbound reverse-proxy/WAF layer distinct from Azure Firewall's outbound/East-West scope above):
+
+```
+Dedicated subnet (Application Gateway ONLY — no other resource type may share it)
+    │
+NSG allows GatewayManager inbound TCP 65200-65535 (v2 control-plane health reporting —
+    missing this = blank/Unknown backend health for EVERY server, not an explicit deny)
+    │
+Listener (frontend IP + port + protocol + hostname if multi-site)
+    │
+[If WAF_v2] WAF policy — gateway/listener/path level, MOST SPECIFIC FULLY OVERRIDES (no merge)
+    │
+Routing rule (Basic or Path-based) → backend pool + HTTP settings
+    │
+Health probe (default: any 200-399 = healthy — a 401/403/302 probe response reads as Unhealthy
+    even when the app itself is fine)
+    │
+Backend pool member responds within RequestTimeout
+    │
+Response returned to client
 ```
 
 ---

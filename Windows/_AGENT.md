@@ -23,6 +23,7 @@ Covers:
 - **Event log analysis** — systematic log collection and interpretation
 - **NTLM Relay to AD CS (PetitPotam / ESC8)** — NTLM authentication coercion (PetitPotam and related MS-EFSRPC/MS-RPRN/MS-DFSNM/MS-FSRVP techniques) relayed to an unprotected AD CS HTTP(S) enrollment endpoint (Certificate Authority Web Enrollment / CES), yielding a legitimately-issued certificate for the coerced identity — Extended Protection for Authentication (EPA) as the primary, non-negotiable mitigation, HTTPS-only enrollment, NTLM restriction as defense-in-depth, and certificate template exposure as a severity multiplier; architecturally distinct from certificate-to-account mapping validation (see `ActiveDirectory/Troubleshooting/CertificateMapping/`)
 - **AD CS Vulnerable Certificate Templates (ESC1 / ESC4)** — direct, relay-free template misconfiguration privilege escalation: ESC1 (a template with `CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT` set, a client-authentication-capable EKU, and broad Enroll rights, letting a low-priv principal request a certificate for an arbitrary chosen identity) and ESC4 (a non-admin principal holding WriteDacl/WriteOwner/WriteProperty on a template object, letting them reconfigure any template into an ESC1 shape); detection via native `Get-ADObject`/LDAP-filter queries against the Configuration NC, remediation via subject-name/EKU correction, ACL scoping, and enrollment agent restrictions; architecturally distinct from ESC8 (`NTLMRelayADCS-A.md` — requires coercion/relay) and from auto-enrollment ACL plumbing (`CertificateServices-A.md` — an availability concern, not a security-misconfiguration one)
+- **WinRM / PowerShell Remoting** — listener/firewall/auth-path triage (Kerberos vs. NTLM, TrustedHosts scope), GPO-managed WinRM configuration precedence over local `Enable-PSRemoting`, the Kerberos double-hop problem (CredSSP vs. classic constrained delegation vs. resource-based constrained delegation — cross-referenced to `ActiveDirectory/Troubleshooting/KerberosDelegation/`), CredSSP Encryption Oracle Remediation (CVE-2018-0886), and WSMan resource quota exhaustion under automation/CI load
 
 ---
 
@@ -60,6 +61,7 @@ Covers:
 | `Troubleshooting/CertificateServices-A.md` / `B.md` | Certificate enrollment/renewal issues |
 | `Troubleshooting/NTLMRelayADCS-A.md` / `B.md` | NTLM relay to AD CS HTTP(S) enrollment endpoints (PetitPotam / ESC8) — coercion-to-certificate-issuance attack chain, EPA/HTTPS-only/NTLM-restriction/template-hardening remediation playbooks |
 | `Troubleshooting/ADCSTemplateMisconfiguration-A.md` / `B.md` | AD CS vulnerable certificate templates (ESC1 enrollee-supplied-subject + client-auth EKU / ESC4 template ACL abuse) — direct, relay-free enrollment-rights privilege escalation, detection queries, template/ACL remediation playbooks |
+| `Troubleshooting/WinRM-A.md` / `B.md` | WinRM/PowerShell Remoting — listener/firewall/network-profile dependency chain, Kerberos vs. NTLM auth path determination, GPO-managed WinRM precedence, Kerberos double-hop (CredSSP/classic/RBCD trade-offs), WSMan quota exhaustion |
 | `Troubleshooting/UserProfile-A.md` / `B.md` | Profile corruption, load failures |
 | `Troubleshooting/PrintSpooler-A.md` / `B.md` | Print spooler crashes, queue issues |
 | `Troubleshooting/DeliveryOptimization-A.md` / `B.md` | Peer-to-peer update distribution issues |
@@ -83,6 +85,7 @@ Covers:
 | `Scripts/Get-CertificateServicesDiagnostics.ps1` | Companion script to CertificateServices |
 | `Scripts/Get-NTLMRelayADCSAudit.ps1` | Companion script to NTLMRelayADCS — AD CS role inventory, HTTP/HTTPS reachability, best-effort EPA read (flags manual verification when unconfirmable), NTLM restriction posture, client-authentication-capable certificate template inventory |
 | `Scripts/Get-ADCSVulnerableTemplateAudit.ps1` | Companion script to ADCSTemplateMisconfiguration — read-only ESC1 detection (enrollee-supplied-subject + client-auth EKU + Enroll ACL holders, opportunistic CA-publication cross-reference via certutil) and ESC4 detection (non-admin WriteDacl/WriteOwner/WriteProperty/GenericAll sweep across every template), CSV export |
+| `Scripts/Get-WinRMDiagnostics.ps1` | Companion script to WinRM — service/listener/firewall/network-profile check, TrustedHosts and GPO-managed-WinRM detection, WSMan quota and active-shell-count read, CredSSP/Encryption-Oracle-Remediation state, optional remote target port+handshake test |
 | `Scripts/Get-UserProfileDiagnostics.ps1` | Companion script to UserProfile |
 | `Scripts/Get-PrinterDiagnostics.ps1` | Companion script to PrintSpooler |
 | `Scripts/Get-DeliveryOptimizationDiagnostics.ps1` | Companion script to DeliveryOptimization |
@@ -168,6 +171,8 @@ Get-WinEvent -LogName System |
 - "Pentest/security tooling flagged ESC1 or ESC4 against a certificate template" → `Troubleshooting/ADCSTemplateMisconfiguration-B.md` (hotfix — Triage table maps the finding to Fix 1/2 directly) / `-A.md` (deep dive — enrollee-supplied-subject + ACL-abuse architecture) + `Scripts/Get-ADCSVulnerableTemplateAudit.ps1`
 - "Is 'we patched PetitPotam' or 'EPA is enabled' enough to close out an AD CS security finding?" → No — that only closes ESC8 (`NTLMRelayADCS-B.md`); a template can still be directly exploitable via ESC1/ESC4 with zero relay/coercion involved, run `Troubleshooting/ADCSTemplateMisconfiguration-B.md`'s Triage separately
 - "A certificate template looks safe today but a pentest calls it ESC4 / flags a write-ACL finding" → `Troubleshooting/ADCSTemplateMisconfiguration-A.md` (explains why a weak template ACL is itself the vulnerability, independent of the template's current subject-name/EKU configuration) — Fix 2 / Playbook 2
+- "Enter-PSSession / Invoke-Command fails, Access is denied, WinRM cannot complete the operation, TrustedHosts, conflicting Group Policy setting, WinRM works but a command inside the session can't reach a second server (double-hop)" → `Troubleshooting/WinRM-B.md` (hotfix — Triage table routes to the right fix path) / `WinRM-A.md` (deep dive — Kerberos vs. NTLM path architecture, GPO precedence, double-hop mechanics) + `Scripts/Get-WinRMDiagnostics.ps1`
+- "Automation/CI pipeline intermittently fails to open PowerShell remoting sessions under load" → `Troubleshooting/WinRM-B.md` Fix 6 (WSMan quota exhaustion — `MaxShellsPerUser`/`MaxConcurrentOperationsPerUser`)
 
 ---
 
