@@ -1,4 +1,4 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway + Load Balancer) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway + Load Balancer + Front Door) — Agent Instructions
 
 ## What's in this folder
 
@@ -20,6 +20,10 @@ Does not cover Application Gateway v1 (legacy, flagged for migration rather than
 
 Does not cover Basic SKU Load Balancer (retired September 30, 2025 — any surviving instance is a migration finding, not a troubleshooting target — see `LoadBalancer-A.md` Playbook 1), NAT Gateway's own dedicated health/capacity diagnostics beyond confirming its presence as one of the three outbound methods (a future standalone topic if ticket volume justifies it), or Gateway Load Balancer (a distinct SKU for transparent third-party NVA chaining via VXLAN, referenced only where HA Ports' flow-symmetry limitation points to it as the alternative).
 
+**Azure Front Door (Standard/Premium)** — the global-edge Layer 7 counterpart to Application Gateway's regional scope above, and the resource actually meant when a client describes multi-region routing, global edge caching, or a WAF block on a site fronted from more than one Azure region: the profile → endpoint → route → origin-group → origin resource hierarchy, EXACT frontend-host route matching with no wildcard-host fallback (a stricter model than the wildcard-path matching that follows it), the WAF-policy-is-a-separate-resource-until-a-Security-Policy-associates-it indirection layer, the tier ceiling where Standard WAF supports custom rules only (no managed rule set/DRS, Bot Protection, or JS Challenge — Premium-only), custom domain validation and the apex-domain certificate autorotation trap (no CNAME exists at a zone apex, so managed-certificate autorotation silently fails and needs recurring manual revalidation), Rule Set Route Configuration Override actions that can redirect traffic to a different origin group than the route's own static association, and the fail-open (round-robin across all origins) behavior when an entire origin group's health probes fail simultaneously.
+
+Does not cover Front Door (classic) beyond identification and migration guidance (retires March 31, 2027 — no new domain onboarding or managed certificates from that point; see `FrontDoor-A.md` Playbook 1), Azure Traffic Manager (DNS-based global distribution, a fundamentally different mechanism with no proxying/caching/WAF), or Private Link origins (Premium-tier private-connectivity-to-origin support, flagged as a likely future topic but not covered in depth yet).
+
 ---
 
 ## Before responding, also check
@@ -30,6 +34,7 @@ Does not cover Basic SKU Load Balancer (retired September 30, 2025 — any survi
 - **VirtualWAN-A.md/VirtualWAN-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — if a client's Azure Firewall sits inside a Virtual WAN secured hub, "traffic isn't reaching the firewall" is a Routing Intent/Next Hop question (VirtualWAN files); "traffic reaches the firewall but is allowed/denied unexpectedly, or a Premium feature isn't working" is a rule/policy question (AzureFirewall files) — don't debug rule content on a firewall traffic never reached
 - **AppGateway-A.md/AppGateway-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — Application Gateway is the inbound reverse-proxy/WAF layer (HTTP/HTTPS, terminates client-facing TLS, Layer 7 routing to a backend pool); Azure Firewall is a general-purpose outbound/East-West filter that does not do inbound reverse-proxying. A "site returns 403/502/504" ticket belongs in AppGateway files even if an Azure Firewall also sits somewhere in the path
 - **LoadBalancer-A.md/LoadBalancer-B.md vs. AppGateway-A.md/AppGateway-B.md** — Load Balancer is Layer 4 only (TCP/UDP, 5-tuple hash, zero path/host/cookie/WAF awareness); Application Gateway is Layer 7. A client saying "the load balancer" while describing path-based routing, a WAF block, or hostname rules is describing Application Gateway — confirm which resource actually fronts the traffic before troubleshooting the wrong one. Both files carry this disambiguation in their own Learning Pointers.
+- **FrontDoor-A.md/FrontDoor-B.md vs. AppGateway-A.md/AppGateway-B.md vs. LoadBalancer-A.md/LoadBalancer-B.md** — all three distribute traffic, but at different scopes: Front Door is GLOBAL edge (multi-region, DNS-resolved to Microsoft's edge network, its own WAF-tier model); Application Gateway is REGIONAL Layer 7 (single-region reverse proxy/WAF); Load Balancer is REGIONAL Layer 4. A client describing multi-region failover, global edge caching, or a `*.azurefd.net` hostname is describing Front Door — confirm scope (global vs. regional) before assuming it's the same troubleshooting model as the other two.
 
 ---
 
@@ -70,6 +75,9 @@ Does not cover Basic SKU Load Balancer (retired September 30, 2025 — any survi
 | `LoadBalancer-B.md` | Load Balancer hotfix runbook — Basic SKU (retired/unsupported) flag, no-outbound-path diagnosis for public LB backends (the #1 post-migration ticket), SNAT port exhaustion under load, NSG explicit-allow gap (Standard SKU has no implicit inbound permit), probe-hitting-a-WinHTTP-restricted-port diagnosis, HA Ports Floating IP mode mismatch, Layer 7 symptom redirect to Application Gateway |
 | `LoadBalancer-A.md` | Load Balancer deep dive — 5-tuple hash distribution model, health probe behavior on established TCP vs. UDP flows, the three explicit outbound-access methods and their precedence, default vs. manual SNAT port allocation, HA Ports Floating IP/DSR architecture and flow-symmetry limits, zone-redundant/zonal frontend model, Basic SKU migration playbook |
 | `Scripts/Get-LoadBalancerHealth.ps1` | Read-only sweep across every Load Balancer — Basic SKU flag, frontend type/zone configuration, backend pool membership and health, probe restricted-port check, outbound-access-method detection for public LB backends (flags a genuine zero-method gap), SNAT allocation vs. backend pool size, NSG presence on backend subnets, HA Ports rule/Floating-IP-mode detection |
+| `FrontDoor-B.md` | Front Door hotfix runbook — Classic-tier migration flag, disabled-endpoint diagnosis, custom domain validation/apex-certificate-autorotation triage, exact-host-match 404 diagnosis, origin health probe troubleshooting, WAF tier-ceiling diagnosis (Standard = custom rules only), Rule Set Route Configuration Override detection, stale-cache purge guidance |
+| `FrontDoor-A.md` | Front Door deep dive — profile/endpoint/route/origin-group resource hierarchy, exact-host + most-specific-path route matching architecture, 3-step health probe determination and fail-open behavior, custom domain validation and the apex-domain certificate autorotation trap, WAF-policy-is-a-separate-resource-until-associated model and tier capability ceiling, Rule Set Route Configuration Override precedence, Classic-to-Standard/Premium migration and domain-onboarding playbooks |
+| `Scripts/Get-FrontDoorHealth.ps1` | Read-only sweep across every Front Door profile — Classic SKU flag, endpoint EnabledState, custom domain validation state with an apex-domain certificate-autorotation-risk flag, domain-to-route association gap check, origin group health/probe configuration (flags empty groups), WAF tier-gap detection when a Standard-tier policy is associated to a domain, Rule Set presence flag for manual Route Configuration Override review |
 
 ---
 
@@ -142,6 +150,14 @@ Does not cover Basic SKU Load Balancer (retired September 30, 2025 — any survi
 - **"Client describes path-based routing or a WAF block on 'the load balancer'"** → `LoadBalancer-B.md` Fix 6 — this is almost always Application Gateway, not this Layer 4 resource; redirect to `AppGateway-B.md`
 - **"We still have a Basic SKU load balancer in this environment"** → `LoadBalancer-B.md` Fix 1 / `LoadBalancer-A.md` Playbook 1 — retired Sept 30, 2025, unsupported, schedule a migration
 - **"Fleet-wide Load Balancer SKU/outbound-access/probe hygiene audit across clients"** → `Scripts/Get-LoadBalancerHealth.ps1`
+- **"Client wants to onboard a new domain on Front Door and it's stuck on validation"** → `FrontDoor-B.md` Fix 3 — check the `_dnsauth` TXT record first; if it's an apex domain, there's no CNAME and autorotation needs manual revalidation
+- **"An apex domain's HTTPS broke with no recent config change"** → `FrontDoor-B.md` Fix 3 / `FrontDoor-A.md` Learning Pointers — managed-certificate autorotation silently fails on apex domains, this is a recurring operational task, not a one-time setup
+- **"A hostname 404s on Front Door even though a route exists for the site"** → `FrontDoor-B.md` Fix 4 — Front Door requires an EXACT frontend host match, there's no wildcard-host fallback the way there is for paths
+- **"Front Door origin health shows everything Unhealthy but the app works directly"** → `FrontDoor-B.md` Fix 5 — check probe path/protocol match and confirm nothing origin-side is blocking Front Door's own probe traffic
+- **"I set up a WAF policy on Front Door and it's not blocking common attacks"** → `FrontDoor-B.md` Fix 6 — confirm tier first; Standard supports custom rules only, no managed rule set/Bot Protection/JS Challenge without Premium
+- **"Traffic on Front Door goes to the wrong origin group despite the route looking correct"** → `FrontDoor-B.md` Fix 7 — check the route's attached Rule Set for a Route Configuration Override action
+- **"Client still has a Front Door (classic) profile"** → `FrontDoor-B.md` Fix 1 / `FrontDoor-A.md` Playbook 1 — retires March 31, 2027, no new domains/certs from that point, schedule a migration
+- **"Fleet-wide Front Door tier/domain-validation/origin-health/WAF-tier audit across clients"** → `Scripts/Get-FrontDoorHealth.ps1`
 
 ---
 
@@ -265,6 +281,23 @@ Get-AzLoadBalancerBackendHealth -ResourceGroupName <rg> -Name <lbName>
 
 # Load Balancer — fleet-wide check for any surviving (unsupported) Basic SKU instances
 Get-AzLoadBalancer | Where-Object { $_.Sku.Name -eq 'Basic' } | Select Name, ResourceGroupName
+
+# Front Door — profile tier and endpoint state (the #1 first check; flag Classic as retiring 2027)
+Get-AzFrontDoorCdnProfile -ResourceGroupName <rg> -ProfileName <profileName> | Select Sku, ResourceState
+Get-AzFrontDoorCdnEndpoint -ResourceGroupName <rg> -ProfileName <profileName> -EndpointName <endpointName>
+
+# Front Door — custom domain validation state and certificate type (apex domains need manual re-validation)
+Get-AzFrontDoorCdnCustomDomain -ResourceGroupName <rg> -ProfileName <profileName> -CustomDomainName <domainName>
+
+# Front Door — origin group health probe configuration
+Get-AzFrontDoorCdnOriginGroup -ResourceGroupName <rg> -ProfileName <profileName> -OriginGroupName <originGroupName>
+
+# Front Door — WAF policy tier (Standard = custom rules only) and its Security Policy domain association
+Get-AzFrontDoorWafPolicy -ResourceGroupName <rg> -Name <wafPolicyName> | Select Sku, ManagedRules
+Get-AzFrontDoorCdnSecurityPolicy -ResourceGroupName <rg> -ProfileName <profileName> -SecurityPolicyName <policyName>
+
+# Front Door — fleet-wide check for any surviving Classic profiles
+Get-AzFrontDoorCdnProfile | Where-Object { $_.Sku.Name -like 'Classic*' } | Select Name, ResourceGroupName
 ```
 
 ---
@@ -430,6 +463,34 @@ Load-balancing rule OR Inbound NAT rule maps frontend IP:port → backend
     — Standard SKU provides NONE of these implicitly; this is THE most common post-migration ticket
     │
 Traffic flows to/from backend instance
+```
+
+Front Door dependency chain (FrontDoor-A.md/FrontDoor-B.md — the GLOBAL-edge Layer 7 counterpart to Application Gateway's regional chain above; a profile can front origins in multiple regions/services at once):
+
+```
+Profile (Standard/Premium — Classic retires March 31, 2027, no new domains/certs from then on)
+    │
+Endpoint EnabledState = Enabled (a disabled endpoint fails EVERY route on it identically)
+    │
+Custom domain DomainValidationState = Approved
+    ├─ Non-apex: _dnsauth TXT record (ownership) + CNAME to the endpoint (routing + managed-cert issuance/autorotation)
+    └─ Apex: _dnsauth TXT record only — NO CNAME possible; managed-cert AUTOROTATION silently fails at
+       renewal and needs manual re-validation (recurring operational task, not one-time setup)
+    │
+Route: protocol → EXACT host match (no wildcard-host fallback, unlike path matching) → most-specific PATH match
+    │
+[If Rule Set attached] check for a RouteConfigurationOverride action — can redirect to a
+    DIFFERENT origin group than the route's own static association, evaluated AFTER normal matching
+    │
+[If Security Policy associates a WAF policy] tier gates capability:
+    Standard = custom rules only | Premium = custom + managed rules (DRS) + Bot Protection + JS Challenge
+    Evaluation order: custom → rate-limit → bot protection → managed rules
+    │
+Origin group health probe (HTTP/HTTPS, HEAD default) — 3-step: exclude disabled →
+    exclude SampleSize/SuccessfulSamplesRequired failures → latency-rank survivors
+    ALL origins failing = fail-OPEN round robin, not fail-closed
+    │
+Origin responds within timeout → cached per route config (if enabled) or passed through
 ```
 
 ---
