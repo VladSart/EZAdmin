@@ -1,4 +1,4 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway + Load Balancer + Front Door) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + Private Link/Private Endpoints + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway + Load Balancer + Front Door) — Agent Instructions
 
 ## What's in this folder
 
@@ -22,7 +22,11 @@ Does not cover Basic SKU Load Balancer (retired September 30, 2025 — any survi
 
 **Azure Front Door (Standard/Premium)** — the global-edge Layer 7 counterpart to Application Gateway's regional scope above, and the resource actually meant when a client describes multi-region routing, global edge caching, or a WAF block on a site fronted from more than one Azure region: the profile → endpoint → route → origin-group → origin resource hierarchy, EXACT frontend-host route matching with no wildcard-host fallback (a stricter model than the wildcard-path matching that follows it), the WAF-policy-is-a-separate-resource-until-a-Security-Policy-associates-it indirection layer, the tier ceiling where Standard WAF supports custom rules only (no managed rule set/DRS, Bot Protection, or JS Challenge — Premium-only), custom domain validation and the apex-domain certificate autorotation trap (no CNAME exists at a zone apex, so managed-certificate autorotation silently fails and needs recurring manual revalidation), Rule Set Route Configuration Override actions that can redirect traffic to a different origin group than the route's own static association, and the fail-open (round-robin across all origins) behavior when an entire origin group's health probes fail simultaneously.
 
-Does not cover Front Door (classic) beyond identification and migration guidance (retires March 31, 2027 — no new domain onboarding or managed certificates from that point; see `FrontDoor-A.md` Playbook 1), Azure Traffic Manager (DNS-based global distribution, a fundamentally different mechanism with no proxying/caching/WAF), or Private Link origins (Premium-tier private-connectivity-to-origin support, flagged as a likely future topic but not covered in depth yet).
+Does not cover Front Door (classic) beyond identification and migration guidance (retires March 31, 2027 — no new domain onboarding or managed certificates from that point; see `FrontDoor-A.md` Playbook 1), Azure Traffic Manager (DNS-based global distribution, a fundamentally different mechanism with no proxying/caching/WAF), or Front Door's own Private Link origins configuration workflow specifically (Premium-tier private-connectivity-to-origin — the general Private Link/Private Endpoint mechanics it relies on are now covered below, but Front Door's own origin-side setup steps are not).
+
+**Azure Private Link / Private Endpoints** — the client-side consumer mechanics that `PrivateDNS-A.md`/`PrivateDNS-B.md`'s general zone/link architecture, `KeyVault-A.md`/`KeyVault-B.md`, `AVD/AVD-Connectivity-A.md`, and several other files' Private Endpoint mentions all point back to as the single source of truth for this layer: the connection approval workflow (Automatic vs. Manual; Pending/Approved/Rejected/Disconnected, where only Approved carries any traffic at all); the reserved `privatelink.*` DNS zone naming convention and the Private DNS Zone Group automation layer that manages A records (the #1 real-world "DNS resolves to the public IP" root cause when absent); the hard rule against sharing one private DNS zone across two different Azure services (each service's Zone Group reconciliation silently overwrites a conflicting record from another); the six documented DNS resolution topologies spanning single-VNet, peered/hub-and-spoke, and on-premises-via-forwarder-or-Private-Resolver scenarios; and `PrivateEndpointNetworkPolicies` being disabled by default on every subnet — a structural exemption from NSG/UDR evaluation for Private Endpoint traffic, not a permissive default rule, and the source of most "my NSG change had no effect" confusion on a PE subnet.
+
+Does not cover Private Link Service (the provider side — publishing your own service behind a Standard Load Balancer for others to consume; this topic is consumer/client-side only), Service Endpoints (an older, architecturally distinct mechanism referenced only for disambiguation — extends VNet identity via route injection but keeps the resource's public IP, versus Private Link's actual private IP in the VNet), or Azure DNS Private Resolver's own deployment/scaling/health troubleshooting as a standalone topic beyond its role as the on-premises resolution bridge (a plausible future topic of its own).
 
 ---
 
@@ -35,6 +39,8 @@ Does not cover Front Door (classic) beyond identification and migration guidance
 - **AppGateway-A.md/AppGateway-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — Application Gateway is the inbound reverse-proxy/WAF layer (HTTP/HTTPS, terminates client-facing TLS, Layer 7 routing to a backend pool); Azure Firewall is a general-purpose outbound/East-West filter that does not do inbound reverse-proxying. A "site returns 403/502/504" ticket belongs in AppGateway files even if an Azure Firewall also sits somewhere in the path
 - **LoadBalancer-A.md/LoadBalancer-B.md vs. AppGateway-A.md/AppGateway-B.md** — Load Balancer is Layer 4 only (TCP/UDP, 5-tuple hash, zero path/host/cookie/WAF awareness); Application Gateway is Layer 7. A client saying "the load balancer" while describing path-based routing, a WAF block, or hostname rules is describing Application Gateway — confirm which resource actually fronts the traffic before troubleshooting the wrong one. Both files carry this disambiguation in their own Learning Pointers.
 - **FrontDoor-A.md/FrontDoor-B.md vs. AppGateway-A.md/AppGateway-B.md vs. LoadBalancer-A.md/LoadBalancer-B.md** — all three distribute traffic, but at different scopes: Front Door is GLOBAL edge (multi-region, DNS-resolved to Microsoft's edge network, its own WAF-tier model); Application Gateway is REGIONAL Layer 7 (single-region reverse proxy/WAF); Load Balancer is REGIONAL Layer 4. A client describing multi-region failover, global edge caching, or a `*.azurefd.net` hostname is describing Front Door — confirm scope (global vs. regional) before assuming it's the same troubleshooting model as the other two.
+- **PrivateLink-A.md/PrivateLink-B.md vs. PrivateDNS-A.md/PrivateDNS-B.md** — Private Link/Private Endpoints is the resource-connectivity layer (creating the NIC, the approval workflow, the Zone Group automation); Private DNS is the general zone/link/registration mechanics that layer depends on. A "Private Endpoint resolves to the public IP" ticket usually starts in PrivateLink-B.md's Zone Group check, which then points into PrivateDNS-B.md's link/zone mechanics if the gap is at that layer — the two files are deliberately complementary, not duplicative.
+- **PrivateLink-A.md/PrivateLink-B.md vs. NSG-A.md/NSG-B.md** — NSG's general rule-evaluation architecture assumes it's actually being evaluated; Private Link's `PrivateEndpointNetworkPolicies` (disabled by default) determines whether NSG/UDR apply to Private Endpoint traffic AT ALL. An NSG rule that "does nothing" on a PE subnet is a PrivateLink-B.md Fix 7 question before it's an NSG-B.md rule-priority question.
 
 ---
 
@@ -78,6 +84,9 @@ Does not cover Front Door (classic) beyond identification and migration guidance
 | `FrontDoor-B.md` | Front Door hotfix runbook — Classic-tier migration flag, disabled-endpoint diagnosis, custom domain validation/apex-certificate-autorotation triage, exact-host-match 404 diagnosis, origin health probe troubleshooting, WAF tier-ceiling diagnosis (Standard = custom rules only), Rule Set Route Configuration Override detection, stale-cache purge guidance |
 | `FrontDoor-A.md` | Front Door deep dive — profile/endpoint/route/origin-group resource hierarchy, exact-host + most-specific-path route matching architecture, 3-step health probe determination and fail-open behavior, custom domain validation and the apex-domain certificate autorotation trap, WAF-policy-is-a-separate-resource-until-associated model and tier capability ceiling, Rule Set Route Configuration Override precedence, Classic-to-Standard/Premium migration and domain-onboarding playbooks |
 | `Scripts/Get-FrontDoorHealth.ps1` | Read-only sweep across every Front Door profile — Classic SKU flag, endpoint EnabledState, custom domain validation state with an apex-domain certificate-autorotation-risk flag, domain-to-route association gap check, origin group health/probe configuration (flags empty groups), WAF tier-gap detection when a Standard-tier policy is associated to a domain, Rule Set presence flag for manual Route Configuration Override review |
+| `PrivateLink-B.md` | Private Link/Private Endpoint hotfix runbook — connection approval-state triage (Pending/Rejected/Disconnected all carry zero traffic), DNS-resolves-to-public-IP diagnosis (the #1 real-world ticket), missing/empty Zone Group, missing VNet link for the client's own VNet (peering never implies one), cross-service zone record contamination, `PrivateEndpointNetworkPolicies`-disabled NSG-has-no-effect diagnosis, on-premises resolution bridging |
+| `PrivateLink-A.md` | Private Link/Private Endpoint deep dive — connection state machine and owner-vs-consumer action model, `privatelink.*` reserved DNS zone naming and Zone Group automation architecture, the six documented DNS resolution topologies (VNet/peered/on-prem × with or without Azure Private Resolver), network policy (NSG/UDR/ASG) subnet-level exemption model and its documented limitations, static-IP-unsupported resource types, Service-Endpoint disambiguation |
+| `Scripts/Get-PrivateEndpointAudit.ps1` | Read-only sweep across every Private Endpoint — connection approval state flag, DNS Zone Group presence, per-zone Virtual Network Link coverage check against the endpoint's own VNet, cross-service zone record-contamination heuristic, best-effort live DNS resolution vs. private-IP-range check, subnet `PrivateEndpointNetworkPolicies` state (informational) |
 
 ---
 
@@ -158,6 +167,13 @@ Does not cover Front Door (classic) beyond identification and migration guidance
 - **"Traffic on Front Door goes to the wrong origin group despite the route looking correct"** → `FrontDoor-B.md` Fix 7 — check the route's attached Rule Set for a Route Configuration Override action
 - **"Client still has a Front Door (classic) profile"** → `FrontDoor-B.md` Fix 1 / `FrontDoor-A.md` Playbook 1 — retires March 31, 2027, no new domains/certs from that point, schedule a migration
 - **"Fleet-wide Front Door tier/domain-validation/origin-health/WAF-tier audit across clients"** → `Scripts/Get-FrontDoorHealth.ps1`
+- **"Our Private Endpoint resolves to the resource's public IP instead of the private one"** → `PrivateLink-B.md` Fix 3 — check the DNS Zone Group first, not the zone or link directly
+- **"Private Endpoint exists, DNS even looks right, but nothing connects"** → `PrivateLink-B.md` Fix 1/2 — check connection approval state before anything else; only Approved carries traffic
+- **"A working Private Endpoint suddenly broke right after we deployed an unrelated one for a different service"** → `PrivateLink-B.md` Fix 6 — two services sharing one private DNS zone, the new one's Zone Group overwrote the old record
+- **"Private Endpoint resolves fine in the hub VNet but not a peered spoke"** → `PrivateLink-B.md` Fix 5 — VNet peering never implies a private DNS zone link, the spoke needs its own explicit link
+- **"I added an NSG rule to the Private Endpoint's subnet and it has no effect at all"** → `PrivateLink-B.md` Fix 7 — `PrivateEndpointNetworkPolicies` is disabled by default; NSG/UDR are structurally not evaluated for PE traffic until enabled
+- **"On-premises users can't resolve our Private Endpoint's FQDN, but VNet clients can"** → `PrivateLink-B.md` Fix 8 / `PrivateLink-A.md` Playbook 3 — needs a DNS forwarder or Azure Private Resolver bridge; on-prem can't query 168.63.129.16 directly
+- **"Fleet-wide Private Endpoint connection-state/DNS-Zone-Group/network-policy audit across clients"** → `Scripts/Get-PrivateEndpointAudit.ps1`
 
 ---
 
@@ -298,6 +314,25 @@ Get-AzFrontDoorCdnSecurityPolicy -ResourceGroupName <rg> -ProfileName <profileNa
 
 # Front Door — fleet-wide check for any surviving Classic profiles
 Get-AzFrontDoorCdnProfile | Where-Object { $_.Sku.Name -like 'Classic*' } | Select Name, ResourceGroupName
+
+# Private Link — connection approval state (the #1 first check; only Approved carries traffic)
+(Get-AzPrivateEndpoint -ResourceGroupName <rg> -Name <peName>).PrivateLinkServiceConnections |
+    Select Name, PrivateLinkServiceConnectionState
+
+# Private Link — DNS Zone Group presence (empty = DNS is unmanaged for this endpoint)
+(Get-AzPrivateEndpoint -ResourceGroupName <rg> -Name <peName>).PrivateDnsZoneGroup
+
+# Private Link — zone's Virtual Network Links (confirm the CLIENT's VNet specifically is present)
+Get-AzPrivateDnsVirtualNetworkLink -ResourceGroupName <rg> -ZoneName <privatelinkZoneName>
+
+# Private Link — live resolution test (expect a private IP, not the resource's public IP)
+Resolve-DnsName -Name <resourceFqdn>
+
+# Private Link — subnet network policy state (off by default; NSG/UDR not evaluated for PE traffic until Enabled)
+(Get-AzVirtualNetworkSubnetConfig -ResourceId <subnetId>).PrivateEndpointNetworkPolicies
+
+# Private Link — fleet-wide: every endpoint's connection state in one pass
+Get-AzPrivateEndpoint | Select Name, ResourceGroupName, @{N='State';E={$_.PrivateLinkServiceConnections[0].PrivateLinkServiceConnectionState.Status}}
 ```
 
 ---
@@ -491,6 +526,42 @@ Origin group health probe (HTTP/HTTPS, HEAD default) — 3-step: exclude disable
     ALL origins failing = fail-OPEN round robin, not fail-closed
     │
 Origin responds within timeout → cached per route config (if enabled) or passed through
+```
+
+Private Link / Private Endpoint dependency chain (PrivateLink-A.md/PrivateLink-B.md — the resource-connectivity layer several other files in this folder, and KeyVault/AVD/Monitor elsewhere, point back to as the single source of truth):
+
+```
+Private-link resource supports Private Link for the specific SUBRESOURCE needed
+    │  (per-subresource, not per-service — e.g., Storage blob vs. file are separate PEs)
+    ▼
+Private Endpoint created — one static private IP for its lifetime
+    │
+Connection approval state = Approved
+    │  (Automatic if requester owns the resource; Manual otherwise — Pending/Rejected/
+    │   Disconnected ALL carry ZERO traffic no matter how complete DNS/network looks)
+    ▼
+Private DNS Zone Group attached (the automation layer for A records)
+    │  (absent = DNS unmanaged; the #1 real-world "resolves to the public IP" root cause)
+    ▼
+Zone uses the EXACT reserved privatelink.<service> name
+    │  (NEVER shared across two DIFFERENT services — each Zone Group's reconciliation
+    │   overwrites a conflicting record left by another service)
+    ▼
+Virtual Network Link connects the zone to EVERY VNet needing resolution
+    │  (peering NEVER implies this link — one shared zone extended by links, not
+    │   duplicate zones; see PrivateDNS-A.md/PrivateDNS-B.md for the general mechanics)
+    ▼
+[On-premises clients] DNS forwarder or Azure Private Resolver bridges resolution
+    │  (168.63.129.16 isn't reachable from on-prem directly; forward the PUBLIC
+    │   suffix, never the privatelink.-prefixed name)
+    ▼
+Client resolves FQDN → private IP → reaches the Private Endpoint NIC
+    │
+[If NSG/UDR enforcement required] PrivateEndpointNetworkPolicies = Enabled on the subnet
+    │  (Disabled by default = NSG/UDR structurally NOT evaluated for this traffic at all —
+    │   an "NSG rule has no effect" ticket on a PE subnet starts here, not in NSG-B.md)
+    ▼
+Traffic reaches the private-link resource
 ```
 
 ---
