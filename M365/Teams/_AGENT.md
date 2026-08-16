@@ -1,14 +1,15 @@
 # Microsoft Teams — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, and Teams-specific governance topics (guest access, channel policies, retention).
+Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, and Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention).
 
 ## Before responding, also check
 - `M365/_AGENT.md` — M365-wide triage starting points and licensing checks
-- `EntraID/` — if Teams sign-in is failing (token/conditional access)
-- `Security/ConditionalAccess/` — if devices are blocked from Teams
+- `EntraID/` — if Teams sign-in is failing (token/conditional access), or for Entra cross-tenant access settings that govern guest access and shared channels
+- `Security/ConditionalAccess/` — if devices are blocked from Teams, or if MFA/compliant-device trust is blocking external users despite B2B direct connect being enabled
 - `M365/Exchange/` — if calendar integration or meeting invites are broken
 - `Intune/` — if Teams app deployment or update issues on managed devices
+- `M365/SharePoint-OneDrive/Permissions-A.md` — if a Teams guest can't see files despite guest access being enabled (SharePoint site-level sharing is a separate gate)
 
 ## Folder contents
 
@@ -22,10 +23,13 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | `Meeting-Policies-A.md` | Meeting policy deep dive — policy sync, group assignment rank conflicts, organizer-vs-attendee precedence |
 | `Teams-Rooms-A.md` | Teams Rooms (MTR) deep dive — resource account model, licensing, device management plane |
 | `Teams-Rooms-B.md` | Teams Rooms hotfix — device not signing in, offline, wrong meeting policy |
+| `ExternalAccess-B.md` | External collaboration hotfix — federation blocked, guest invite stuck, shared channel/B2B direct connect failures |
+| `ExternalAccess-A.md` | External collaboration deep dive — the three distinct architectures (federation, guest access, Teams Connect shared channels), cross-tenant access precedence, mutual B2B direct connect config |
 | `Scripts/Get-TeamsCallQuality.ps1` | Call quality dashboard (CQD-style) for a user or fleet |
 | `Scripts/Get-TeamsMeetingPolicyAudit.ps1` | Meeting policy + group assignment rank-conflict audit, optional per-user effective policy resolution |
 | `Scripts/Get-TeamsRoomDeviceHealth.ps1` | Teams Rooms resource account and licensing health fleet report |
 | `Scripts/Get-TeamsDevicePolicyAudit.ps1` | Device account health, update/IP-phone policy assignment, and calendar auto-accept audit for resource accounts |
+| `Scripts/Get-TeamsExternalAccessAudit.ps1` | Tenant-wide federation, guest invite, and cross-tenant B2B direct connect posture audit — flags stale invites, dormant guests, incomplete partner overrides |
 
 ## Common entry points
 
@@ -38,7 +42,9 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 - "Can't record / different users get different meeting features" → `Meeting-Policies-B.md`, use `Scripts/Get-TeamsMeetingPolicyAudit.ps1` for rank-conflict detection
 - "User can't join meetings" → check `EntraID/` for auth, then CA policy
 - "Teams not syncing calendar" → `M365/Exchange/` — EWS and Autodiscover
-- "Guest can't access team" → check Teams admin centre → Guest access settings
+- "Can't chat/call someone at another company" → `ExternalAccess-B.md` Fix 1/2 (federation)
+- "Guest can't access team" / guest invite stuck pending → `ExternalAccess-B.md` Fix 3/4 (guest access)
+- "Can't add external partner to a shared channel" / "Teams Connect not working" → `ExternalAccess-B.md` Fix 5/6 (B2B direct connect)
 - "Can't record meetings" → check Teams meeting policy (AllowCloudRecording)
 
 ## Key diagnostic commands
@@ -62,6 +68,12 @@ Get-CsOnlineUser -Filter {InterpretedUserType -eq "SfbOnpremUser" -or Interprete
 # Test PSTN connectivity (requires Teams admin)
 # Get-CsOnlinePstnUsage | Select-Object -ExpandProperty Usage
 # Get-CsVoiceRoute | Select-Object Name, NumberPattern, PstnGatewayList | Format-Table -AutoSize
+
+# Check external access / federation posture
+Get-CsTenantFederationConfiguration | Select-Object AllowFederatedUsers, AllowedDomains, BlockedDomains
+
+# Check cross-tenant access settings (governs guest access + shared channels)
+Get-MgPolicyCrossTenantAccessPolicyDefault | Select-Object B2bCollaborationInbound, B2bDirectConnectInbound
 ```
 
 ## Key dependency chain

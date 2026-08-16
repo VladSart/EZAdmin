@@ -21,11 +21,14 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Migration-A.md` | Migration deep dive — SharePoint Migration Tool/Mover architecture, throttling behaviour, permission remapping |
 | `Advanced-Management-B.md` | SharePoint Advanced Management (SAM) hotfix — licensing gate errors, RAC not enforcing, RCD not hiding content, site lifecycle notifications not sending, idle sign-out behaviour |
 | `Advanced-Management-A.md` | SAM deep dive — RAC/RCD/DAG/Site Lifecycle Management architecture, licensing fork (Copilot licence vs. SAM Plan 1 add-on), dependency stack, remediation playbooks |
+| `HubSites-B.md` | Hub site hotfix — association fails/greyed out, navigation not showing, hub-to-hub nesting issues, permission-inheritance misunderstandings |
+| `HubSites-A.md` | Hub site deep dive — registration/association mechanics, hub-of-hubs architecture, search scoping, why permissions are never inherited from hub association |
 | `Scripts/Get-SharePointSiteReport.ps1` | Tenant-wide site inventory — storage, quota, sharing, orphaned-owner report |
 | `Scripts/Get-SharePointPermissionAudit.ps1` | Site sharing-capability alignment, unique-permission sprawl, M365 Group disconnection, guest redemption audit |
 | `Scripts/Get-SharePointMigrationStatus.ps1` | Dual-mode: local SPMT agent/connectivity/log check + destination SPO quota/site-admin check + source pre-scan (oversized files, long paths, bad characters) |
 | `Scripts/Get-OneDriveSyncClientHealth.ps1` | Local ODC diagnostic: process/version, Entra join + PRT state, multi-account conflict detection, event log errors, path-length compliance, KFM registry/redirection check |
 | `Scripts/Get-SPAdvancedManagementAudit.ps1` | Read-only SAM audit: tenant RAC/RCD delegation flags, per-site RAC group count/enforceability, RCD-on-OneDrive misconfiguration, site lock state, optional DAG report status / idle sign-out / restricted-site-creation checks |
+| `Scripts/Get-SPHubSiteAudit.ps1` | Read-only hub structure audit: registration/association inventory, orphan hub detection, tenant limit tracking (2,000 hubs), hub-to-hub nesting depth check, permission-independence snapshot |
 
 ## Common entry points
 
@@ -42,6 +45,10 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 - "Restrict a SharePoint site to specific groups" / "hide a site from Copilot search" → `Advanced-Management-A.md` Playbook 1 (RAC) or Playbook 2 (RCD)
 - "Inactive site policy / site went read-only or archived unexpectedly" → `Advanced-Management-A.md` Playbook 3, or `Advanced-Management-B.md` Fix 4
 - "Data access governance report stuck / oversharing review" → `Advanced-Management-A.md` Playbook 4
+- "Can't associate a site with a hub / option greyed out" → `HubSites-B.md` Fix 1 — check Site Owner rights and hub registration
+- "Hub navigation not showing on an associated site" → `HubSites-B.md` Fix 2 — usually a propagation delay (2-4h)
+- "Associating with a hub didn't change who can access the site" → `HubSites-B.md` Fix 4 — expected behaviour, hub association never inherits permissions
+- "Audit our hub site structure / how many hubs do we have" → `Scripts/Get-SPHubSiteAudit.ps1` for a tenant-wide report with orphan/limit flags
 
 ## Key diagnostic commands
 
@@ -63,6 +70,10 @@ Get-SPOTenant | Select-Object SharingCapability, DefaultSharingLinkType, Require
 
 # Check OneDrive for a specific user
 Get-SPOSite -Filter {Url -like "*-my.sharepoint.com/personal*"} -IncludePersonalSite $true | Where-Object {$_.Owner -eq "<UPN>"}
+
+# List all hub sites and check a site's hub association
+Get-SPOHubSite | Select-Object Title, SiteUrl, RequiresJoinApproval
+Get-SPOSite -Identity https://<tenantName>.sharepoint.com/sites/<siteName> | Select-Object Url, HubSiteId
 ```
 
 ## Key dependency chain
