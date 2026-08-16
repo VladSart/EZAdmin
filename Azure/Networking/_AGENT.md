@@ -1,4 +1,4 @@
-# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway) — Agent Instructions
+# Azure Networking (Hybrid Connectivity + NSG + AVNM + Virtual WAN + Private DNS + ExpressRoute + Azure Firewall + Point-to-Site VPN + Azure Bastion + Application Gateway + Load Balancer) — Agent Instructions
 
 ## What's in this folder
 
@@ -16,6 +16,10 @@ Private DNS is why a Private Endpoint or AVD/Windows 365 host can be fully reach
 
 Does not cover Application Gateway v1 (legacy, flagged for migration rather than troubleshot on its own terms), Application Gateway for Containers (a different, Kubernetes-native product sharing only the name), User-Defined Routes/route tables as a standalone routing topic outside the hub-routing context covered here (referenced only where they intersect NSG or Virtual WAN troubleshooting), or AVNM's IP Address Management (IPAM) feature (functionally and operationally independent of connectivity/security governance, no MSP-ticket history yet).
 
+**Azure Load Balancer (Standard SKU)** — the Layer 4 (TCP/UDP) counterpart to Application Gateway's Layer 7 scope above, and the resource most often meant (or confused with Application Gateway) when a client says "the load balancer": 5-tuple hash-based flow distribution (not round-robin, not client-affinity), health probes and their differing effect on established TCP vs. UDP flows when they fail, and — the single most consequential post-migration fact in this topic — Standard SKU's secure-by-default outbound model, where a public load balancer's backend pool has **zero implicit outbound Internet path** (unlike the now-fully-retired Basic SKU) until one of exactly three explicit methods is configured: Load Balancer outbound rules (watch default SNAT port allocation, which shrinks per instance as the backend pool grows), NAT Gateway (Microsoft's current production recommendation), or an instance-level public IP. Also covers High Availability (HA) Ports (internal-only, NVA scale-out scenarios, Floating IP/DSR mode selection) and the zone-redundant/zonal/non-zonal frontend model.
+
+Does not cover Basic SKU Load Balancer (retired September 30, 2025 — any surviving instance is a migration finding, not a troubleshooting target — see `LoadBalancer-A.md` Playbook 1), NAT Gateway's own dedicated health/capacity diagnostics beyond confirming its presence as one of the three outbound methods (a future standalone topic if ticket volume justifies it), or Gateway Load Balancer (a distinct SKU for transparent third-party NVA chaining via VXLAN, referenced only where HA Ports' flow-symmetry limitation points to it as the alternative).
+
 ---
 
 ## Before responding, also check
@@ -25,6 +29,7 @@ Does not cover Application Gateway v1 (legacy, flagged for migration rather than
 - **Security/ConditionalAccess** — if the underlying complaint is "users can't reach an app" rather than "sites can't reach each other," confirm this isn't actually a CA/identity issue before assuming a network-path fault
 - **VirtualWAN-A.md/VirtualWAN-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — if a client's Azure Firewall sits inside a Virtual WAN secured hub, "traffic isn't reaching the firewall" is a Routing Intent/Next Hop question (VirtualWAN files); "traffic reaches the firewall but is allowed/denied unexpectedly, or a Premium feature isn't working" is a rule/policy question (AzureFirewall files) — don't debug rule content on a firewall traffic never reached
 - **AppGateway-A.md/AppGateway-B.md vs. AzureFirewall-A.md/AzureFirewall-B.md** — Application Gateway is the inbound reverse-proxy/WAF layer (HTTP/HTTPS, terminates client-facing TLS, Layer 7 routing to a backend pool); Azure Firewall is a general-purpose outbound/East-West filter that does not do inbound reverse-proxying. A "site returns 403/502/504" ticket belongs in AppGateway files even if an Azure Firewall also sits somewhere in the path
+- **LoadBalancer-A.md/LoadBalancer-B.md vs. AppGateway-A.md/AppGateway-B.md** — Load Balancer is Layer 4 only (TCP/UDP, 5-tuple hash, zero path/host/cookie/WAF awareness); Application Gateway is Layer 7. A client saying "the load balancer" while describing path-based routing, a WAF block, or hostname rules is describing Application Gateway — confirm which resource actually fronts the traffic before troubleshooting the wrong one. Both files carry this disambiguation in their own Learning Pointers.
 
 ---
 
@@ -62,6 +67,9 @@ Does not cover Application Gateway v1 (legacy, flagged for migration rather than
 | `AppGateway-B.md` | Application Gateway hotfix runbook — backend health Unknown-for-all (GatewayManager NSG gap) vs. Unhealthy-for-specific-servers (probe misconfiguration), WAF 403 false-positive tuning, 502/504 with healthy backend (timeout/Proxy Protocol), WAF policy precedence override diagnosis, SNAT/capacity exhaustion |
 | `AppGateway-A.md` | Application Gateway deep dive — v2 dedicated-subnet and control-plane architecture, listener/routing-rule/backend-HTTP-settings request path, health probe default-match behavior, three-level WAF policy precedence (gateway/listener/path, full override not merge), autoscale/SNAT capacity model, Front-Door/Azure-Firewall disambiguation |
 | `Scripts/Get-AppGatewayHealth.ps1` | Read-only sweep across every Application Gateway — provisioning state and legacy-v1-SKU flag, dedicated-subnet GatewayManager 65200-65535 NSG rule check, per-server backend health (flags all-Unknown as a likely NSG issue distinct from real per-server Unhealthy), WAF policy mode and precedence at all three association levels, backend HTTP settings timeout/HostName flags, diagnostic settings presence, autoscale configuration |
+| `LoadBalancer-B.md` | Load Balancer hotfix runbook — Basic SKU (retired/unsupported) flag, no-outbound-path diagnosis for public LB backends (the #1 post-migration ticket), SNAT port exhaustion under load, NSG explicit-allow gap (Standard SKU has no implicit inbound permit), probe-hitting-a-WinHTTP-restricted-port diagnosis, HA Ports Floating IP mode mismatch, Layer 7 symptom redirect to Application Gateway |
+| `LoadBalancer-A.md` | Load Balancer deep dive — 5-tuple hash distribution model, health probe behavior on established TCP vs. UDP flows, the three explicit outbound-access methods and their precedence, default vs. manual SNAT port allocation, HA Ports Floating IP/DSR architecture and flow-symmetry limits, zone-redundant/zonal frontend model, Basic SKU migration playbook |
+| `Scripts/Get-LoadBalancerHealth.ps1` | Read-only sweep across every Load Balancer — Basic SKU flag, frontend type/zone configuration, backend pool membership and health, probe restricted-port check, outbound-access-method detection for public LB backends (flags a genuine zero-method gap), SNAT allocation vs. backend pool size, NSG presence on backend subnets, HA Ports rule/Floating-IP-mode detection |
 
 ---
 
@@ -127,6 +135,13 @@ Does not cover Application Gateway v1 (legacy, flagged for migration rather than
 - **"One path or site on the gateway behaves differently than the rest"** → `AppGateway-B.md` Fix 5 — check for a listener- or path-level WAF policy override; most specific fully overrides, doesn't merge with the gateway-level policy
 - **"Client wants to know why WAF rule updates seem to have stopped applying"** → `AppGateway-A.md` Learning Pointers — confirm outbound Internet isn't blocked on the gateway subnet, WAF_v2 needs it for engine/signature updates
 - **"Fleet-wide Application Gateway backend health / WAF policy precedence audit across clients"** → `Scripts/Get-AppGatewayHealth.ps1`
+- **"We migrated off Basic Load Balancer and now our VMs can't reach the internet"** → `LoadBalancer-B.md` Fix 2 — Standard SKU has zero implicit outbound path, one of three explicit methods must be configured
+- **"Load balancer outbound worked fine, now fails intermittently under load"** → `LoadBalancer-B.md` Fix 3 — SNAT port exhaustion, usually a large backend pool still on default port allocation
+- **"Client can't reach our public load balancer frontend, no NSG deny logged"** → `LoadBalancer-B.md` Fix 4 — Standard SKU is secure-by-default, NSG must explicitly allow, nothing is implicit
+- **"Load balancer health probe shows everything Unhealthy but the app works fine directly"** → `LoadBalancer-B.md` Fix 5 — check the probe port against the WinHTTP HTTP-probe restricted-port list first
+- **"Client describes path-based routing or a WAF block on 'the load balancer'"** → `LoadBalancer-B.md` Fix 6 — this is almost always Application Gateway, not this Layer 4 resource; redirect to `AppGateway-B.md`
+- **"We still have a Basic SKU load balancer in this environment"** → `LoadBalancer-B.md` Fix 1 / `LoadBalancer-A.md` Playbook 1 — retired Sept 30, 2025, unsupported, schedule a migration
+- **"Fleet-wide Load Balancer SKU/outbound-access/probe hygiene audit across clients"** → `Scripts/Get-LoadBalancerHealth.ps1`
 
 ---
 
@@ -235,6 +250,21 @@ Get-AzApplicationGatewayBackendHealth -ResourceGroupName <rg> -Name <gwName>
 # Application Gateway — control-plane NSG rule required by v2 SKU (GatewayManager, TCP 65200-65535)
 Get-AzNetworkSecurityGroup -ResourceGroupName <rg> -Name <nsgName> | Get-AzNetworkSecurityRuleConfig |
     Where-Object { $_.SourceAddressPrefix -match "GatewayManager" }
+
+# Load Balancer — SKU and backend health (the #1 first check; flag Basic as unsupported/retired)
+Get-AzLoadBalancer -ResourceGroupName <rg> -Name <lbName> | Select Sku, ProvisioningState
+Get-AzLoadBalancerBackendHealth -ResourceGroupName <rg> -Name <lbName>
+
+# Load Balancer — outbound-access method check (public LB backends — Standard SKU has NO implicit path)
+(Get-AzLoadBalancer -ResourceGroupName <rg> -Name <lbName>).OutboundRules
+(Get-AzVirtualNetworkSubnetConfig -ResourceId <subnetId>).NatGateway
+(Get-AzNetworkInterface -ResourceGroupName <rg> -Name <nicName>).IpConfigurations.PublicIpAddress
+
+# Load Balancer — health probe protocol/port (check against the WinHTTP restricted-port list)
+(Get-AzLoadBalancer -ResourceGroupName <rg> -Name <lbName>).Probes | Select Name, Protocol, Port, RequestPath
+
+# Load Balancer — fleet-wide check for any surviving (unsupported) Basic SKU instances
+Get-AzLoadBalancer | Where-Object { $_.Sku.Name -eq 'Basic' } | Select Name, ResourceGroupName
 ```
 
 ---
@@ -377,6 +407,29 @@ Health probe (default: any 200-399 = healthy — a 401/403/302 probe response re
 Backend pool member responds within RequestTimeout
     │
 Response returned to client
+```
+
+Load Balancer dependency chain (LoadBalancer-A.md/LoadBalancer-B.md — the Layer 4 counterpart to Application Gateway's Layer 7 chain above; distribution is per-flow via 5-tuple hash, not round-robin or client-affinity):
+
+```
+Frontend IP configuration (public or private — decides LB type; zone setting fixed at creation)
+    │
+NSG explicitly allows the intended traffic (Standard SKU = secure-by-default, NO implicit inbound
+    permit — the #1 "traffic just times out" gap for anyone assuming Basic SKU's old implicit allow)
+    │
+Backend pool populated with real instances (single VNet scope; no Private Endpoints)
+    │
+Health probe (TCP/HTTP/HTTPS) passing — blocks NEW flows only on failure, does NOT reset established
+    TCP connections; ALL-instances-unhealthy DOES terminate every UDP flow immediately (no grace period)
+    │
+Load-balancing rule OR Inbound NAT rule maps frontend IP:port → backend
+    │
+[Public LB backend needing outbound Internet] EXACTLY ONE explicit method present:
+    LB outbound rule (watch default SNAT allocation shrinking as pool grows) |
+    NAT Gateway (MS production recommendation) | instance-level public IP
+    — Standard SKU provides NONE of these implicitly; this is THE most common post-migration ticket
+    │
+Traffic flows to/from backend instance
 ```
 
 ---
