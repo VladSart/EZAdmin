@@ -3,11 +3,15 @@
 ## What's in this folder
 Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment), Hunting (the analyst-driven manual workflow — hunting query library, Bookmarks, the Hunts (Preview) end-to-end wrapper, and KQL jobs as the retired-livestream replacement), and Notebooks (Jupyter/MSTICPy code-first hunting and investigation, executed on a separate Azure Machine Learning workspace launched from Sentinel). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above; Hunting's Azure-portal-only bookmark creation constraint, the Hunts-clones-not-references model, and the KQL-jobs-are-persistence-not-alerting distinction that trips up livestream migrations; Notebooks' dual-RBAC model (independent Sentinel-workspace and AML-workspace grants), the AML storage-account network posture that gates direct in-portal launch, and the MSTICPy config/auth layer (`msticpyconfig.yaml`, query providers, external TI/GeoIP enrichment) underneath the notebook runtime itself; and the Sentinel **data lake** architecture — the cold, up-to-12-year storage tier, its own INDEPENDENT Entra-ID-directory-role access model (separate from Sentinel SIEM's Azure RBAC), one-time tenant-wide onboarding (DL102/DL103 errors, CMK incompatibility, permanent subscription/RG/region lock), the KQL-job/Summary-rule/Search-job tool-selection decision, and data federation to Azure Databricks/ADLS Gen 2/Microsoft Fabric. Also covers **Microsoft Sentinel graph** — a name spanning two unrelated products: zero-configuration built-in embedded graphs (Incident graph/Blast Radius, Hunting graph, Purview data risk graphs) that auto-provision alongside data lake onboarding, and Custom graphs (preview), a code-first VS Code/PySpark/GQL authoring workflow gated by three independent permission systems (XDR unified RBAC to model, an Entra ID directory role to persist, XDR unified RBAC to query) plus two silent architectural constraints (per-table data access, Sentinel scoping).
 
+Also covers **Threat Intelligence** — Sentinel's own STIX-typed indicator/object management layer across four import paths (Defender Threat Intelligence connector, the Upload API — the current recommended path for custom/TIP integrations, the STIX/TAXII connector, and the legacy Threat Intelligence Platform connector, which is being deprecated), the `ThreatIntelIndicators`/`ThreatIntelObjects` table schema that replaced the legacy single `ThreatIntelligenceIndicator` table on 2025-07-31 (a silent, no-error cutover — stale references simply stop seeing new data), ingestion rules (connector-sourced TI only, never Upload API/manual objects), Id-based deduplication, and how imported TI drives indicator-based analytics rule templates and the separate Defender TI matching-analytics rule — distinct from Defender for Endpoint's own Threat Intelligence Indicators (an EDR allow/block-list feature, see `Security/Defender/`). And **Watchlists** — the flat name-value-pair reference-data mechanism (not STIX-typed, not a detection feed) used for allow/block lists and enrichment joins, its `SearchKey`-based best-performance query pattern via `_GetWatchlistAlias`/`_GetWatchlist()`, documented limits (10M active items workspace-wide, 3.8 MB local/500 MB Azure-Storage-preview upload, 3-64 char naming rules), the retention-vs-refresh distinction (28-day underlying table retention does NOT mean 28-day expiration — the 12-day refresh cycle keeps active watchlists perpetually current), and the explicit, permanent unsupported-via-Azure-Lighthouse cross-workspace management gap relevant to MSSPs already using Lighthouse for delegated access.
+
 ## Before responding, also check
 - `EntraID/Graph/` — Entra ID sign-in/audit log connectors are actually diagnostic settings, not a distinct Sentinel object; cross-reference if the question is about Entra log gaps specifically
 - `Security/Defender/` — Defender XDR (MDE/MDA/MDI) alert ingestion into Sentinel depends on those products' own health first — check sensor/connector health there before assuming a Sentinel-side fault; also relevant if a tenant is onboarded to the Defender portal, since Defender XDR's correlation engine (not Sentinel's own grouping settings) then owns incident creation
 - `M365/Exchange/` — Office 365 connector issues often trace back to Unified Audit Log configuration, which is an Exchange Online/compliance setting, not Sentinel-side
 - `Azure/` — Arc-onboarded on-prem/multi-cloud servers depend on Arc agent health as a prerequisite layer beneath AMA; if no Azure folder entry exists yet for Arc, treat Arc connectivity as in-scope here until a dedicated Arc runbook exists
+- `Azure/Lighthouse/` — before troubleshooting an MSSP watchlist-management-via-delegated-session ticket, confirm the gap isn't the documented Azure Lighthouse cross-workspace watchlist limitation (not a permissions misconfiguration to keep chasing)
+- `Security/Defender/` — a ticket mentioning "threat intelligence indicators" may actually be about Defender for Endpoint's own EDR-blocking indicator feature, not Sentinel's STIX-typed TI layer covered here — disambiguate first
 
 ## Folder contents
 
@@ -38,6 +42,12 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 | `SentinelGraph-B.md` | Hotfix runbook — disambiguating built-in vs. custom graph tickets, missing Entra ID role for persisting, silent data-access gaps, Sentinel-scoped-user block, on-demand graph expiry, rename-vs-overwrite confusion, Spark cold start, GQL query/schema mismatch |
 | `SentinelGraph-A.md` | Deep dive — the two-products-one-name architecture (built-in embedded graphs vs. Custom graphs preview), the three-independent-permission-system model for custom graphs, the ephemeral-vs-materialized graph lifecycle, and the Edit-vs-Create rename/overwrite distinction |
 | `Scripts/Get-SentinelGraphReadinessAudit.ps1` | Audits data lake onboarding (the shared foundation both graph types depend on) and a given user's Entra ID directory role eligibility to persist custom graphs |
+| `ThreatIntelligence-B.md` | Hotfix runbook — confirming current-schema (`ThreatIntelIndicators`/`ThreatIntelObjects`) vs. retired-legacy-table (`ThreatIntelligenceIndicator`) dependency, quiet connector sources, Upload API role gaps, ingestion-rule scope confusion |
+| `ThreatIntelligence-A.md` | Deep dive — the four import-path architecture, the 2025-07-31 schema cutover, STIX object model and relationships, deduplication logic, indicator-based vs. Defender TI matching analytics rules, MSSP centralization playbook |
+| `Scripts/Get-SentinelThreatIntelAudit.ps1` | Audits for lingering writes to the retired legacy table, per-source ingestion gaps against a historical baseline, and Upload API Entra app role assignment at the correct workspace scope |
+| `Watchlists-B.md` | Hotfix runbook — empty-query false alarms from narrow time scoping, the 28-day-retention-vs-refresh-cycle misconception, portal 5XX/service-incident triage, SearchKey join mismatches, upload rejections |
+| `Watchlists-A.md` | Deep dive — creation paths and hard limits, the SearchKey performance pattern, the retention/refresh architecture explained, the workspace-wide 10M-item ceiling, the explicit Azure Lighthouse cross-workspace management gap |
+| `Scripts/Get-SentinelWatchlistAudit.ps1` | Audits per-watchlist queryability (wide time range, avoiding the false-empty pattern), row counts, SearchKey population, and combined item count against the workspace-wide ceiling |
 
 ## Common entry points
 
@@ -95,6 +105,14 @@ Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the 
 - "Custom graph is missing expected nodes/edges, no error shown" → `SentinelGraph-B.md` Fix 3 (per-table access fails silently)
 - "User can't create a custom graph despite having roles" → `SentinelGraph-B.md` Fix 4 (Sentinel-scoped users are hard-blocked)
 - "A materialized custom graph disappeared after about a month" → `SentinelGraph-B.md` Fix 5 (On-demand 30-day auto-expiry)
+- "An analytics rule/workbook that used to work for threat intel now shows nothing, no error" → `ThreatIntelligence-B.md` Fix 2/4 (check for a lingering reference to the retired `ThreatIntelligenceIndicator` table)
+- "Indicators submitted via our own TI platform/script never show up" → `ThreatIntelligence-B.md` Fix 1 (Upload API Entra app role — must be scoped to the specific workspace, not subscription/RG)
+- "Why didn't the ingestion rule filter this indicator" → `ThreatIntelligence-B.md` Fix 5 (ingestion rules only apply to connector-sourced TI, never Upload API/manual)
+- "Should we keep troubleshooting the legacy TIP connector" → `ThreatIntelligence-A.md` Playbook 1 (no — migrate to the Upload API instead)
+- "Watchlist query returns nothing / fewer rows than expected" → `Watchlists-B.md` Triage + Fix 2 (widen the Logs pane time range first)
+- "Does our watchlist need to be recreated every 28 days" → `Watchlists-B.md`/`Watchlists-A.md` Learning Pointers (no — 28 days is underlying-table retention, not expiration; the 12-day refresh cycle keeps it current)
+- "Watchlists page is blank / throwing 502s" → `Watchlists-B.md` Fix 3 (check query-plane vs. management-plane, don't delete/recreate mid-incident)
+- "MSSP can't manage a client's watchlist through our Lighthouse-delegated session" → `Watchlists-A.md` Playbook 3 (explicit, permanent platform gap — manage natively per client workspace)
 
 ## Key diagnostic commands
 
@@ -157,6 +175,23 @@ Get-MgUserMemberOf -UserId <user@domain.com> | Where-Object { $_.AdditionalPrope
 # XDR unified RBAC for modeling/querying has no PowerShell/Graph surface as of this writing)
 Get-MgUserMemberOf -UserId <user@domain.com> -All |
     Where-Object { $_.AdditionalProperties.displayName -in @("Security Operator","Security Administrator","Global Administrator") }
+```
+
+```kusto
+// Threat intelligence: confirm current-schema ingestion and rule out lingering legacy-table dependency
+ThreatIntelIndicators | where TimeGenerated > ago(24h) | summarize count() by SourceSystem
+ThreatIntelligenceIndicator | summarize MaxTimeGenerated = max(TimeGenerated)  // should be <= 2025-07-31
+```
+
+```powershell
+# Threat intelligence: Upload API Entra app role — must be scoped to the SPECIFIC workspace resource ID
+Get-AzRoleAssignment -ObjectId <entra-app-object-id> -Scope <workspace-resource-id>
+```
+
+```kusto
+// Watchlists: enumerate, then query with a WIDE time range to avoid the false-empty pattern
+_GetWatchlistAlias
+_GetWatchlist('<alias>') | take 10   // run with Logs pane time picker set broad, e.g. Last 30 days
 ```
 
 ## Key dependency chain
@@ -272,6 +307,39 @@ Sentinel data lake onboarded (shared prerequisite for BOTH branches below)
             ├── Silent constraints: per-table read access; user must be UNSCOPED in Sentinel
             └── Lifecycle: Ephemeral (session-only) vs. Materialized (graph job)
                     └── On demand (30-day auto-expiry) vs. Recurring (scheduled refresh)
+```
+
+**Threat intelligence chain** (four import paths converging on a two-table schema since the 2025-07-31 cutover — see `ThreatIntelligence-A.md`):
+```
+Source: MDTI connector / TAXII server / Upload API caller / legacy TIP connector (deprecating)
+    └── Ingestion rules (CONNECTOR-SOURCED ONLY — never Upload API or manually created objects)
+            └── ThreatIntelIndicators (indicators) + ThreatIntelObjects (actor/attack-pattern/
+                identity/relationship) — CURRENT schema, supersedes the retired single-table
+                ThreatIntelligenceIndicator (stopped receiving data 2025-07-31, still queryable
+                for historical data only)
+                    └── Deduplication: Id = base64(SourceSystem)+"---"+stixId, newest wins
+                            └── Indicator-based analytics rule templates (needs the EVENT-side
+                                data source table populated too, independent of TI volume) +
+                                Defender TI matching-analytics rule (separate mechanism) +
+                                hunting/notebooks/workbooks
+```
+
+**Watchlist chain** (flat reference data, NOT STIX-typed — see `Watchlists-A.md`):
+```
+CSV (local <=3.8MB, or Azure Storage SAS-URL preview <=500MB)
+    └── Watchlist definition: name/alias (3-64 chars) + SearchKey column + KQL-valid columns
+            └── Watchlist table (workspace-scoped) + query cache
+                    ├── Workspace-wide ceiling: 10M active items ACROSS ALL watchlists combined
+                    ├── Underlying table retention: 28 days
+                    └── Refresh cycle: every 12 days (resets TimeGenerated — keeps active
+                        watchlists inside the retention window indefinitely; NOT a 28-day expiry)
+                            └── _GetWatchlistAlias / _GetWatchlist('alias') — best performance
+                                when joining on SearchKey specifically
+                                    └── Consumed by: analytics rules, hunting, workbooks,
+                                        notebooks, Logic Apps playbook actions
+                                            ✗ NOT supported: cross-workspace management via
+                                              Azure Lighthouse — must connect natively per
+                                              client workspace (MSSP-relevant gap)
 ```
 
 ## Response format reminder

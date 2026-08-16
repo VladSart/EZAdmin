@@ -12,6 +12,7 @@ Covers:
 - **Spam and phishing** — EOP (Exchange Online Protection) policies, Safe Sender lists, quarantine, anti-phishing rules
 - **Connectors** — inbound/outbound connectors, partner connectors, on-prem relay, TLS enforcement
 - **Outlook desktop client** — classic Outlook vs. New Outlook architecture split, Autodiscover resolution, connection status states, OST corruption, credential/token loops, COM add-in conflicts
+- **Direct Send abuse** — unauthenticated SMTP delivery to the tenant's own MX endpoint spoofing internal senders, `RejectDirectSend` mitigation, SPF/anti-phishing hardening — distinct from the unrelated "direct send" hybrid outbound-routing term used in `Mail-Flow-A.md` (see that file's disambiguation note)
 
 ---
 
@@ -38,7 +39,10 @@ Covers:
 | `TransportRules-A.md` | Deep dive: ETR evaluation order, condition/exception AND/OR logic, multi-rule action stacking, DLP boundary |
 | `Outlook-Client-B.md` | Hotfix: profile/Autodiscover failures, Disconnected/Trying-to-connect/Needs-Password loops, OST corruption, COM add-in conflicts, New Outlook cache issues |
 | `Outlook-Client-A.md` | Deep dive: classic Outlook vs. New Outlook architecture split, Autodiscover v2/v1/SCP resolution chain, Cached Exchange Mode/OST model, modern-auth token caching |
+| `DirectSendAbuse-B.md` | Hotfix: unauthenticated Direct Send abuse — confirm RejectDirectSend state, spot a spoofed message via headers, harden SPF, migrate legitimate dependents |
+| `DirectSendAbuse-A.md` | Deep dive: why Direct Send bypasses the intra-org SPF exemption, the 2025–2026 abuse campaign and Microsoft's architectural-limitation stance, RejectDirectSend mechanics, KQL detection query |
 | `Scripts/Get-MessageTrace.ps1` | Mail flow trace wrapper for stuck/bounced messages |
+| `Scripts/Get-DirectSendExposureAudit.ps1` | RejectDirectSend state, per-domain SPF enforcement qualifier, anti-phish spoof intelligence, message-trace sweep flagging candidate Direct Send senders |
 | `Scripts/Get-OutlookClientHealth.ps1` | Device-local Outlook client diagnostic — client type, profile, OST freshness, Autodiscover DNS, cached credentials, COM add-ins, optional CA sign-in check |
 | `Scripts/Get-ExchangeHybridHealth.ps1` | Hybrid connector/certificate health check |
 | `Scripts/Get-MailboxAuditReport.ps1` | General mailbox permissions/forwarding/audit-log report |
@@ -77,6 +81,8 @@ Covers:
 - "New Outlook missing calendar/delegates for an on-prem or hosted mailbox" → `Outlook-Client-A.md` (New Outlook treats non-EXO mailboxes as generic IMAP — expected, not a bug)
 - "Outlook hangs on launch or on send/print/invite" → `Outlook-Client-B.md` (Fix 6 — COM add-in isolation)
 - "Device-local Outlook client diagnostic before escalating" → `Scripts/Get-OutlookClientHealth.ps1`
+- "Getting phishing reports of mail that looks like it's from a coworker/executive, no external banner" → `DirectSendAbuse-B.md` (confirm via headers before assuming mailbox compromise)
+- "Should we turn on RejectDirectSend / will it break anything" → `DirectSendAbuse-B.md` Triage step 5 + `Scripts/Get-DirectSendExposureAudit.ps1` (inventory before blocking)
 
 ---
 

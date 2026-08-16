@@ -18,6 +18,7 @@ Covers:
 - **Lifecycle Workflows** — Entra ID Governance joiner-mover-leaver (JML) task automation (welcome email, license/group assignment, account enable/disable/delete, Temporary Access Pass, custom Logic App tasks) — distinct from HR-driven provisioning (creates the account), Access Reviews (recertification), and PIM (role activation)
 - **Graph API** — scripting against Entra, batch queries, permissions model
 - **Certificate-Based Authentication (CBA)** — native (non-ADFS) X.509 certificate sign-in, CA trust chain, CRL revocation checking, certificate-to-user binding (high-affinity vs. legacy low-affinity), authentication strength mapping — distinct from Windows Hello for Business (device-bound key/cert, see `Troubleshooting/WHfB-B.md`/`-A.md`) and from Intune Cloud PKI (certificate *issuance*, not sign-in validation, see `Intune/Troubleshooting/CloudPKI-A.md`)
+- **Restricted Management Administrative Units (RMAU)** — the special-cased AU (`isMemberManagementRestricted = true`) that blocks even Global Administrator/Privileged Role Administrator from directly modifying member Users/Devices/Security Groups without an RMAU-scoped role assignment; direct-membership-only (no cascade), permanent restricted setting at creation, hard incompatibility with PIM/Entitlement Management/Lifecycle Workflows/Access Reviews — distinct from a regular (non-restricted) AU, which only scopes role applicability without blocking tenant-scoped admins
 
 ---
 
@@ -83,6 +84,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/WorkloadIdentity-B.md` / `-A.md` | Hotfix + deep dive: workload identity federation (OIDC subject/issuer/audience matching for GitHub Actions/Azure DevOps/Kubernetes), AADSTS700211/700213/70021/700223/700238/70025 error mapping, Conditional Access for workload identities (direct-SP targeting only, no group enforcement, Workload Identities Premium licensing), risky workload identity remediation |
 | `Troubleshooting/AccessReviews-B.md` / `-A.md` | Hotfix + deep dive: periodic access recertification (groups/apps/access packages/Entra roles/Azure resource roles), reviewer-type/auto-apply/on-prem-sync remediation gaps, resource-type-specific RBAC permission model, Graph API coverage gap for Azure resource roles |
 | `Troubleshooting/CBA-B.md` / `-A.md` | Hotfix + deep dive: native Certificate-Based Authentication — CA trust chain upload, CRL/CDP reachability (cloud-side validator, not client-network-side), high- vs. low-affinity certificate-to-user binding, authentication strength/OID mapping for Conditional Access MFA satisfaction |
+| `Troubleshooting/RestrictedManagementAU-B.md` / `-A.md` | Hotfix + deep dive: RMAU — Global Admin/Privileged Role Admin blocked from direct member modification, AU-scoped role assignment model, direct-membership-only (no cascade), the Global-Admin-as-RMAU-member dead end, PIM/Governance-feature incompatibility |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
@@ -116,6 +118,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-ExternalIdentitiesAudit.ps1` | Read-only tenant-wide B2B guest audit — stuck-PendingAcceptance (default 14-day threshold), disabled, and stale/inactive (default 90-day threshold) guest flagging, plus full Cross-Tenant Access Settings partner-policy dump; defers all cleanup to `ExternalIdentities-A.md` Playbook 3 |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 | `Scripts/Get-CBAConfigurationAudit.ps1` | CBA policy state/scope, trusted CA + CRL-configured audit, binding priority/affinity type, per-user certificateUserIds/UPN binding-readiness check |
+| `Scripts/Get-RestrictedManagementAUAudit.ps1` | Tenant-wide RMAU inventory — member type breakdown per RMAU, scoped role assignment audit with orphaned-principal detection, PIM eligible-assignment conflict cross-check |
 
 ---
 
@@ -160,6 +163,9 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Lifecycle Workflow rule shows a red error icon / invalid properties" → `Troubleshooting/LifecycleWorkflows-B.md` Fix 4 (deactivated custom security attribute)
 - "Smart card sign-in says certificate not trusted / not revoked but Entra says it is / signs in as the wrong user" → `Troubleshooting/CBA-B.md` + `Scripts/Get-CBAConfigurationAudit.ps1`
 - "Cert-based sign-in works but Conditional Access still demands MFA" → `Troubleshooting/CBA-B.md` Fix 6 (authentication strength OID mapping)
+- "Global Admin can't reset this exec's password / can't edit this group's membership, no obvious reason" → `Troubleshooting/RestrictedManagementAU-B.md` (check `isMemberManagementRestricted` first)
+- "PIM eligible assignment / access review / Lifecycle Workflow silently doesn't apply to a specific user or group" → `Troubleshooting/RestrictedManagementAU-B.md` Fix 6 (confirm RMAU membership before troubleshooting the Governance feature)
+- "Nobody can reset a Global Administrator's own password" → `Troubleshooting/RestrictedManagementAU-B.md` Fix 5 (must be removed from the RMAU first)
 
 ---
 
