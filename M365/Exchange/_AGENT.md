@@ -13,6 +13,7 @@ Covers:
 - **Connectors** — inbound/outbound connectors, partner connectors, on-prem relay, TLS enforcement
 - **Outlook desktop client** — classic Outlook vs. New Outlook architecture split, Autodiscover resolution, connection status states, OST corruption, credential/token loops, COM add-in conflicts
 - **Direct Send abuse** — unauthenticated SMTP delivery to the tenant's own MX endpoint spoofing internal senders, `RejectDirectSend` mitigation, SPF/anti-phishing hardening — distinct from the unrelated "direct send" hybrid outbound-routing term used in `Mail-Flow-A.md` (see that file's disambiguation note)
+- **Mailbox migration batches** — Cutover, Staged (legacy Exchange 2003/2007 only), IMAP (incl. Google Workspace), Remote Move (hybrid onboarding/offboarding), and Cross-tenant (tenant-to-tenant) migration batch mechanics, throttling, and cross-tenant organization-relationship prerequisites — distinct from `Hybrid-Coexistence-A.md`, which covers the hybrid topology/HCW/mail-routing side, not batch migration internals
 
 ---
 
@@ -41,6 +42,8 @@ Covers:
 | `Outlook-Client-A.md` | Deep dive: classic Outlook vs. New Outlook architecture split, Autodiscover v2/v1/SCP resolution chain, Cached Exchange Mode/OST model, modern-auth token caching |
 | `DirectSendAbuse-B.md` | Hotfix: unauthenticated Direct Send abuse — confirm RejectDirectSend state, spot a spoofed message via headers, harden SPF, migrate legitimate dependents |
 | `DirectSendAbuse-A.md` | Deep dive: why Direct Send bypasses the intra-org SPF exemption, the 2025–2026 abuse campaign and Microsoft's architectural-limitation stance, RejectDirectSend mechanics, KQL detection query |
+| `MigrationBatches-B.md` | Hotfix: stalled/failed migration batches, WLM/MRS throttling vs. real failure, AutoSuspended/Synced stuck users, MRSProxy connection limit, cutover single-batch limit, cross-tenant org-relationship pre-checks |
+| `MigrationBatches-A.md` | Deep dive: Cutover/Staged/IMAP/Remote Move/Cross-tenant migration architecture, MRS/MRSProxy/WLM throttling stack, Data Consistency Score skipped-item handling, cross-tenant pre-staging playbook |
 | `Scripts/Get-MessageTrace.ps1` | Mail flow trace wrapper for stuck/bounced messages |
 | `Scripts/Get-DirectSendExposureAudit.ps1` | RejectDirectSend state, per-domain SPF enforcement qualifier, anti-phish spoof intelligence, message-trace sweep flagging candidate Direct Send senders |
 | `Scripts/Get-OutlookClientHealth.ps1` | Device-local Outlook client diagnostic — client type, profile, OST freshness, Autodiscover DNS, cached credentials, COM add-ins, optional CA sign-in check |
@@ -54,6 +57,7 @@ Covers:
 | `Scripts/Get-RoomMailboxAudit.ps1` | Room mailbox booking/calendar/sign-in audit |
 | `Scripts/Get-SharedMailboxAudit.ps1` | Fleet-wide shared mailbox type/delegation/licensing/quota/sign-in audit |
 | `Scripts/Get-TransportRuleConflictAudit.ps1` | Tenant-wide ETR conflict audit — stuck test mode, priority short-circuits, broad conditions, unscoped high-impact actions, DLP overlap review |
+| `Scripts/Get-MigrationBatchHealth.ps1` | Tenant-wide migration batch/user health audit — real failures vs. throttling, skipped-item approval status, cutover limit risk, optional cross-tenant org-relationship and post-migration licensing checks |
 
 ---
 
@@ -83,6 +87,11 @@ Covers:
 - "Device-local Outlook client diagnostic before escalating" → `Scripts/Get-OutlookClientHealth.ps1`
 - "Getting phishing reports of mail that looks like it's from a coworker/executive, no external banner" → `DirectSendAbuse-B.md` (confirm via headers before assuming mailbox compromise)
 - "Should we turn on RejectDirectSend / will it break anything" → `DirectSendAbuse-B.md` Triage step 5 + `Scripts/Get-DirectSendExposureAudit.ps1` (inventory before blocking)
+- "Migration batch stuck at Syncing / mailboxes stalled" → `MigrationBatches-B.md` Triage (rule out WLM/MRS throttling before escalating)
+- "Cutover migration says a batch already exists" → `MigrationBatches-B.md` Fix 5
+- "Cross-tenant mailbox migration batch won't create / fails pre-check" → `MigrationBatches-B.md` Fix 6, `MigrationBatches-A.md` Playbook 3 (pre-staging is the most common cause)
+- "Migration report shows skipped items / data loss warning" → `MigrationBatches-B.md` Fix 4
+- "Fleet audit of all migration batches before/after a cutover weekend" → `Scripts/Get-MigrationBatchHealth.ps1`
 
 ---
 

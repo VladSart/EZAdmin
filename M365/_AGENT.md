@@ -10,7 +10,7 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 
 | Folder | Covers |
 |--------|--------|
-| `Exchange/` | Mail flow, hybrid coexistence, shared mailboxes, calendar permissions, spam/phishing |
+| `Exchange/` | Mail flow, hybrid coexistence, shared mailboxes, calendar permissions, spam/phishing; also covers mailbox migration batch mechanics — Cutover, Staged, IMAP, Remote Move, and Cross-tenant (`MigrationBatches-A/B.md`) — distinct from steady-state hybrid coexistence/routing (`Hybrid-Coexistence-A/B.md`) |
 | `SharePoint-OneDrive/` | Permissions, sync client, migration, storage, external sharing |
 | `Teams/` | Calling plans, device policies, federation, meeting policies, guest access |
 | `Licensing/` | Group-based licensing, service plan conflicts, assignment automation |

@@ -31,6 +31,7 @@
 - Standalone Exchange Online configuration (no hybrid)
 - Exchange 2010 (EOL) hybrid — unsupported
 - Cross-forest hybrid (separate Active Directory forests)
+- Migration batch mechanics (Cutover, Staged, IMAP, Remote Move throttling/statuses, Cross-tenant) — see `MigrationBatches-A.md`/`MigrationBatches-B.md`, which cover the batch/move-request layer this file's "mailbox migrations" bullet above only summarizes
 
 **Assumptions:**
 - On-premises Exchange Server 2016 CU23+, 2019 CU12+, or Subscription Edition (SE)
