@@ -19,6 +19,7 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 | `Backup/` | Microsoft 365 Backup — protection policies/units, restore points, restore sessions, coverage-gap detection for SharePoint/OneDrive/Exchange |
 | `Apps/` | Microsoft 365 Apps desktop client stack — Click-to-Run install architecture, Office Deployment Tool, update channels (Current/Monthly Enterprise/Semi-Annual Enterprise), Shared Computer Activation and client-level activation/licensing. Distinct from `Exchange/Outlook-Client-*.md` (Outlook-specific profile/Autodiscover issues) and `Licensing/` (Entra ID license assignment) |
 | `VivaEngage/` | Viva Engage (Yammer) — the tenant-wide service-principal sign-in gate, Native Mode architecture (community ↔ connected M365 Group ↔ SharePoint/OneNote/Planner), the 7-role admin model across its 3 real assignment surfaces (Entra ID / Viva Engage-Yammer admin center / per-community), community-creation gating via the M365 Group creation policy, and the Microsoft Graph `/employeeExperience` API surface. Distinct from `Security/Purview/CommunicationCompliance-*.md`/`RetentionLabels-*.md`, which own the Purview-side policy mechanics for Viva Engage as a monitored channel |
+| `Places/` | Microsoft Places — the hybrid-workplace app (desk/room booking, work plans, Places Finder/Explorer) embedded in Teams and Outlook, architecturally layered on top of (not a replacement for) Exchange Online room/workspace mailboxes; the strict Building>Floor>Section>Room/Workspace/Desk directory hierarchy and its asymmetric parenting rule (Workspace/Desk objects must parent to a Section, Rooms don't), the tenant-wide `EnableBuildings` visibility gate, the three-role RBAC model split across Entra ID (Places Administrator) and Exchange RBAC (Places Building/Desk Administrator), and the April 1, 2026 licensing unbundling (Teams Premium → per-space MTR/MTSS/MTSS-SS license model). Requires PowerShell 7.4+ for the `MicrosoftPlaces` module — a deliberate exception to this repo's usual PS 5.1-compatible scripting convention |
 
 ---
 
@@ -73,6 +74,12 @@ Get-MgUserLicenseDetail -UserId <UPN> | Select SkuPartNumber
 - "Someone was made Verified Admin / Network Admin but I can't find that role in Entra ID" → `VivaEngage/VivaEngage-B.md` Fix 5 (these roles only exist in the Viva Engage/Yammer admin center)
 - "We accidentally deleted a Viva Engage community" → `VivaEngage/VivaEngage-B.md` Fix 4 (30-day recovery window)
 - "Our Communication Compliance/retention policy shows zero Viva Engage matches" → `VivaEngage/VivaEngage-B.md` Fix 8 + cross-reference `Security/Purview/CommunicationCompliance-B.md`/`RetentionLabels-B.md`
+- "We built our building/floor hierarchy in Places but nobody can see it" → `Places/Places-B.md` Fix 2 (tenant-wide `EnableBuildings` setting, off by default — separate from hierarchy correctness)
+- "Desk pool is configured but won't show up for booking" → `Places/Places-B.md` Fix 5 (workspaces must parent to a Section, not just a Floor — silent failure, no error)
+- "MicrosoftPlaces PowerShell module won't install / cmdlets not found" → `Places/Places-B.md` Fix 1 (requires PowerShell 7.4+, will not load on Windows PowerShell 5.1)
+- "User could book any desk before, now they can't" → `Places/Places-B.md` Fix 6 (April 1, 2026 licensing unbundling — per-space MTR/MTSS/MTSS-SS license now required, unless still inside a legacy Teams Premium grace period)
+- "Room shows fine in Places Management portal but missing from Outlook Room Finder" → `Places/Places-B.md` Fix 4 (RoomList membership is a separate, Exchange-side gate from Places directory placement)
+- "Places Building/Desk Administrator can't create a room or rename one" → `Places/Places-B.md` Fix 9 (permanent role-boundary restriction, not a misconfiguration)
 
 ---
 
