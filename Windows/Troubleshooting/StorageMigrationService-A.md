@@ -32,6 +32,7 @@
 - DFS Replication's own preseeding/database-cloning validation steps beyond the specific SMS-interaction defect — see `DFS/Troubleshooting/Replication/Replication-A.md`
 - General Robocopy usage outside of its role as an SMS-adjacent manual-reconciliation tool
 - Azure File Sync's own cloud-tiering architecture — SMS supports migrating TO a server already running the Azure File Sync agent, but doesn't configure or manage Azure File Sync itself
+- Print server/print queue migration — SMS is file-server-focused and does not migrate printers at all; see `PrintServerMigration-A.md` for the PrintBRM-based equivalent workflow for a print role
 
 **Assumptions:**
 - Orchestrator and destination run Windows Server 2019 or later (Windows Server 2016 destinations are supported but slower and lose mainstream support in January 2027)

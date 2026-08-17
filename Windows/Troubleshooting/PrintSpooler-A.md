@@ -28,6 +28,7 @@
 - Linux CUPS
 - Printer hardware faults (see vendor documentation)
 - Industrial/thermal label printers with proprietary Windows drivers (Zebra, Dymo — vendor-specific troubleshooting required)
+- Migrating printers/queues from one print server to another (PrintBRM/Printbrm.exe backup-restore, cutover rename) — see `PrintServerMigration-A.md`/`PrintServerMigration-B.md`
 
 **Assumptions:**
 - Target machines are domain-joined or Entra-joined Windows 10 21H2+ or Windows 11
