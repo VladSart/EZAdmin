@@ -20,9 +20,12 @@ Runbooks for **Microsoft Fabric** from an IT admin/MSP perspective — tenant se
 |------|---------------|
 | `_AGENT.md` | This file — routing and orientation |
 | `FabricAdmin-B.md` | Hotfix runbook — workspace has no capacity, capacity paused/deleted, throttling symptoms, tenant setting propagation, Git integration setup failures, external sharing/guest access gaps |
+| `FabricAdmin-A.md` | Deep dive — CU-second billing/bursting/smoothing mechanics, the four-stage throttling policy (overage protection → interactive delay → interactive rejection → background rejection), carryforward/burndown, compound throttling protection, capacity overage (preview, 3x billing), and the full OneLake data-access-role (RBAC) model — workspace-role bypass, default roles, permission inheritance, RLS/CLS union-vs-intersection evaluation, shortcut identity-passthrough nuances, propagation latencies |
+| `Domains-B.md` | Hotfix runbook — Fabric domains (data-mesh governance grouping): domain vs. workspace-access disambiguation (domain assignment never grants visibility/access), domain admin/contributor/Fabric-admin role boundaries, the 3 workspace-assignment methods, the reassignment-override tenant-setting gate, default-domain auto-assignment scope, delegated settings (sensitivity label, certification) |
 | `Scripts/Get-FabricCapacityHealth.ps1` | Audits F-SKU capacity assignment, workspace-to-capacity mapping, and flags workspaces with no capacity or capacities in a non-Active state |
+| `Scripts/Get-FabricDomainAudit.ps1` | Audits domain/subdomain structure via the Fabric REST Admin API — domain-to-workspace mapping, workspaces with no domain assignment, domains missing a description; flags that admin/contributor lists and delegated-settings state require a manual portal check (not exposed by this API surface) |
 
-**Not yet built (candidates for a future run):** `FabricAdmin-A.md` (deep dive — capacity architecture, CU-second throttling model, OneLake data-access-role internals), Git integration deep dive, domains/workspace governance at scale.
+**Not yet built (candidates for a future run):** `Domains-A.md` (deep dive — data mesh architecture rationale, REST Admin API domain operations, audit schema), Git integration deep dive (currently only covered at hotfix depth in `FabricAdmin-B.md` Fix 4), workspace governance at scale beyond domains (e.g. tenant-wide workspace-naming/lifecycle policy).
 
 ## Common entry points
 
@@ -34,6 +37,12 @@ Runbooks for **Microsoft Fabric** from an IT admin/MSP perspective — tenant se
 - "External user can't be added to a workspace despite being invited" → `FabricAdmin-B.md` Fix 5 — tenant-level external sharing switch not enabled
 - "We deleted a capacity by mistake, is the data gone?" → `FabricAdmin-B.md` Fix 1 — 7-day soft-delete recovery window, region-matched reassignment
 - "Who can see what" / workspace role confusion → `FabricAdmin-B.md` Escalation Evidence section — Admin/Member/Contributor bypass OneLake granular security; only Viewer/external is meaningfully restricted
+- "Why is the capacity showing 150% utilization but nobody's complaining" → `FabricAdmin-A.md` How It Works — smoothing/bursting explained, only a Throttling-chart event is user-visible impact
+- "Why does this Viewer still see everything even though we set up OneLake security" → `FabricAdmin-A.md` Symptom→Cause Map — workspace-role Write access always overrides OneLake security Read restrictions for Admin/Member/Contributor
+- "I removed someone from the security group, they can still see the data" → `FabricAdmin-A.md` Validation Step 6 — group-membership propagation can take up to ~2 hours across cached engines
+- "I put a workspace in the Finance domain but the Finance team still can't see it" → `Domains-B.md` Fix 1 — domain assignment never grants access, that's a workspace-role/OneLake-security problem
+- "I'm a domain contributor but can't assign a workspace to my domain" → `Domains-B.md` Fix 2 — must also independently hold Workspace Admin on that workspace
+- "I moved a workspace to a new domain and it didn't take" → `Domains-B.md` Fix 3 — reassignment-override tenant setting is off by default
 
 ## Key diagnostic commands
 
@@ -53,6 +62,10 @@ Get-PowerBIWorkspace -Scope Organization -Include All |
 
 # Fabric REST Admin API — list workspaces (requires Fabric Administrator role + token)
 Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/admin/workspaces" `
+    -Headers @{ Authorization = "Bearer $token" } -Method GET
+
+# Fabric REST Admin API — list domains (no dedicated cmdlet exists for domains)
+Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/admin/domains" `
     -Headers @{ Authorization = "Bearer $token" } -Method GET
 ```
 
@@ -76,6 +89,15 @@ Azure subscription (F-SKU capacity is an Azure resource: Microsoft.Fabric/capaci
                                             Git integration — set at admin.microsoft.com /
                                             Fabric admin portal, propagate tenant-wide (not
                                             instant)
+
+Separately gated, ORTHOGONAL to the access chain above (never affects visibility/access):
+[Domain — data-mesh governance/discovery grouping]
+    └── Fabric admin creates domain → assigns domain admins
+            └── Domain admin manages contributors/workspace-assignment/delegated settings
+                    └── Domain contributor assigns workspaces THEY administer (must also be
+                        Workspace Admin on that specific workspace — two independent checks)
+                            └── Workspace gets domainId metadata — enables OneLake catalog
+                                filter/discovery and delegated tenant-setting overrides ONLY
 ```
 
 ## Response format reminder
