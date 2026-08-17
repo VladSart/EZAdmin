@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design), **Certificate-Based Authentication Mapping / KB5014754** (the PKINIT/Schannel certificate-to-account binding hardening — the SID extension, `altSecurityIdentities` weak-vs-strong mapping types, Event 39/40/41 diagnostics, and why Full Enforcement is now permanent and unbypassable on any DC patched since September 9, 2025), **Kerberos Armoring (FAST)** (the pre-authentication-exchange hardening and Dynamic Access Control/compound-authentication/AD FS-device-claims prerequisite — the domain-functional-level gate that silently no-ops stricter enforcement below Windows Server 2012, the independent KDC-side/client-side GPO pairing, and down-level-DC-driven intermittent failures), **the Group Policy Central Store & ADMX/ADML management** (the SYSVOL-hosted `PolicyDefinitions` folder that supplies the ADMX/ADML definitions Group Policy Management Editor renders — its silent per-machine local fallback when absent, ADMX namespace collisions and ADMX/ADML version-pairing errors caused by incremental/partial updates, the `EnableLocalStoreOverride` escape hatch, and the presentation-layer-only nature of ADMX/ADML relative to the actual `registry.pol`-stored setting value), **DNSSEC for AD-integrated DNS zones** (zone signing/KSK-ZSK key architecture, the Key Master role and its move-vs-seize recovery paths, trust anchor distribution via forest-wide AD DS replication, the manual-and-never-automatic DS record required for secure delegation to a parent zone, and the Windows DNS Client's status as a non-validating stub resolver — a response-*integrity* control layered on top of, and architecturally independent from, the DC Locator/SRV/scavenging *availability* mechanics covered in the base DNS topic), and **Kerberos Delegation** (unconstrained, constrained/KCD via S4U2Self+S4U2Proxy, and resource-based constrained delegation/RBCD — the three impersonation-authorization models that solve the "double hop" problem; the `AccountNotDelegated`/Protected Users controls that intentionally and unconditionally block delegation for Tier-0 accounts regardless of any front-end or resource configuration; and why classic constrained delegation is intra-domain-only while RBCD is the only model that works across a domain boundary within the same forest) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), not NTLM relay to AD CS/PetitPotam/ESC8 (a related but architecturally distinct relay-to-certificate-issuance attack chain, see `Windows/Troubleshooting/NTLMRelayADCS-A.md`), not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`), not Entra ID's own cloud-side Certificate-Based Authentication (a separate, non-KDC mechanism — see `EntraID/Troubleshooting/CBA-A.md`), not Windows Hello for Business Cloud Kerberos Trust (an unrelated feature that shares only the word "Kerberos" with the armoring topic here), not GPO client-side processing behavior or GPC/SYSVOL replication (the Central Store topic is specifically about the ADMX/ADML *editing-tool* dependency, not how a configured setting reaches or applies on an end-user machine — see `Troubleshooting/GroupPolicy/AD-GroupPolicy-A.md` and `Windows/Troubleshooting/GPO-A.md` for those), not Intune-native configuration profiles (see `Intune/Troubleshooting/GP-to-CSP-A.md`), and not NTLM relay or the general Kerberos ticket lifecycle (the Kerberos Delegation topic assumes the base Kerberos exchange already works — see `Windows/Troubleshooting/Kerberos-A.md` for foundational mechanics and `Windows/Troubleshooting/NTLM-A.md`/`NTLMRelayADCS-A.md` for the separate NTLM-relay attack class).
+On-premises Active Directory Domain Services — the identity foundation that DFS, Entra Connect/hybrid join, Kerberos auth, and Group Policy all sit on top of. This module covers the **directory replication layer** (NTDS.dit multi-master replication, FSMO roles, replication topology), **domain/forest trust relationships** (secure channel health, SID filtering, selective authentication), **backup/restore** (System State backup validity, authoritative vs. non-authoritative restore, USN rollback, DSRM, AD Recycle Bin), **Group Policy processing & replication** (client-side GPO processing pipeline, GPC/GPT version agreement, security/WMI filtering, loopback processing), **AD-integrated DNS** (zone replication scope, DC Locator SRV records, scavenging/aging, forwarders/root hints, split-brain detection), **AD FS / Web Application Proxy** (on-prem claims-based federation for M365/SaaS — token-signing/decrypting certificate lifecycle, relying party trusts, claims rules, WAP proxy trust), **Group Managed Service Accounts (gMSA)** (KDS root key/GKDS deterministic password derivation, the two-step AD-delegation-vs-local-installation authorization model, forest-scoping limits), **Delegated Managed Service Accounts (dMSA)** (Windows Server 2025's migration-tracked successor to gMSA — the two-phase `Start-`/`Complete-ADServiceAccountMigration` state machine, the client-side `DelegatedMSAEnabled` policy gate, and the BadSuccessor/CVE-2025-53779 privilege-escalation consideration), **Fine-Grained Password Policies** (Password Settings Objects/PSOs, precedence resolution, direct-vs-group targeting, the domain-wide GPO policy as fallback), **LDAP Signing / Channel Binding** (the NTLM-relay-to-LDAP hardening — `LDAPServerIntegrity`/`LdapEnforceChannelBinding` enforcement levels, Event 2886/2887/3039 exposure diagnostics, and why a TLS-terminating proxy breaks channel binding by design), **Certificate-Based Authentication Mapping / KB5014754** (the PKINIT/Schannel certificate-to-account binding hardening — the SID extension, `altSecurityIdentities` weak-vs-strong mapping types, Event 39/40/41 diagnostics, and why Full Enforcement is now permanent and unbypassable on any DC patched since September 9, 2025), **Kerberos Armoring (FAST)** (the pre-authentication-exchange hardening and Dynamic Access Control/compound-authentication/AD FS-device-claims prerequisite — the domain-functional-level gate that silently no-ops stricter enforcement below Windows Server 2012, the independent KDC-side/client-side GPO pairing, and down-level-DC-driven intermittent failures), **the Group Policy Central Store & ADMX/ADML management** (the SYSVOL-hosted `PolicyDefinitions` folder that supplies the ADMX/ADML definitions Group Policy Management Editor renders — its silent per-machine local fallback when absent, ADMX namespace collisions and ADMX/ADML version-pairing errors caused by incremental/partial updates, the `EnableLocalStoreOverride` escape hatch, and the presentation-layer-only nature of ADMX/ADML relative to the actual `registry.pol`-stored setting value), **DNSSEC for AD-integrated DNS zones** (zone signing/KSK-ZSK key architecture, the Key Master role and its move-vs-seize recovery paths, trust anchor distribution via forest-wide AD DS replication, the manual-and-never-automatic DS record required for secure delegation to a parent zone, and the Windows DNS Client's status as a non-validating stub resolver — a response-*integrity* control layered on top of, and architecturally independent from, the DC Locator/SRV/scavenging *availability* mechanics covered in the base DNS topic), **Kerberos Delegation** (unconstrained, constrained/KCD via S4U2Self+S4U2Proxy, and resource-based constrained delegation/RBCD — the three impersonation-authorization models that solve the "double hop" problem; the `AccountNotDelegated`/Protected Users controls that intentionally and unconditionally block delegation for Tier-0 accounts regardless of any front-end or resource configuration; and why classic constrained delegation is intra-domain-only while RBCD is the only model that works across a domain boundary within the same forest), **AdminSDHolder / SDProp** (the template-object-plus-enforcement-process pair that stamps a fixed ACL onto every protected account/group — Domain Admins, Enterprise Admins, Administrators, Schema Admins, and the rest of the built-in protected-groups list — on a 60-minute, PDC-Emulator-only cycle; why `adminCount` is a side effect of a correction, not the authoritative protection signal; and why `adminCount` is never automatically cleared when an account leaves a protected group, a deliberate Windows 2000-era design choice that makes orphaned `adminCount=1` one of the most common recurring AD hygiene findings), **Read-Only Domain Controllers (RODC)** (the read-only, unidirectionally-replicated DC role for lower-physical-security locations — Password Replication Policy's Allowed/Denied list model and absolute Deny-over-Allow precedence, the dedicated per-RODC `krbtgt_<xxxxx>` account as a blast-radius isolation control, the authentication-forwarding-to-a-writable-DC flow and its WAN-down failure mode, the RODC Filtered Attribute Set as a forest-wide exclusion layered on top of PRP, the credential-reset-on-deletion incident-response workflow for a stolen RODC, and the security-critical "Replicating Directory Changes All" over-permission misconfiguration that silently bypasses PRP domain-wide), **Shadow Groups** (the practitioner-coined, script/tool-driven pattern of keeping an ordinary security group's membership synchronized to an OU or attribute filter — built entirely from scheduled tasks/third-party tools rather than any native AD feature, since neither GPO security filtering nor FGPP/PSO targeting can reference an OU directly; the additive-only-sync implementation defect as the most common real-world failure mode, the narrow member-attribute delegation model for the sync account, and the pattern's complete lack of self-healing compared to its downstream GPO/PSO consumers), and **AD LDS / Active Directory Lightweight Directory Services** (formerly ADAM — the same directory engine as AD DS running in an independent, domain-infrastructure-free mode for application-specific directory stores; the per-instance `ADAM_<name>` service/port/schema/partition model, the configuration-set multi-master replication topology and its near-simultaneous-service-account-change failure mode, the two mutually-exclusive per-object authentication models — instance-local principals vs. `userProxy` bind-redirection objects that forward auth live to a real AD DS account, the single most common source of misdiagnosed AD LDS auth tickets — and ADAMSync's one-way, incremental AD DS-to-AD LDS sync design) — not the SYSVOL DFSR replication engine itself (see `DFS/`), not client-side DNS resolver config (see `Windows/`), not SMB signing (a parallel but separate relay-mitigation control on a different protocol, see `Windows/Troubleshooting/SMB-A.md`), not NTLM relay to AD CS/PetitPotam/ESC8 (a related but architecturally distinct relay-to-certificate-issuance attack chain, see `Windows/Troubleshooting/NTLMRelayADCS-A.md`), not cloud/hybrid sync or Entra Connect PHS/PTA (see `EntraID/`), not Entra ID's own cloud-side Certificate-Based Authentication (a separate, non-KDC mechanism — see `EntraID/Troubleshooting/CBA-A.md`), not Windows Hello for Business Cloud Kerberos Trust (an unrelated feature that shares only the word "Kerberos" with the armoring topic here), not GPO client-side processing behavior or GPC/SYSVOL replication (the Central Store topic is specifically about the ADMX/ADML *editing-tool* dependency, not how a configured setting reaches or applies on an end-user machine — see `Troubleshooting/GroupPolicy/AD-GroupPolicy-A.md` and `Windows/Troubleshooting/GPO-A.md` for those), not Intune-native configuration profiles (see `Intune/Troubleshooting/GP-to-CSP-A.md`), and not NTLM relay or the general Kerberos ticket lifecycle (the Kerberos Delegation topic assumes the base Kerberos exchange already works — see `Windows/Troubleshooting/Kerberos-A.md` for foundational mechanics and `Windows/Troubleshooting/NTLM-A.md`/`NTLMRelayADCS-A.md` for the separate NTLM-relay attack class).
 
 ---
 
@@ -13,6 +13,10 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - `EntraID/` — if the symptom involves Entra Connect, hybrid join, cloud-side identity, or the org uses Password Hash Sync/Pass-through Auth instead of federation; on-prem AD health is a prerequisite dependency for all of it
 - `Windows/` — if the issue is Kerberos/NTLM auth failures on a client (not between DCs), DNS client-side resolver config, time sync at the endpoint level (this folder's DNS coverage is the AD-integrated *server* side — zones, SRV records, scavenging), or SMB signing/relay hardening (a parallel control on a different protocol from LDAP signing)
 - `Security/ConditionalAccess/` — if access is being blocked by policy rather than by a broken identity/replication chain; this includes the case where AD FS issued a valid token but Entra ID's Conditional Access still blocks the resulting sign-in
+- "Permissions on a Domain Admins/Administrators-equivalent account keep reverting" is `Troubleshooting/AdminSDHolder/` (SDProp ACL enforcement), not a Group Policy or delegation bug — check `Troubleshooting/KerberosDelegation/` only if the symptom is impersonation/second-hop authentication, not ACL/permission changes on the account itself
+- "Branch office logon fails when the WAN is down" or "an RODC seems to be caching too many passwords" is `Troubleshooting/RODC/` (Password Replication Policy), not a replication-health problem — check `Troubleshooting/Replication/` only if the RODC itself isn't receiving any updates at all, not for password-caching-specific symptoms
+- "Can we just make a dynamic group like Entra ID has?" — no native on-prem AD equivalent exists; `Troubleshooting/ShadowGroups/` is the script/tool-driven practitioner pattern that fills this gap, not a feature to look for in AD itself — see `EntraID/Troubleshooting/DynamicGroups-A.md` for the cloud-only native feature this gets confused with
+- "AD LDS auth fails for some users but not others" is almost always an AD DS account-state or network-reachability problem surfacing through an AD LDS `userProxy` bind-redirection object, not an AD LDS instance fault — check `Troubleshooting/ADLDS/` before assuming AD LDS itself is broken
 
 ---
 
@@ -65,6 +69,18 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 | `Troubleshooting/KerberosDelegation/Delegation-B.md` | Hotfix: delegation-model triage (unconstrained/constrained/RBCD), double-hop diagnosis, SPN-mismatch and RBCD-not-configured fix paths, sensitive-account/Protected-Users dead-end recognition |
 | `Troubleshooting/KerberosDelegation/Delegation-A.md` | Deep dive: S4U2Self/S4U2Proxy protocol architecture, why classic KCD is intra-domain-only vs. RBCD's cross-domain capability, unconstrained-delegation risk model, phased-migration and cross-domain RBCD playbooks |
 | `Scripts/Get-KerberosDelegationAudit.ps1` | One-shot domain-wide audit: unconstrained/constrained/RBCD inventory, exact authorized-target listing per object, Tier-0 group membership cross-check flagging tiering violations |
+| `Troubleshooting/AdminSDHolder/AdminSDHolder-B.md` | Hotfix: reverting-permissions triage, orphaned adminCount=1 diagnosis, OU-delegation-doesn't-apply recognition, forcing an on-demand SDProp run |
+| `Troubleshooting/AdminSDHolder/AdminSDHolder-A.md` | Deep dive: AdminSDHolder template/SDProp enforcement architecture, why adminCount is a side effect not the authoritative signal, why adminCount is never auto-cleared, orphaned-cleanup and template-customization playbooks |
+| `Scripts/Get-AdminSDHolderAudit.ps1` | One-shot domain-wide audit: current protected-group membership baseline (transitive), every adminCount=1 object, orphaned/stale protection cross-check, optional AdminSDHolder template ACL dump |
+| `Troubleshooting/RODC/RODC-B.md` | Hotfix: Allowed/Denied PRP triage, offline-branch-logon diagnosis, orphaned-Allow-entry-vs-Deny-wins recognition, the "Replicating Directory Changes All" over-permission red flag, stolen-RODC incident response |
+| `Troubleshooting/RODC/RODC-A.md` | Deep dive: read-only/unidirectional replication architecture, PRP attribute model, per-RODC krbtgt isolation design, Filtered Attribute Set vs. PRP distinction, over-permission remediation and theft-response playbooks |
+| `Scripts/Get-RODCPasswordReplicationAudit.ps1` | One-shot audit per RODC (or domain-wide): Allowed/Denied list membership, currently-cached credentials, Allow/Deny overlap (no-op) detection, domain-wide "Replicating Directory Changes All" over-permission security check |
+| `Troubleshooting/ShadowGroups/ShadowGroups-B.md` | Hotfix: membership-drift triage, additive-only-sync-bug diagnosis, sync-account delegation checks, GPO/PSO downstream-consumer handoff recognition |
+| `Troubleshooting/ShadowGroups/ShadowGroups-A.md` | Deep dive: why OUs can't be security principals, the script/tool-driven sync architecture, delegation model, greenfield-build and safe-retirement playbooks |
+| `Scripts/Get-ShadowGroupDriftAudit.ps1` | One-shot (or batch, via CSV) audit per shadow group: scope validation, actual-vs-expected membership diff (stale/missing), delegated-permission reporting, optional GPO/PSO downstream-reference cross-check |
+| `Troubleshooting/ADLDS/ADLDS-B.md` | Hotfix: instance service/port triage, RootDSE bind diagnosis, bind-redirection (userProxy) vs. instance-local auth isolation, replication and ADAMSync fix paths |
+| `Troubleshooting/ADLDS/ADLDS-A.md` | Deep dive: AD LDS instance/service/schema architecture, configuration-set replication model, the two authentication models, ADAMSync design, instance removal playbook |
+| `Scripts/Get-ADLDSInstanceAudit.ps1` | Read-only per-instance audit: service/port/RootDSE health, replication status, optional userProxy bind-redirection SID resolution and AD DS account status check |
 
 ---
 
@@ -166,6 +182,31 @@ On-premises Active Directory Domain Services — the identity foundation that DF
 - "Found a server with 'Trust this computer for delegation to any service' enabled, nobody knows why" → `Troubleshooting/KerberosDelegation/Delegation-A.md` (Remediation Playbook 2 — treat as a standing risk, migrate off unconstrained)
 - "Multi-tier app spans two domains in the same forest, constrained delegation won't authorize the target" → `Troubleshooting/KerberosDelegation/Delegation-A.md` (Remediation Playbook 3 — RBCD is required, classic KCD is intra-domain only)
 - "Need a domain-wide inventory of every account with any kind of delegation configured" → `Scripts/Get-KerberosDelegationAudit.ps1`
+- "I changed permissions on a Domain Admins member and they disappeared an hour later" → `Troubleshooting/AdminSDHolder/AdminSDHolder-B.md` (Fix 1 — SDProp working as designed)
+- "This account hasn't been an admin in months but still behaves oddly / won't inherit OU permissions" → `Troubleshooting/AdminSDHolder/AdminSDHolder-B.md` (Fix 2 — orphaned adminCount)
+- "PingCastle/Purple Knight/BloodHound flagged a list of stale adminCount=1 objects" → `Troubleshooting/AdminSDHolder/AdminSDHolder-A.md` (Remediation Playbook 1) or `Scripts/Get-AdminSDHolderAudit.ps1`
+- "Delegated OU admin can't manage a user that used to be a Domain Admin" → `Troubleshooting/AdminSDHolder/AdminSDHolder-B.md` (Fix 3 — inheritance disabled by design)
+- "Need to validate an AdminSDHolder/group-membership change right now, not in an hour" → `Troubleshooting/AdminSDHolder/AdminSDHolder-B.md` (Fix 4) or `-A.md` (Remediation Playbook 2)
+- "Need a permission to apply permanently to every protected account/group domain-wide" → `Troubleshooting/AdminSDHolder/AdminSDHolder-A.md` (Remediation Playbook 4 — edit the template, not individual objects)
+- "Quick AdminSDHolder/adminCount posture audit across the domain" → `Scripts/Get-AdminSDHolderAudit.ps1`
+- "Branch office user can't log in when the internet/WAN is down" → `Troubleshooting/RODC/RODC-B.md` (Fix 1 — password never cached)
+- "I added a user to the Allowed RODC Password Replication list but it's still not caching" → `Troubleshooting/RODC/RODC-B.md` (Fix 2 — Deny overrides Allow, check nested Denied-group membership)
+- "This RODC seems to have way more cached passwords than it should" → `Troubleshooting/RODC/RODC-B.md` (Fix 4 — check for "Replicating Directory Changes All") or `Scripts/Get-RODCPasswordReplicationAudit.ps1`
+- "An RODC was stolen / physically compromised" → **Stop, security incident** — `Troubleshooting/RODC/RODC-B.md` (Fix 3) / `Troubleshooting/RODC/RODC-A.md` (Remediation Playbook 2)
+- "LAPS password / BitLocker key isn't available through the RODC even though the account is Allowed" → `Troubleshooting/RODC/RODC-B.md` (Triage — Filtered Attribute Set, not a PRP issue)
+- "Quick RODC Password Replication Policy audit / replication-ACL over-permission check" → `Scripts/Get-RODCPasswordReplicationAudit.ps1`
+- "A group tied to an OU has stale members who left months ago" → `Troubleshooting/ShadowGroups/ShadowGroups-B.md` (Fix 2 — additive-only sync bug, the most common cause)
+- "I linked a GPO or PSO directly to an OU and it didn't work like a group would" → `Troubleshooting/ShadowGroups/ShadowGroups-B.md` (Fix 6) — OUs can't be GPO security-filter principals or PSO targets, a shadow group is required
+- "Sync job for this group runs fine but membership never actually updates" → `Troubleshooting/ShadowGroups/ShadowGroups-B.md` (Fix 3 — sync account lost its delegated member-attribute permission)
+- "Do we have a dynamic/rule-based security group feature like Entra ID?" → No — `Troubleshooting/ShadowGroups/ShadowGroups-A.md` Scope & Assumptions explicitly disambiguates from `EntraID/Troubleshooting/DynamicGroups-A.md`
+- "Need to stand up a new shadow group for GPO scoping or PSO targeting" → `Troubleshooting/ShadowGroups/ShadowGroups-A.md` (Remediation Playbook 1)
+- "Quick shadow-group drift and delegation audit" → `Scripts/Get-ShadowGroupDriftAudit.ps1`
+- "AD LDS instance service won't start" → `Troubleshooting/ADLDS/ADLDS-B.md` (Fix 1)
+- "Application can bind to AD DS on this box but not to our AD LDS instance" → `Troubleshooting/ADLDS/ADLDS-B.md` (Fix 5 — bare hostname resolves to AD DS on a co-located DC; the app needs an explicit `host:port`)
+- "AD LDS login works for most users but fails for a few, no pattern" → `Troubleshooting/ADLDS/ADLDS-B.md` (Fix 4 — check the userProxy object's referenced AD DS account status first)
+- "Two AD LDS replicas stopped replicating after a service account password rotation" → `Troubleshooting/ADLDS/ADLDS-B.md` (Fix 3) / `Troubleshooting/ADLDS/ADLDS-A.md` (near-simultaneous service-account-change failure mode)
+- "ADAMSync isn't picking up a recent AD DS attribute/OU change" → `Troubleshooting/ADLDS/ADLDS-B.md` (Fix 6)
+- "Quick AD LDS instance health + bind-redirection proxy audit" → `Scripts/Get-ADLDSInstanceAudit.ps1`
 
 ---
 
@@ -419,6 +460,101 @@ against a second, backend resource (the "double hop")
         front-end's SID — authorized by the RESOURCE owner, works CROSS-DOMAIN in-forest
   ALL THREE unconditionally blocked if the impersonated user has AccountNotDelegated=True
   or is a member of Protected Users (which also disables NTLM fallback entirely)
+```
+
+**AdminSDHolder / SDProp chain** (see `Troubleshooting/AdminSDHolder/` — an ACL-stamping mechanism, architecturally unrelated to Kerberos delegation above despite both protecting Tier-0 accounts):
+
+```
+PDC Emulator FSMO role — SDProp evaluates and enforces ONLY here, no distributed fallback
+  └── AdminSDProtectFrequency (default 3600s/60min) governs the scheduled interval
+        └── Transitively expand membership of all protected groups (Domain Admins,
+            Enterprise Admins, Administrators, Schema Admins, Account/Backup/Print/Server
+            Operators, Replicator, Krbtgt, Domain Controllers, Read-only Domain Controllers,
+            Enterprise/Key Admins)
+              └── Compare each protected principal's ACL against the AdminSDHolder template
+                  object's ACL (CN=AdminSDHolder,CN=System,<domain DN>)
+                    └── Mismatch → ACL overwritten to match template, adminCount=1 set,
+                        inheritance disabled (AreAccessRulesProtected=True) — PERMANENT until
+                        MANUALLY cleared; removal from the protected group does NOT auto-clear
+                        this by design (assumption: a former privileged account warrants review,
+                        not silent restoration)
+```
+
+**RODC / Password Replication Policy chain** (see `Troubleshooting/RODC/` — a read-only, unidirectional replication model layered on top of the base AD replication chain above, with its own dedicated credential-caching policy):
+
+```
+At least one writable DC exists (RODC cannot be the first DC, and cannot itself be
+another RODC's replication source)
+  └── RODC computer account + dedicated PER-RODC krbtgt_<xxxxx> cached locally by
+      default (isolated from every other RODC's krbtgt and the domain's shared krbtgt)
+        └── Password Replication Policy — DENY ALWAYS WINS over Allow:
+              ├── msDS-Reveal-OnDemandGroup → Allowed list (empty by default)
+              └── msDS-NeverRevealGroup → Denied list (Domain Admins, Enterprise Admins,
+                  Schema Admins, and other Tier-0 groups pre-populated by default)
+                    └── Enforcement DEPENDS ON Enterprise Read-only Domain Controllers
+                        holding ONLY "Replicating Directory Changes" (never "...All") on
+                        the domain partition — if over-scoped, PRP is silently bypassed
+                        domain-wide regardless of its own Allowed/Denied configuration
+  └── (separate, forest-wide, NOT tunable per-RODC) Filtered Attribute Set — excludes
+      specific schema attributes (LAPS password, BitLocker recovery key, etc.) from
+      replicating to ANY RODC, independent of what PRP allows for the owning account
+  └── At logon: cached → local auth | not cached → forward to a writable DC → (if PRP
+      allows) background pull-replicate that one account's password for next time
+        └── WAN link down + password never cached = hard authentication failure
+```
+
+**Shadow group chain** (see `Troubleshooting/ShadowGroups/` — a script/tool-driven convention layered on top of ordinary AD security groups, with no native AD support anywhere in this chain):
+
+```
+OU structure or attribute defines the TRUE population (the source of truth an admin
+actually manages day to day)
+  └── Ordinary security group created ONCE (Security/Global scope — required for both
+      downstream consumers below; nothing native ties it to the OU)
+        └── Sync identity delegated Write on the group's "member" attribute ONLY
+            (never Domain Admin, never full group-management rights)
+              └── Scheduled task / third-party tool job runs on an admin-chosen interval
+                  (NO platform-enforced cadence, NO native scheduling engine)
+                    └── Job RECONCILES desired-vs-actual membership (add AND remove) —
+                        additive-only logic is the #1 real-world implementation defect
+                          └── Membership change replicates via normal AD replication
+                                └── Downstream consumers evaluate independently, on
+                                    THEIR OWN schedules (shadow-group sync has ZERO
+                                    self-healing if it silently stops):
+                                      ├── GPO security filtering — Read + Apply Group
+                                      │     Policy ACE, since an OU cannot appear there
+                                      └── FGPP/PSO msDS-PSOAppliesTo — users/global
+                                            security groups only, never an OU (identical
+                                            root constraint to the GPO side, see
+                                            Troubleshooting/FineGrainedPasswordPolicies/)
+  (NOT the same as Entra ID Dynamic Groups — that's a live-evaluated, native rule
+  engine with no on-prem AD DS equivalent; see EntraID/Troubleshooting/DynamicGroups-A.md)
+```
+
+**AD LDS instance chain** (see `Troubleshooting/ADLDS/` — the same directory engine as AD DS,
+running independently, with its own service/port/schema/replication/auth stack per instance):
+
+```
+Windows Server + "Active Directory Lightweight Directory Services" role
+(Install-WindowsFeature ADLDS — independent of whether AD DS is also present on the box)
+  └── Per-instance identity, created one at a time:
+        ├── ADAM_<instanceName> service (always this naming — no exceptions)
+        ├── Own LDAP port + SSL port (no fixed default; 50000/50001 is a common
+        │   convention when co-located with AD DS on a DC, never a hard rule)
+        ├── Own database files (physically separate from NTDS.dit)
+        └── Own schema + application partition(s) — changes NEVER cross instances
+              └── (Optional) Configuration set — 2+ replicas of the SAME instance
+                    ├── Multi-master replication, same version/timestamp
+                    │     conflict rule as AD DS, but a fully independent topology
+                    └── Near-simultaneous service-account changes across replicas
+                          = documented replication-break trigger (sequence them)
+              └── Per-OBJECT authentication model (pick one, not instance-wide):
+                    ├── Instance-local principal — password lives only in AD LDS
+                    └── userProxy bind-redirection object — holds a real AD DS
+                        objectSid; auth is forwarded LIVE to that domain's DC
+                          └── DEPENDS ON: network reachability to a DC in that
+                              domain + the real account being enabled/unlocked/
+                              not-expired — invisible from inside AD LDS itself,
+                              the #1 source of misdiagnosed "AD LDS auth" tickets
 ```
 
 ---

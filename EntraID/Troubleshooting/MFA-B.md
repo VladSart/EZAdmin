@@ -137,7 +137,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq '$UPN' and createdDateTime gt
 Error codes to know:
 - `50074` — MFA required but user hasn't completed it
 - `50076` — MFA required by CA policy (interactive prompt expected)
-- `50158` — External security challenge required (third-party MFA)
+- `50158` — External security challenge required (third-party MFA) — this is a distinct topic, see `Troubleshooting/ExternalMFA-B.md`/`-A.md`
 - `53004` — User must register for MFA before accessing this resource
 - `500121` — Incorrect second factor — wrong code entered
 

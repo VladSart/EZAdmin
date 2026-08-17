@@ -19,6 +19,8 @@ Covers:
 - **Graph API** — scripting against Entra, batch queries, permissions model
 - **Certificate-Based Authentication (CBA)** — native (non-ADFS) X.509 certificate sign-in, CA trust chain, CRL revocation checking, certificate-to-user binding (high-affinity vs. legacy low-affinity), authentication strength mapping — distinct from Windows Hello for Business (device-bound key/cert, see `Troubleshooting/WHfB-B.md`/`-A.md`) and from Intune Cloud PKI (certificate *issuance*, not sign-in validation, see `Intune/Troubleshooting/CloudPKI-A.md`)
 - **Restricted Management Administrative Units (RMAU)** — the special-cased AU (`isMemberManagementRestricted = true`) that blocks even Global Administrator/Privileged Role Administrator from directly modifying member Users/Devices/Security Groups without an RMAU-scoped role assignment; direct-membership-only (no cascade), permanent restricted setting at creation, hard incompatibility with PIM/Entitlement Management/Lifecycle Workflows/Access Reviews — distinct from a regular (non-restricted) AU, which only scopes role applicability without blocking tenant-scoped admins
+- **External MFA (formerly External Authentication Methods/EAM)** — delegating the MFA second factor entirely to a non-Microsoft OIDC provider (e.g., Cisco Duo); the two-role admin-consent gate (Authentication Policy Administrator creates the method, only Privileged Role Administrator can consent the provider's app), the hard incompatibility with authentication-strength grant controls, acr/amr claim type-mapping as the actual "was this really MFA" trust check, and Custom-Control-to-External-MFA migration via mutually exclusive parallel Conditional Access policies — distinct from native Microsoft methods (see `Troubleshooting/MFA-B.md`/`-A.md`), Passkeys (see `Troubleshooting/Passkeys-B.md`/`-A.md`), and cross-tenant B2B MFA trust (see `Security/ConditionalAccess/`)
+- **Enterprise Application (SCIM) Provisioning** — outbound automatic user/group provisioning from Entra ID to third-party SaaS apps via SCIM 2.0 (or the on-prem provisioning agent for LDAP/SQL/REST-SOAP/PowerShell/ECMA targets); assignment-based vs. attribute-based scoping (nested groups never read, only direct members), the matching-attribute join key, initial-vs-incremental cycle/watermark mechanics, quarantine/escrow thresholds, and disable-vs-delete deprovisioning — architecturally the same provisioning engine as Entra Cloud Sync but the reverse direction and a distinct configuration surface, see `Troubleshooting/EnterpriseAppProvisioning-B.md`/`-A.md`
 
 ---
 
@@ -119,6 +121,10 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 | `Scripts/Get-CBAConfigurationAudit.ps1` | CBA policy state/scope, trusted CA + CRL-configured audit, binding priority/affinity type, per-user certificateUserIds/UPN binding-readiness check |
 | `Scripts/Get-RestrictedManagementAUAudit.ps1` | Tenant-wide RMAU inventory — member type breakdown per RMAU, scoped role assignment audit with orphaned-principal detection, PIM eligible-assignment conflict cross-check |
+| `Troubleshooting/ExternalMFA-B.md` / `-A.md` | Hotfix + deep dive: External MFA (third-party OIDC provider satisfying MFA) — two-role admin-consent gate, authentication-strength incompatibility, acr/amr claim type-mapping validation, Custom-Control migration, Windows 10 OOBE limitation, provider signing-key rollover/24h metadata cache |
+| `Scripts/Get-ExternalMFAAudit.ps1` | External MFA method state/consent audit (service-principal-existence-as-consent-proxy), Conditional Access authentication-strength conflict scan, optional live provider discovery-endpoint reachability check |
+| `Troubleshooting/EnterpriseAppProvisioning-B.md` / `-A.md` | Hotfix + deep dive: Enterprise Application SCIM provisioning to SaaS apps — quarantine (invalid credentials/escrow threshold/SCIM compliance) triage, "not effectively entitled" and scoping-filter skip resolution, nested-group non-support, matching-attribute rebuild, deprovisioning (disable vs. delete) behavior |
+| `Scripts/Get-EnterpriseAppProvisioningAudit.ps1` | Tenant-wide provisioning job inventory — status/quarantine-reason flagging, stale-last-success detection, per-app recent-failure-reason grouping from provisioning logs |
 
 ---
 
@@ -155,6 +161,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "User can't register a passkey / TAP rejected / locked out of Security info trying to add a passkey" → `Troubleshooting/Passkeys-B.md` + `Scripts/Get-PasskeyRegistrationAudit.ps1`
 - "Our MSP/partner suddenly can't get into a customer tenant / GDAP relationship expired" → `Troubleshooting/GDAP-B.md` + `Scripts/Get-GDAPRelationshipAudit.ps1`
 - "Verified ID / verifiable credential won't issue or verify / Authenticator shows unverified warning" → `Troubleshooting/VerifiedID-B.md` + `Scripts/Get-VerifiedIDConfigAudit.ps1`
+- "Salesforce/Workday/ServiceNow (or any SaaS app) provisioning job in quarantine" / "users not showing up in a SaaS app" / "SCIM provisioning stopped working" → `Troubleshooting/EnterpriseAppProvisioning-B.md` + `Scripts/Get-EnterpriseAppProvisioningAudit.ps1`
+- "User shows as 'skipped, not effectively entitled' in provisioning logs" / "group member never provisions to a SaaS app despite being in the group" (nested-group gap) → `Troubleshooting/EnterpriseAppProvisioning-B.md` Fix 4 / Fix 7
 - "Access review completed but the person still has access" / "reviewer never got notified" / "can't find this app to review it" → `Troubleshooting/AccessReviews-B.md` + `Scripts/Get-AccessReviewAudit.ps1`
 - "I have Global Reader but can't create an access review" / "group owner can't review their own group" → `Troubleshooting/AccessReviews-B.md` Fix 5 / `Troubleshooting/AccessReviews-A.md` resource-type permission table
 - "Built a Lifecycle Workflow and nothing runs automatically" / "workflow is enabled but never fires" → `Troubleshooting/LifecycleWorkflows-B.md` Fix 1 (check `IsSchedulingEnabled` — separate switch from `IsEnabled`)
@@ -166,6 +174,9 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Global Admin can't reset this exec's password / can't edit this group's membership, no obvious reason" → `Troubleshooting/RestrictedManagementAU-B.md` (check `isMemberManagementRestricted` first)
 - "PIM eligible assignment / access review / Lifecycle Workflow silently doesn't apply to a specific user or group" → `Troubleshooting/RestrictedManagementAU-B.md` Fix 6 (confirm RMAU membership before troubleshooting the Governance feature)
 - "Nobody can reset a Global Administrator's own password" → `Troubleshooting/RestrictedManagementAU-B.md` Fix 5 (must be removed from the RMAU first)
+- "Third-party MFA (Duo, etc.) stopped satisfying Conditional Access" / "external MFA method stuck disabled" / error code 50158 → `Troubleshooting/ExternalMFA-B.md` + `Scripts/Get-ExternalMFAAudit.ps1`
+- "External MFA enabled tenant-wide but still blocked by a phishing-resistant/authentication-strength policy" → `Troubleshooting/ExternalMFA-B.md` Fix 2 / `Troubleshooting/ExternalMFA-A.md` (hard incompatibility, not a config gap)
+- "User redirected to Duo/provider twice during sign-in" → `Troubleshooting/ExternalMFA-B.md` Fix 5 (overlapping Custom Control + External MFA policies)
 
 ---
 
