@@ -3,6 +3,8 @@
 ## What's in this folder
 Runbooks and scripts for Microsoft Sentinel data connector troubleshooting (the layer where most MSP Sentinel incidents actually live — "connector is connected but I see no data"), analytics rule / incident tuning (detection logic, alert grouping, entity mapping, automation rules, false-positive tuning), Logic Apps playbook / SOAR execution troubleshooting (automation rule → playbook handoff, connector authentication, throttling), UEBA (User & Entity Behavior Analytics — behavioral baselining, anomaly detection, and entity enrichment), Hunting (the analyst-driven manual workflow — hunting query library, Bookmarks, the Hunts (Preview) end-to-end wrapper, and KQL jobs as the retired-livestream replacement), and Notebooks (Jupyter/MSTICPy code-first hunting and investigation, executed on a separate Azure Machine Learning workspace launched from Sentinel). Covers the three connector families: agent-based (AMA + Data Collection Rules), API/service-to-service (Office 365, Entra ID, Defender XDR), and Azure-resource diagnostic-settings-based connectors; the five analytics rule kinds (Scheduled, NRT, Microsoft security, Fusion, Anomaly) and the alert→incident→automation pipeline above them; the automation rule → Logic App playbook handoff, its permission model, and the three independent throttling layers (Logic App resource, connector, destination system); UEBA's three independently-toggled capabilities (base behavioral baselining, Detect Anomalies, and the newer UEBA behaviors layer), its data sources, and the `BehaviorAnalytics`/`IdentityInfo`/`UserPeerAnalytics`/`Anomalies` table model that feeds the Anomaly rule kind above; Hunting's Azure-portal-only bookmark creation constraint, the Hunts-clones-not-references model, and the KQL-jobs-are-persistence-not-alerting distinction that trips up livestream migrations; Notebooks' dual-RBAC model (independent Sentinel-workspace and AML-workspace grants), the AML storage-account network posture that gates direct in-portal launch, and the MSTICPy config/auth layer (`msticpyconfig.yaml`, query providers, external TI/GeoIP enrichment) underneath the notebook runtime itself; and the Sentinel **data lake** architecture — the cold, up-to-12-year storage tier, its own INDEPENDENT Entra-ID-directory-role access model (separate from Sentinel SIEM's Azure RBAC), one-time tenant-wide onboarding (DL102/DL103 errors, CMK incompatibility, permanent subscription/RG/region lock), the KQL-job/Summary-rule/Search-job tool-selection decision, and data federation to Azure Databricks/ADLS Gen 2/Microsoft Fabric. Also covers **Microsoft Sentinel graph** — a name spanning two unrelated products: zero-configuration built-in embedded graphs (Incident graph/Blast Radius, Hunting graph, Purview data risk graphs) that auto-provision alongside data lake onboarding, and Custom graphs (preview), a code-first VS Code/PySpark/GQL authoring workflow gated by three independent permission systems (XDR unified RBAC to model, an Entra ID directory role to persist, XDR unified RBAC to query) plus two silent architectural constraints (per-table data access, Sentinel scoping).
 
+Also covers **the Unified Security Operations Platform onboarding/connection layer** — how a Microsoft Sentinel workspace connects to the Defender portal (System > Settings > Microsoft Sentinel), the unconditional-Owner-at-subscription-scope permission gate that silently blocks onboarding when only a conditional (ABAC) Owner assignment exists, the one-primary/unlimited-secondary workspace model and what Defender XDR correlation each tier does and doesn't receive, the five standalone data connectors (MDE/MDA/MDI/Defender for Office 365/Entra ID Protection) that auto-disconnect on primary onboarding to prevent duplicate ingestion, the Microsoft Purview Insider Risk Management and Defender for Cloud tenant-based-vs-legacy-connector prerequisites, and the explicit, permanent non-support of Azure Lighthouse/GDAP for this specific data path (Entra ID B2B is the documented workaround) — distinct from day-to-day Sentinel operation once already connected, which remains covered by the feature-specific topics below regardless of which portal (Azure vs. Defender) is used to access them.
+
 Also covers **Threat Intelligence** — Sentinel's own STIX-typed indicator/object management layer across four import paths (Defender Threat Intelligence connector, the Upload API — the current recommended path for custom/TIP integrations, the STIX/TAXII connector, and the legacy Threat Intelligence Platform connector, which is being deprecated), the `ThreatIntelIndicators`/`ThreatIntelObjects` table schema that replaced the legacy single `ThreatIntelligenceIndicator` table on 2025-07-31 (a silent, no-error cutover — stale references simply stop seeing new data), ingestion rules (connector-sourced TI only, never Upload API/manual objects), Id-based deduplication, and how imported TI drives indicator-based analytics rule templates and the separate Defender TI matching-analytics rule — distinct from Defender for Endpoint's own Threat Intelligence Indicators (an EDR allow/block-list feature, see `Security/Defender/`). And **Watchlists** — the flat name-value-pair reference-data mechanism (not STIX-typed, not a detection feed) used for allow/block lists and enrichment joins, its `SearchKey`-based best-performance query pattern via `_GetWatchlistAlias`/`_GetWatchlist()`, documented limits (10M active items workspace-wide, 3.8 MB local/500 MB Azure-Storage-preview upload, 3-64 char naming rules), the retention-vs-refresh distinction (28-day underlying table retention does NOT mean 28-day expiration — the 12-day refresh cycle keeps active watchlists perpetually current), and the explicit, permanent unsupported-via-Azure-Lighthouse cross-workspace management gap relevant to MSSPs already using Lighthouse for delegated access.
 
 ## Before responding, also check
@@ -48,6 +50,9 @@ Also covers **Threat Intelligence** — Sentinel's own STIX-typed indicator/obje
 | `Watchlists-B.md` | Hotfix runbook — empty-query false alarms from narrow time scoping, the 28-day-retention-vs-refresh-cycle misconception, portal 5XX/service-incident triage, SearchKey join mismatches, upload rejections |
 | `Watchlists-A.md` | Deep dive — creation paths and hard limits, the SearchKey performance pattern, the retention/refresh architecture explained, the workspace-wide 10M-item ceiling, the explicit Azure Lighthouse cross-workspace management gap |
 | `Scripts/Get-SentinelWatchlistAudit.ps1` | Audits per-watchlist queryability (wide time range, avoiding the false-empty pattern), row counts, SearchKey population, and combined item count against the workspace-wide ceiling |
+| `UnifiedSecOps-B.md` | Hotfix runbook — onboarding permission failures (unconditional Owner check), analytics rules gone silent after standalone-connector auto-disconnect, MSSP Lighthouse-can't-see-data triage, primary-workspace-switch impact |
+| `UnifiedSecOps-A.md` | Deep dive — "Sentinel in Defender portal" vs. "unified security operations" distinction, full permission model, primary/secondary workspace architecture, standalone connector auto-disconnection mechanics, IRM/Defender for Cloud prerequisites, the permanent Lighthouse/GDAP gap, March 2027 Azure-portal retirement |
+| `Scripts/Get-UnifiedSecOpsOnboardingAudit.ps1` | Audits Owner role assignment condition state (unconditional vs. ABAC-conditional) and Sentinel-enabled workspace inventory for a subscription — the two most common onboarding blockers this script can check programmatically |
 
 ## Common entry points
 
@@ -113,6 +118,12 @@ Also covers **Threat Intelligence** — Sentinel's own STIX-typed indicator/obje
 - "Does our watchlist need to be recreated every 28 days" → `Watchlists-B.md`/`Watchlists-A.md` Learning Pointers (no — 28 days is underlying-table retention, not expiration; the 12-day refresh cycle keeps it current)
 - "Watchlists page is blank / throwing 502s" → `Watchlists-B.md` Fix 3 (check query-plane vs. management-plane, don't delete/recreate mid-incident)
 - "MSSP can't manage a client's watchlist through our Lighthouse-delegated session" → `Watchlists-A.md` Playbook 3 (explicit, permanent platform gap — manage natively per client workspace)
+- "Onboarding to the Defender portal fails even though I'm an Owner" → `UnifiedSecOps-B.md` Fix 1 (check whether the Owner assignment is conditional/ABAC-scoped — must be unconditional)
+- "Analytics rules for MDE/MDI/MDA/O365/Entra ID Protection stopped firing after connecting Sentinel to the Defender portal" → `UnifiedSecOps-B.md` Fix 2 (standalone connectors auto-disconnect on primary onboarding)
+- "MSSP/Lighthouse session can't see a client's Sentinel data in the Defender portal" → `UnifiedSecOps-B.md` Fix 3 (unsupported by design — use Entra ID B2B instead)
+- "We changed the primary workspace and now old rules/automation look stale" → `UnifiedSecOps-B.md` Fix 4 (Defender XDR connector auto-moves to the new primary)
+- "Is this the same as just 'Sentinel in the Defender portal'?" → No — `UnifiedSecOps-A.md` How It Works explicitly disambiguates from full unified security operations (Defender XDR correlation)
+- "Quick onboarding-readiness check (Owner role condition, workspace inventory)" → `Scripts/Get-UnifiedSecOpsOnboardingAudit.ps1`
 
 ## Key diagnostic commands
 
@@ -340,6 +351,26 @@ CSV (local <=3.8MB, or Azure Storage SAS-URL preview <=500MB)
                                             ✗ NOT supported: cross-workspace management via
                                               Azure Lighthouse — must connect natively per
                                               client workspace (MSSP-relevant gap)
+```
+
+**Unified security operations onboarding chain** (see `UnifiedSecOps-A.md` — the portal-connection layer beneath everything else in this file, not a replacement for any of it):
+```
+Microsoft Entra tenant + Log Analytics workspace with Sentinel enabled
+    └── Onboarding permission gate: Entra ID Security Administrator AND
+        (unconditional Owner OR User Access Administrator + Sentinel Contributor)
+        at subscription scope — a CONDITIONAL Owner assignment silently fails this
+            └── Defender portal: System > Settings > Microsoft Sentinel > Connect a
+                workspace → designate PRIMARY (one per tenant) or SECONDARY (unlimited)
+                    ├── PRIMARY: Defender XDR connector attaches → unified incident
+                    │     queue + shared advanced hunting → 5 standalone connectors
+                    │     (MDE/MDA/MDI/Defender O365/Entra ID Protection) auto-disconnect
+                    │     to prevent duplicate ingestion — dependent rules need re-pointing
+                    └── SECONDARY: Sentinel-only in Defender portal, no XDR sync,
+                          operates autonomously (MSSP/global-SOC isolation use case)
+    ✗ NOT supported: Azure Lighthouse/GDAP for this data — Entra ID B2B required
+      (a SEPARATE gap from the Watchlist-specific Lighthouse gap above — same root
+      cause, different feature)
+    (forcing function: Sentinel in the Azure portal retires March 31, 2027)
 ```
 
 ## Response format reminder

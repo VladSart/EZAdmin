@@ -1,7 +1,7 @@
 # Microsoft Defender — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Azure-resource Secure Score, posture, multicloud/hybrid connectors), CIEM (Cloud Infrastructure Entitlement Management — a Defender CSPM sub-feature covering multicloud identity/permission risk, and the successor to the now-retired standalone Microsoft Entra Permissions Management product), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, Defender for Office 365 Safe Links/Safe Attachments, and the tenant-wide **Microsoft Secure Score** (Identity/Device/Apps/Data — security.microsoft.com/securescore, explicitly distinct from Defender for Cloud's Azure-resource CSPM score of the same name) troubleshooting in MSP/enterprise environments. Covers onboarding, policy conflicts, sensor health, cloud posture management, identity entitlement/permission risk, real-time URL/attachment protection, tenant-wide security posture scoring, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
+Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Cloud Apps (MDA), Defender for Identity (MDI), Defender for Cloud (CSPM — Azure-resource Secure Score, posture, multicloud/hybrid connectors), CIEM (Cloud Infrastructure Entitlement Management — a Defender CSPM sub-feature covering multicloud identity/permission risk, and the successor to the now-retired standalone Microsoft Entra Permissions Management product), Defender Vulnerability Management, Attack Surface Reduction (ASR), Network Protection, Cloud Protection, Tamper Protection, WDAC (Windows Defender Application Control), Attack Simulation Training, Defender for Office 365 Safe Links/Safe Attachments, and the tenant-wide **Microsoft Secure Score** (Identity/Device/Apps/Data — security.microsoft.com/securescore, explicitly distinct from Defender for Cloud's Azure-resource CSPM score of the same name) troubleshooting in MSP/enterprise environments. Also covers **Automated Investigation & Response (AIR)** — MDE's automated alert-triage engine (Plan 2/Defender for Business only), its five per-device-group automation levels, the verdict-to-remediation-action model, and the 7-day pending-approval auto-reject window — architecturally distinct from Live Response, manual response actions, and Automatic attack disruption. Covers onboarding, policy conflicts, sensor health, cloud posture management, identity entitlement/permission risk, real-time URL/attachment protection, tenant-wide security posture scoring, automated remediation, and incident response workflows across the Defender XDR suite plus Defender for Office 365.
 
 ## Before responding, also check
 - `Security/ConditionalAccess/` — CA policies often interact with MDE compliance signals
@@ -48,6 +48,9 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 | `Scripts/Get-DeviceControlPolicyAudit.ps1` | Local device control readiness audit — onboarding/AM version, policy delivery, PnP device Hardware ID/Instance Path inventory for group cross-referencing, Device Installation Restriction layer check |
 | `Scripts/Get-SecureScoreReport.ps1` | Graph-based tenant-wide Secure Score audit — regression/category-regression detection, EnabledServices-vs-license gap check, stale manual override flagging, quick-win candidate ranking, device-category informational routing |
 | `Scripts/Get-CIEMRecommendationAudit.ps1` | CIEM readiness audit — Defender CSPM plan tier, Azure CIEM recommendation state, multicloud connector inventory flagged for manual "was Configure access re-run" verification (the CIEM on/off toggle itself is portal-only and not read by this script) |
+| `AIR-B.md` | Hotfix / deep dive: Automated Investigation & Response — false-positive quarantine undo, Pending-approval-queue triage (7-day auto-reject expiry), per-device-group automation-level confusion, Plan 1 licensing dead-end recognition |
+| `AIR-A.md` | Deep dive: the five automation levels, verdict-to-action architecture, device-group rank-order matching, undo mechanics, and why Microsoft recommends Full automation over Semi-automation approval queues |
+| `Scripts/Get-AIRActionCenterAudit.ps1` | Graph-based Action Center alert audit — flags alerts unresolved and approaching the 7-day pending-action auto-reject window; reminder to manually capture device-group automation-level config (portal-only, no stable Graph read surface) |
 
 ## Common entry points
 
@@ -77,6 +80,12 @@ Runbooks and scripts for Microsoft Defender for Endpoint (MDE), Defender for Clo
 - "Where did our Entra Permissions Management dashboard go?" / "we used to have CIEM, now it's missing" → `CIEM-B.md` Fix 4 — standalone product retired Oct 1 2025, this is a fresh onboarding into Defender for Cloud's CIEM sub-feature, not a migration
 - "Defender CSPM is enabled but we see no overprivileged/inactive identity recommendations" → `CIEM-B.md` Fix 1 — CIEM has its own sub-toggle separate from the Defender CSPM plan itself
 - "AWS/GCP shows no CIEM data" → `CIEM-B.md` Fix 2/3 — the connector's CIEM-specific access-configuration step (CloudFormation/Terraform) needs a separate re-run from base connector onboarding
+- "AIR quarantined a legitimate file/app" → `AIR-B.md` Fix 1 — Undo in Action Center + add an allow indicator
+- "Remediation action stuck Pending, nobody's approving it" → `AIR-B.md` Fix 2 — check for the 7-day auto-reject expiry
+- "AIR didn't do anything after an alert fired" → `AIR-B.md` Fix 3 — check the device group's automation level first, especially "No automated response"
+- "Two similar devices got different AIR treatment for the same alert type" → `AIR-B.md` Diagnosis Step 2 — device groups match top-down by rank, confirm which group each device actually landed in
+- "We're on Defender for Endpoint Plan 1, why isn't AIR investigating anything?" → `AIR-B.md` Triage — AIR does not exist on Plan 1, licensing gap not a config issue
+- "Should we turn on Full automation?" → `AIR-A.md` How It Works — Microsoft's recommended default, with Undo as the safety net
 
 ## Key diagnostic commands
 
@@ -137,6 +146,18 @@ non-Microsoft apps) ── must appear in EnabledServices or the whole category 
                     └── RBAC gate: Unified RBAC "Exposure Management" (portal) OR
                             legacy Entra global role (portal AND currently the
                             only path for Graph API access)
+
+Automated Investigation & Response (AIR) — a FOURTH chain, layered on top of the MDE
+sensor chain above, gated by licensing and device-group configuration:
+Device onboarded to MDE, licensed Plan 2 or Defender for Business (Plan 1 = no AIR)
+    └── Alert eligible to trigger automated investigation
+            └── Device Group membership resolved (ranked, top-down match; unmatched
+                    devices fall to "Ungrouped devices" default)
+                    └── Automation Level on THAT group: Full / Semi (3 variants) /
+                            No automated response
+                            └── Verdict per artifact (Malicious/Suspicious/No threats
+                                    found) → automatic action OR Pending (7-day
+                                    auto-reject) → logged to Action Center, undoable
 ```
 
 ## Response format reminder
