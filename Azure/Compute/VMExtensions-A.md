@@ -31,7 +31,7 @@
 - Azure Backup's VM extension (`AzureBackupWindowsIaasExtension` / `AzureBackupLinuxIaasExtension`) and its VSS/snapshot-specific failure modes — see `Azure/Backup/AzureBackup-A.md`, which owns backup-specific guest prerequisite health
 - Azure Arc-enabled server extensions (the Connected Machine agent's own extension model for non-Azure/on-premises servers) — a materially different onboarding and identity architecture; see `Azure/Arc/AzureArc-A.md`
 - VM networking (NIC/NSG/routing) beyond the specific WireServer connectivity requirement extensions depend on — see `Azure/Networking/NSG-A.md` for general NSG troubleshooting
-- OS-level disk/boot-loader repair once boot diagnostics has confirmed a specific in-guest boot failure (BCD repair, GRUB repair, disk attach-to-recovery-VM workflows) — a natural follow-on topic for a future run, not covered here
+- OS-level disk/boot-loader repair once boot diagnostics has confirmed a specific in-guest boot failure (BCD repair, offline chkdsk, reboot-loop root-cause diagnosis, ADE-encrypted disk unlock, the manual and automated repair-VM playbooks) — see `Azure/Compute/VMBootRepair-A.md`, which owns this layer in full; Linux boot repair (GRUB, fstab, initramfs) remains uncovered by either file
 - Azure Update Manager's own patch-extension lifecycle — see `Azure/UpdateManager/UpdateManager-A.md`, which shares the same VM Agent dependency but owns the patching-specific extension behavior
 
 **Assumptions:**
