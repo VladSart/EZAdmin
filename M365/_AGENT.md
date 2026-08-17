@@ -15,7 +15,7 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 | `Teams/` | Calling plans, device policies, federation, meeting policies, guest access |
 | `Licensing/` | Group-based licensing, service plan conflicts, assignment automation |
 | `Copilot/` | Microsoft 365 Copilot licensing, policy, Conditional Access, and grounding/permission troubleshooting (`Copilot-A/B.md`); agent lifecycle governance — Registry/Requests approval, ownership, risk signals, and the distinct admin surfaces per creation platform (Copilot Studio, Agent Builder, SharePoint, Foundry) — in `AgentGovernance-A/B.md` |
-| `UniversalPrint/` | Printer connector, printer shares, driverless print job diagnostics |
+| `UniversalPrint/` | Printer connector, printer shares, driverless print job diagnostics; also covers migrating OFF an on-premises print server ONTO Universal Print (`UP-Migration-A/B.md`) — distinct from steady-state UP operation and from server-to-server print migration (`Windows/Troubleshooting/PrintServerMigration-A/B.md`) |
 | `Backup/` | Microsoft 365 Backup — protection policies/units, restore points, restore sessions, coverage-gap detection for SharePoint/OneDrive/Exchange |
 | `Apps/` | Microsoft 365 Apps desktop client stack — Click-to-Run install architecture, Office Deployment Tool, update channels (Current/Monthly Enterprise/Semi-Annual Enterprise), Shared Computer Activation and client-level activation/licensing. Distinct from `Exchange/Outlook-Client-*.md` (Outlook-specific profile/Autodiscover issues) and `Licensing/` (Entra ID license assignment) |
 
@@ -65,6 +65,8 @@ Get-MgUserLicenseDetail -UserId <UPN> | Select SkuPartNumber
 - "Click-to-Run repair dialog does nothing" → `Apps/Deployment-UpdateChannels-B.md` Fix 3
 - "A Copilot agent is stuck pending approval / has no owner / is flagged at risk" → `Copilot/AgentGovernance-B.md`
 - "Our Copilot Studio agent works fine there but won't show up in Teams/M365 Copilot" → `Copilot/AgentGovernance-B.md` Fix 5
+- "We're decommissioning our print server and moving to Universal Print" → `UniversalPrint/UP-Migration-A.md`
+- "Migration to Universal Print is 'done' but users still see the old printer / can't find the new one" → `UniversalPrint/UP-Migration-B.md`
 
 ---
 

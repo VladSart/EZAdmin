@@ -392,4 +392,4 @@ Destination driver name/status (Get-Printer):  _______________
 
 - **This is architecturally the print-specific sibling of Storage Migration Service, not the same tool.** SMS (`StorageMigrationService-B.md`) explicitly does not migrate print queues — it's file-server-focused. If a decommission project involves both a legacy file server AND a legacy print server on the same box, expect to run two separate tools with two separate playbooks, not one combined migration.
 
-- **Universal Print is the alternative to ALL of this, not a variant of it.** If the actual goal is getting off on-premises print servers entirely rather than moving to a newer one, evaluate `M365/UniversalPrint/Universal-Print-A.md` before investing migration effort in a server that's slated for elimination anyway.
+- **Universal Print is the alternative to ALL of this, not a variant of it.** If the actual goal is getting off on-premises print servers entirely rather than moving to a newer one, evaluate `M365/UniversalPrint/UP-Migration-A.md` before investing migration effort in a server that's slated for elimination anyway.

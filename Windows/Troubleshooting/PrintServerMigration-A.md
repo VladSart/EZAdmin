@@ -27,7 +27,7 @@
 
 **Does not cover:**
 - File-server data migration — that's `StorageMigrationService-A.md`; SMS does not migrate print queues at all, it's a separate tool for a separate role
-- Migrating TO cloud-based Universal Print (eliminating the print server rather than moving it) — see `M365/UniversalPrint/Universal-Print-A.md`
+- Migrating TO cloud-based Universal Print (eliminating the print server rather than moving it) — see `M365/UniversalPrint/UP-Migration-A.md`/`UP-Migration-B.md` (eligibility triage, Connector sizing, bulk registration, Intune Settings Catalog rollout, cutover)
 - General Print Spooler crash/queue troubleshooting on a server that isn't being migrated — see `PrintSpooler-A.md`/`PrintSpooler-B.md`
 - Printer driver security hardening (Point and Print restrictions, PrintNightmare mitigations) as an ongoing posture — covered in `PrintSpooler-A.md`; only the migration-specific interaction (Fix 2 in the hotfix runbook) is addressed here
 - macOS/Linux print server migration (CUPS) — see `macOS/` folder

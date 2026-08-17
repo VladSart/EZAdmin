@@ -31,6 +31,7 @@
 
 **Does not cover:**
 - On-premises print servers (Windows Server Print Spooler) — for migrating printers between two on-prem servers (rather than moving off print servers entirely), see `Windows/Troubleshooting/PrintServerMigration-A.md`
+- The migration project itself — eligibility triage, Connector sizing/rollout, bulk registration, replacing legacy GPO/PrintProvisioning delivery with Intune, and cutover/decommission of the legacy print server — see `UP-Migration-A.md`/`UP-Migration-B.md`. This file assumes Universal Print is already the steady-state solution.
 - IPP Everywhere or AirPrint natively (though UP uses IPP internally)
 - Third-party print management (PaperCut, Printix, Printix Cloud)
 - The native Universal Print Mac App (macOS Sonoma 14.6.1+) — a separate client with its own install paths, per-device-install/per-user-permission model, and known-issue surface — see `Universal-Print-macOS-A.md`/`Universal-Print-macOS-B.md`
