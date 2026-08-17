@@ -22,10 +22,11 @@ Runbooks for **Microsoft Fabric** from an IT admin/MSP perspective — tenant se
 | `FabricAdmin-B.md` | Hotfix runbook — workspace has no capacity, capacity paused/deleted, throttling symptoms, tenant setting propagation, Git integration setup failures, external sharing/guest access gaps |
 | `FabricAdmin-A.md` | Deep dive — CU-second billing/bursting/smoothing mechanics, the four-stage throttling policy (overage protection → interactive delay → interactive rejection → background rejection), carryforward/burndown, compound throttling protection, capacity overage (preview, 3x billing), and the full OneLake data-access-role (RBAC) model — workspace-role bypass, default roles, permission inheritance, RLS/CLS union-vs-intersection evaluation, shortcut identity-passthrough nuances, propagation latencies |
 | `Domains-B.md` | Hotfix runbook — Fabric domains (data-mesh governance grouping): domain vs. workspace-access disambiguation (domain assignment never grants visibility/access), domain admin/contributor/Fabric-admin role boundaries, the 3 workspace-assignment methods, the reassignment-override tenant-setting gate, default-domain auto-assignment scope, delegated settings (sensitivity label, certification) |
+| `Domains-A.md` | Deep dive — data mesh architecture rationale (what Fabric domains implement vs. what a full data-mesh model implies); the full REST Admin API domain-management surface (Domain object model, Create/Update/Delete Domain incl. the required `preview=false` flag, the 3 workspace-assignment operations and their shared silent-override-gate behavior, Role Assignments Bulk Assign/Unassign incl. the Admin-vs-Contributor principal-type restriction); the audit schema (13 `OperationName` values, 2 with undocumented property schemas, and the bit-flag-shaped `Value` enums on access/contributor-scope changes) |
 | `Scripts/Get-FabricCapacityHealth.ps1` | Audits F-SKU capacity assignment, workspace-to-capacity mapping, and flags workspaces with no capacity or capacities in a non-Active state |
 | `Scripts/Get-FabricDomainAudit.ps1` | Audits domain/subdomain structure via the Fabric REST Admin API — domain-to-workspace mapping, workspaces with no domain assignment, domains missing a description; flags that admin/contributor lists and delegated-settings state require a manual portal check (not exposed by this API surface) |
 
-**Not yet built (candidates for a future run):** `Domains-A.md` (deep dive — data mesh architecture rationale, REST Admin API domain operations, audit schema), Git integration deep dive (currently only covered at hotfix depth in `FabricAdmin-B.md` Fix 4), workspace governance at scale beyond domains (e.g. tenant-wide workspace-naming/lifecycle policy).
+**Not yet built (candidates for a future run):** Git integration deep dive (currently only covered at hotfix depth in `FabricAdmin-B.md` Fix 4), workspace governance at scale beyond domains (e.g. tenant-wide workspace-naming/lifecycle policy).
 
 ## Common entry points
 
@@ -43,6 +44,10 @@ Runbooks for **Microsoft Fabric** from an IT admin/MSP perspective — tenant se
 - "I put a workspace in the Finance domain but the Finance team still can't see it" → `Domains-B.md` Fix 1 — domain assignment never grants access, that's a workspace-role/OneLake-security problem
 - "I'm a domain contributor but can't assign a workspace to my domain" → `Domains-B.md` Fix 2 — must also independently hold Workspace Admin on that workspace
 - "I moved a workspace to a new domain and it didn't take" → `Domains-B.md` Fix 3 — reassignment-override tenant setting is off by default
+- "Our script assigns workspaces to a domain via the REST API and gets 200 OK, but nothing changed" → `Domains-A.md` How It Works / Symptom→Cause Map — the API silently obeys the same override tenant-setting gate as the portal, no error either way
+- "Bulk-assigning a security group as a domain admin via the API fails" → `Domains-A.md` Symptom→Cause Map — `UnsupportedPrincipalTypeForDomainAdminAssignment`, Admin role has narrower principal-type support than Contributor
+- "Who deleted/renamed this domain, or changed contributor scope?" → `Domains-A.md` Evidence Pack / Command Cheat Sheet — Purview audit search by `DataDomainObjectId`, parse the `Value` enums correctly (they're not sequential integers)
+- "Building automation to bulk-create or bulk-assign domains" → `Domains-A.md` Remediation Playbooks 1–2 — rate limits (25/min domain CRUD, 10/min workspace assignment), `preview=false` requirement, LRO polling for capacity-based assignment
 
 ## Key diagnostic commands
 
