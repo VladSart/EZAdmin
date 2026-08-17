@@ -4654,3 +4654,26 @@ Gotcha for the build itself: the task briefing handed to this run referenced "ru
 File count: 928 (via `find`, excluding `_BUILD/` and `.git/`), up from run 154's stated 919 — a clean +9 delta matching exactly the 9 new files this run (3 topic pairs × 2 `.md` + 3 scripts), no discrepancy to flag.
 
 **For next run:** AD and Intune are now assessed as close to exhaustive for standard L2/L3 MSP pain points after two consecutive dedicated survey passes (137→138ish and now 155) finding no clean new gap in either — future gap-hunting should default to Security/ sub-areas not yet deep-surveyed (Purview and ConditionalAccess got a fresh look a few runs back per run 154's own history; Copilot for Security has comparatively thin coverage — 1 topic — and may be worth a dedicated look), or pivot to the still-open Microsoft Fabric domain run 154 flagged. Git health: authored directly against the mounted working tree; verify true `origin/master` state independently before trusting local ahead/behind counts, per the standing lesson since runs 28/135-154.
+
+---
+
+## Defender for Business + Microsoft Fabric (new domain) — run 156
+
+| File | Status | Assigned |
+|------|--------|---------|
+| `Security/Defender/DefenderForBusiness-B.md` | ✅ | auto-build |
+| `Security/Defender/DefenderForBusiness-A.md` | ✅ | auto-build |
+| `Security/Defender/Scripts/Get-DefenderForBusinessStatus.ps1` | ✅ | auto-build |
+| `Security/Defender/_AGENT.md` (backfilled — Covers clause, 2 folder-contents rows, 5 common-entry-point bullets) | ✅ | auto-build |
+| `Fabric/_AGENT.md` (new domain) | ✅ | auto-build |
+| `Fabric/FabricAdmin-B.md` | ✅ | auto-build |
+| `Fabric/Scripts/Get-FabricCapacityHealth.ps1` | ✅ | auto-build |
+| `AGENT_INDEX.md` (backfilled — 2 new Domain Map rows: Defender for Business, Microsoft Fabric admin) | ✅ | auto-build |
+
+Ran as scheduled task "ezadmin-day-build." Manifest table backlog confirmed empty entering this run (only the legend row matches `⬜`) — Expansion Rules mode. Took up run 155's own "for next run" pointer directly: picked **Defender for Business** (thin-coverage-adjacent — full MDE has ~15 topics, DfB as the SMB licensing tier had none) and the **still-open Microsoft Fabric domain**, deliberately deferred by run 153 as "explicitly scoped as a multi-run domain build" — this run is that domain's first installment (`_AGENT.md` + hotfix runbook + script), not a complete build; `FabricAdmin-A.md` (deep dive) and further Fabric sub-topics remain open for a future run.
+
+Researched both topics live via a research subagent before writing (DfB: SMB 300-seat/5-device cap, same-sensor-as-MDE architecture, auto-provisioned Default policies, feature boundary vs. P2, migration path; Fabric: F-SKU capacity replacing P-SKU, capacity State as first triage step, 7-day soft-delete window, CU-second throttling model with 10-min buffer, OneLake workspace-role security model where Admin/Member/Contributor bypass granular controls, Git integration ADO/GitHub limits) rather than relying on recall, since both hinge on precise platform mechanics. Cited Microsoft Learn URLs throughout both new topics.
+
+File count: not independently re-verified this run — approximately 935 (928 from run 155 + 7 new files, one of which, `Fabric/_AGENT.md`, is new-domain scaffolding rather than a topic file).
+
+**For next run:** Continue the Fabric domain — build `FabricAdmin-A.md` (deep dive: capacity architecture, CU-second billing model internals, OneLake data-access-role mechanics) as the natural next step now that the domain scaffold and hotfix runbook exist. Also still open per run 155: Security/Copilot's thin (1-topic) coverage may warrant a second Copilot-adjacent topic if a genuine gap is found on survey (don't force one). Git health: authored directly against the mounted working tree via file tools; verify true `origin/master` state independently before trusting local ahead/behind counts, per the standing lesson since runs 28/135-155.
