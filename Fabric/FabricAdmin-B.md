@@ -108,7 +108,7 @@ Portal: **admin.microsoft.com** (or **app.fabric.microsoft.com → gear → Admi
 Only **Azure DevOps** (recommended, GA) and **GitHub** (more limited) are supported. Confirm:
 - User has read-write item permission on the workspace (required, not just workspace Admin/Member)
 - Repo/branch exists and the connecting account has access to it
-- Commit size is under 150 MB and the workspace is under the 1,000-item cap
+- Commit size is under the provider/credential-specific limit (25 MB ADO+service principal / 125 MB ADO+user SSO / 50 MB GitHub combined — see `GitIntegration-B.md` Fix 4 for the full breakdown) and the workspace is under the 1,000-item cap
 
 ---
 
@@ -181,7 +181,7 @@ Set-PowerBIWorkspace -Id "<workspaceId>" -CapacityId "<capacityId>" -Scope Organ
 1. Confirm provider: **Azure DevOps is recommended**; GitHub has more limitations — if GitHub is failing, consider migrating the connection to ADO
 2. Confirm the connecting user has **read-write item permission** on the workspace — workspace Admin/Member role alone is not sufficient if item-level permissions have been customized
 3. Confirm repo/branch access from the connecting account's side (ADO/GitHub), not just the Fabric side
-4. Check limits: commit under 150 MB, workspace under 1,000 items
+4. Check limits: commit size varies by provider/credential type (25 MB ADO+service principal / 125 MB ADO+user SSO / 50 MB GitHub combined — see `GitIntegration-B.md` Fix 4), workspace under 1,000 items
 5. Disconnect and reconnect the Git integration from workspace settings if a sync gets stuck in a bad state — this does not delete workspace content, only resets the sync pointer
 
 **Rollback:** Disconnecting Git integration leaves workspace content untouched; it only stops tracking Git history going forward.

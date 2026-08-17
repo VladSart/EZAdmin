@@ -28,8 +28,11 @@ Runbooks for **Microsoft Fabric** from an IT admin/MSP perspective — tenant se
 | `Scripts/Get-FabricCapacityHealth.ps1` | Audits F-SKU capacity assignment, workspace-to-capacity mapping, and flags workspaces with no capacity or capacities in a non-Active state |
 | `Scripts/Get-FabricDomainAudit.ps1` | Audits domain/subdomain structure via the Fabric REST Admin API — domain-to-workspace mapping, workspaces with no domain assignment, domains missing a description; flags that admin/contributor lists and delegated-settings state require a manual portal check (not exposed by this API surface) |
 | `Scripts/Get-FabricGitIntegrationStatus.ps1` | Audits Git connection state and per-item sync health (conflicts/uncommitted/pending-update counts) across all tenant workspaces, and flags workspaces approaching the 1,000-item cap; explicitly reports (not silently skips) workspaces the supplied token can't check Git status for, since the Git endpoints are workspace-scoped, not admin-scoped |
+| `DeploymentPipelines-B.md` | Hotfix runbook — Fabric's separate stage-promotion ALM tool (complementary to, not the same as, Git integration): can't-assign-workspace name collisions, backward-deploy-disabled, breaking schema-change confirmation dialogs, autobind/dependency failures (same-workspace and cross-pipeline), deployment rules grayed out or not applying, legacy semantic model metadata deploy failures, orphaned pipelines (no admin), and REST automation gotchas (LRO polling, 429s, selective-deployment gaps) |
+| `DeploymentPipelines-A.md` | Deep dive — pipeline structure and item pairing mechanics (identity survives renames, never auto-merges unpaired same-named items); the autobinding algorithm (same-workspace fail-whole-deploy behavior vs. cross-pipeline stage-index-and-equal-count matching); the 3 deployment rule types and their owner-only, next-deploy-only semantics; the two-tier permission model (pipeline Admin vs. workspace role, both required to deploy); the full Deploy Stage Content REST API and LRO/execution-plan pattern; and the Feb 12 2026 (already-enforced) legacy semantic model metadata retirement, with ASLC's exemption |
+| `Scripts/Get-FabricDeploymentPipelineStatus.ps1` | Audits pipeline stage structure (flags unassigned stages), role assignments (flags orphaned pipelines with zero Admins), and the most recent deployment operation's outcome (surfaces the failing step's exact error) across every pipeline the supplied token can see; explicitly flags that pipeline visibility is participant-scoped, not tenant-admin-scoped — there is no equivalent to the workspace Admin API for this item type |
 
-**Not yet built (candidates for a future run):** Deployment Pipelines (Fabric's separate stage-promotion ALM tool — related to but architecturally distinct from Git integration), workspace governance at scale beyond domains (e.g. tenant-wide workspace-naming/lifecycle policy).
+**Not yet built (candidates for a future run):** workspace governance at scale beyond domains (e.g. tenant-wide workspace-naming/lifecycle policy).
 
 ## Common entry points
 
@@ -60,6 +63,15 @@ Runbooks for **Microsoft Fabric** from an IT admin/MSP perspective — tenant se
 - "Building automation that calls the Git integration REST API" → `GitIntegration-A.md` Remediation Playbook 1 — branch on `RequiredAction` before committing, and poll the LRO (`x-ms-operation-id`/`Retry-After`) rather than trusting the initial `202`
 - "Service principal can't authenticate Git integration to Azure DevOps" → `GitIntegration-A.md` How It Works / Learning Pointers — Automatic/SSO credential mode is interactive-user-only; SPs need a `ConfiguredConnection`
 - "Client asks if sensitivity-labeled items in Fabric will still sync to Git" → `GitIntegration-A.md` Symptom→Cause Map — flag the December 1, 2026 read-write-on-items enforcement change proactively
+- "Can't assign a workspace to a pipeline stage, error names an item" → `DeploymentPipelines-B.md` Fix 1 — a same-type/same-name item already exists in an adjacent stage
+- "Deploy to previous/earlier stage button is greyed out" → `DeploymentPipelines-B.md` Fix 2 — backward deploy only works into an empty target stage
+- "Deployment popped up a 'continue the deployment' warning" → `DeploymentPipelines-B.md` Fix 3 — breaking schema change would destroy target data, confirm intent before continuing
+- "Deploy fails citing a missing dependency, or an item silently didn't rebind" → `DeploymentPipelines-B.md` Fix 4 or `DeploymentPipelines-A.md` How It Works — same-workspace autobind needs the dependency present in target; cross-pipeline autobind needs matching stage INDEX and equal stage counts
+- "Deployment rule is grayed out, or I set one and nothing happened" → `DeploymentPipelines-B.md` Fix 5 — requires item ownership, and only applies starting the NEXT deploy
+- "Semantic model won't deploy, error mentions an unsupported/legacy format" → `DeploymentPipelines-B.md` Fix 6 — legacy metadata retired for deployment pipelines as of Feb 12, 2026 (already in effect); ASLC models are exempt
+- "Nobody can unassign our workspace from its pipeline" → `DeploymentPipelines-B.md` Fix 7 — orphaned pipeline (no admin), needs tenant-admin reclaim via the Admin API
+- "Building automation that calls the Deployment Pipelines REST API" → `DeploymentPipelines-A.md` Remediation Playbook 1 — poll the LRO to a terminal status, respect `Retry-After` on 429s, max 300 items per call
+- "We want reports to always point at the Production semantic model, not whatever stage they're being tested in" → `DeploymentPipelines-A.md` Remediation Playbook 3 — 3 supported ways to deliberately avoid autobinding
 
 ## Key diagnostic commands
 
@@ -83,6 +95,11 @@ Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/admin/workspaces" `
 
 # Fabric REST Admin API — list domains (no dedicated cmdlet exists for domains)
 Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/admin/domains" `
+    -Headers @{ Authorization = "Bearer $token" } -Method GET
+
+# Fabric REST API — list deployment pipelines visible to the caller (no admin-scoped
+# enumeration exists for this item type — see Get-FabricDeploymentPipelineStatus.ps1 header)
+Invoke-RestMethod -Uri "https://api.fabric.microsoft.com/v1/deploymentPipelines" `
     -Headers @{ Authorization = "Bearer $token" } -Method GET
 ```
 
@@ -115,6 +132,17 @@ Separately gated, ORTHOGONAL to the access chain above (never affects visibility
                         Workspace Admin on that specific workspace — two independent checks)
                             └── Workspace gets domainId metadata — enables OneLake catalog
                                 filter/discovery and delegated tenant-setting overrides ONLY
+
+Separately gated, ORTHOGONAL to the access chain above (a workspace's pipeline membership
+never grants or restricts who can see it — deploying needs pipeline role AND workspace role):
+[Deployment Pipeline — stage-promotion ALM tool]
+    └── Workspace assigned to exactly ONE pipeline stage (1:1, permanent stage count/names)
+            └── Item pairing established (survives renames; unpaired same-name items never merge)
+                    └── Deploy requires: pipeline Admin role AND >= Contributor on BOTH the
+                        source AND target workspace — pipeline access alone grants nothing
+                            └── Autobind resolves dependencies at deploy time (same-workspace:
+                                fails whole deploy if missing; cross-pipeline: stage-INDEX +
+                                equal-stage-count match only)
 ```
 
 ## Response format reminder
