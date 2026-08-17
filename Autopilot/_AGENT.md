@@ -7,7 +7,7 @@ Windows Autopilot — zero-touch device provisioning for Entra joined and Hybrid
 Covers:
 - **Enrollment** — hash upload, profile assignment, OOBE flow
 - **Hybrid join (HAADJ)** — the most complex scenario; requires on-prem AD + Entra Connect + Intune Connector
-- **Deployment profiles** — user-driven, self-deploying, pre-provisioning (white glove)
+- **Deployment profiles** — user-driven, self-deploying, pre-provisioning (white glove — see `Troubleshooting/WhiteGlove-B.md`/`-A.md` for the dedicated Technician-flow/User-flow deep dive)
 - **ESP (Enrollment Status Page)** — why devices get stuck, timeout handling
 - **TPM issues** — attestation failures, firmware version problems
 - **Network requirements** — firewall/proxy requirements for Autopilot to reach Microsoft
@@ -56,6 +56,9 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 - "Device prep policy won't save / 0 groups assigned / ESP showing when it shouldn't" → `Troubleshooting/DevicePreparation-B.md` (hotfix) / `DevicePreparation-A.md` (deep dive — Enrollment Time Grouping architecture) + `Scripts/Get-DevicePreparationReadinessAudit.ps1`
 - "Apps/scripts Skipped during a device preparation OOBE deployment" → `Troubleshooting/DevicePreparation-B.md` (Fix 4)
 - "Reset device for next user / redeploy / wipe and reprovision" → `Troubleshooting/Reset-B.md` (hotfix) / `Reset-A.md` (deep dive — Autopilot Reset vs. Wipe vs. Fresh Start comparison, hybrid-join hard exclusion) + `Scripts/Get-AutopilotResetReadinessAudit.ps1`
+- "White Glove / pre-provisioning red error screen at Technician flow" / "TPM attestation fails right after pressing Provision" / "error 0x800705B4 or 0x81036502 during provisioning" → `Troubleshooting/WhiteGlove-B.md` (hotfix) / `WhiteGlove-A.md` (deep dive — Technician flow vs. User flow, device-vs-user targeting boundary, 90-minute/6-month timing windows) + `Scripts/Get-WhiteGloveReadiness.ps1`
+- "Device won't go through pre-provisioning again after a failed or completed attempt" → `Troubleshooting/WhiteGlove-B.md` Fix 7 (delete the Intune device record — no automatic re-enrollment path exists)
+- "Stuck at 'Joining your organization's network' during White Glove Technician flow" (hybrid join) → `Troubleshooting/WhiteGlove-B.md` Fix 3 (cross-ref `HybridJoin-Autopilot-B.md`)
 
 ---
 
@@ -80,6 +83,8 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 | `Scripts/Get-DevicePreparationReadinessAudit.ps1` | Read-only audit of device-prep prerequisites — device group ownership/eligibility, Intune Provisioning Client SP presence, classic-Autopilot shadowing by serial |
 | `Troubleshooting/Reset-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot Reset (local + remote) — hybrid-join/Surface Hub hard exclusion, WinRE preflight gate, local vs. remote identity-handoff divergence, comparison vs. Wipe/Fresh Start |
 | `Scripts/Get-AutopilotResetReadinessAudit.ps1` | Fleet-wide pre-flight audit of Autopilot Reset eligibility via Graph — flags hybrid-joined devices and stale MDM sync before a bulk reset is attempted |
+| `Troubleshooting/WhiteGlove-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot pre-provisioning (White Glove) — Technician flow vs. User flow architecture, TPM-attestation-gated eligibility, device-vs-user targeting boundary during Technician flow, the 90-minute/6-month timing windows between flows, one-way-door re-enrollment behavior |
+| `Scripts/Get-WhiteGloveReadiness.ps1` | Device-local read-only readiness/failure-signature check for pre-provisioning — TPM state, endpoint reachability, ESP tracking registry state, recent Autopilot/MDM event log entries, IME log failure scan, heuristic 90-minute/6-month timing-window check |
 
 > ⚠️ Not listed above: `Troubleshooting/Autopilot-Troubleshooting2.ps1` and `Troubleshooting/Autopilot-Network-Connectivity.ps1` (misfiled `.ps1` scripts sitting under `Troubleshooting/` rather than `Scripts/`, one a near-duplicate of `Test-AutopilotNetworkRequirements.ps1`) are flagged since run 30 for interactive user review (rename/relocate/dedupe), not touched autonomously.
 
