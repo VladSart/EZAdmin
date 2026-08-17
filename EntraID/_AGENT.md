@@ -19,6 +19,7 @@ Covers:
 - **Graph API** — scripting against Entra, batch queries, permissions model
 - **Certificate-Based Authentication (CBA)** — native (non-ADFS) X.509 certificate sign-in, CA trust chain, CRL revocation checking, certificate-to-user binding (high-affinity vs. legacy low-affinity), authentication strength mapping — distinct from Windows Hello for Business (device-bound key/cert, see `Troubleshooting/WHfB-B.md`/`-A.md`) and from Intune Cloud PKI (certificate *issuance*, not sign-in validation, see `Intune/Troubleshooting/CloudPKI-A.md`)
 - **Restricted Management Administrative Units (RMAU)** — the special-cased AU (`isMemberManagementRestricted = true`) that blocks even Global Administrator/Privileged Role Administrator from directly modifying member Users/Devices/Security Groups without an RMAU-scoped role assignment; direct-membership-only (no cascade), permanent restricted setting at creation, hard incompatibility with PIM/Entitlement Management/Lifecycle Workflows/Access Reviews — distinct from a regular (non-restricted) AU, which only scopes role applicability without blocking tenant-scoped admins
+- **External MFA (formerly External Authentication Methods/EAM)** — delegating the MFA second factor entirely to a non-Microsoft OIDC provider (e.g., Cisco Duo); the two-role admin-consent gate (Authentication Policy Administrator creates the method, only Privileged Role Administrator can consent the provider's app), the hard incompatibility with authentication-strength grant controls, acr/amr claim type-mapping as the actual "was this really MFA" trust check, and Custom-Control-to-External-MFA migration via mutually exclusive parallel Conditional Access policies — distinct from native Microsoft methods (see `Troubleshooting/MFA-B.md`/`-A.md`), Passkeys (see `Troubleshooting/Passkeys-B.md`/`-A.md`), and cross-tenant B2B MFA trust (see `Security/ConditionalAccess/`)
 
 ---
 
@@ -119,6 +120,8 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Graph/Useful-Queries.md` | Common Graph API queries for MSP reporting |
 | `Scripts/Get-CBAConfigurationAudit.ps1` | CBA policy state/scope, trusted CA + CRL-configured audit, binding priority/affinity type, per-user certificateUserIds/UPN binding-readiness check |
 | `Scripts/Get-RestrictedManagementAUAudit.ps1` | Tenant-wide RMAU inventory — member type breakdown per RMAU, scoped role assignment audit with orphaned-principal detection, PIM eligible-assignment conflict cross-check |
+| `Troubleshooting/ExternalMFA-B.md` / `-A.md` | Hotfix + deep dive: External MFA (third-party OIDC provider satisfying MFA) — two-role admin-consent gate, authentication-strength incompatibility, acr/amr claim type-mapping validation, Custom-Control migration, Windows 10 OOBE limitation, provider signing-key rollover/24h metadata cache |
+| `Scripts/Get-ExternalMFAAudit.ps1` | External MFA method state/consent audit (service-principal-existence-as-consent-proxy), Conditional Access authentication-strength conflict scan, optional live provider discovery-endpoint reachability check |
 
 ---
 
@@ -166,6 +169,9 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "Global Admin can't reset this exec's password / can't edit this group's membership, no obvious reason" → `Troubleshooting/RestrictedManagementAU-B.md` (check `isMemberManagementRestricted` first)
 - "PIM eligible assignment / access review / Lifecycle Workflow silently doesn't apply to a specific user or group" → `Troubleshooting/RestrictedManagementAU-B.md` Fix 6 (confirm RMAU membership before troubleshooting the Governance feature)
 - "Nobody can reset a Global Administrator's own password" → `Troubleshooting/RestrictedManagementAU-B.md` Fix 5 (must be removed from the RMAU first)
+- "Third-party MFA (Duo, etc.) stopped satisfying Conditional Access" / "external MFA method stuck disabled" / error code 50158 → `Troubleshooting/ExternalMFA-B.md` + `Scripts/Get-ExternalMFAAudit.ps1`
+- "External MFA enabled tenant-wide but still blocked by a phishing-resistant/authentication-strength policy" → `Troubleshooting/ExternalMFA-B.md` Fix 2 / `Troubleshooting/ExternalMFA-A.md` (hard incompatibility, not a config gap)
+- "User redirected to Duo/provider twice during sign-in" → `Troubleshooting/ExternalMFA-B.md` Fix 5 (overlapping Custom Control + External MFA policies)
 
 ---
 

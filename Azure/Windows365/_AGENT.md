@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`. Windows 365 Cloud Apps (published-application delivery layered on Flex Shared mode) is covered separately in `CloudApps-A.md`/`CloudApps-B.md` — it introduces no separate licensing/compute model of its own, only a policy property pairing and an app discovery/publish lifecycle.
+Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`. Windows 365 Cloud Apps (published-application delivery layered on Flex Shared mode) is covered separately in `CloudApps-A.md`/`CloudApps-B.md` — it introduces no separate licensing/compute model of its own, only a policy property pairing and an app discovery/publish lifecycle. **Windows 365 Reserve** (short-term, on-demand Cloud PC access — up to 10 days/user/year — for users whose physical device is temporarily unavailable) is covered separately in `Reserve-A.md`/`Reserve-B.md` — a standalone offering with its own licensing/eligibility/deprovisioning model, architecturally unrelated to Windows 365 Cross-region Disaster Recovery / Disaster Recovery Plus (add-ons covered in `Flex-A.md` that protect an *existing* Enterprise/Flex Cloud PC, not a substitute for a user with none).
 
 ---
 
@@ -31,6 +31,9 @@ Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts 
 | `CloudApps-B.md` | Hotfix runbook — Windows 365 Cloud Apps: invalid policy property pairing, app discovery failures (custom image/APPX-MSIX/Autopilot), Failed/stuck publish states, concurrency exhaustion, expected cross-app launch behavior |
 | `CloudApps-A.md` | Deep-dive reference — Cloud Apps as a policy-property pairing on Flex Shared mode (not a separate product), app discovery/publish lifecycle, inherited Flex licensing/concurrency model, Application Control for Windows as the only launch-restriction mechanism |
 | `Scripts/Get-Windows365CloudAppsAudit.ps1` | Cloud Apps audit: invalid property-pairing detection, custom-image discovery risk flag, zero-provisioned-Cloud-PC detection, concurrency-at-capacity check — read-only, no remediation |
+| `Reserve-B.md` | Hotfix runbook — Windows 365 Reserve: 7-day activation-delay blocks, 1-active-Cloud-PC-per-user limit, first-assigned-policy-wins reporting gap, disaster-recovery-add-on expectation mismatch, no-capacity-guarantee during large-scale events, no-snapshot-on-manual-deprovision data loss, bulk-provisioning rate limit |
+| `Reserve-A.md` | Deep-dive reference — Reserve's standalone licensing/eligibility model (7-day delay, non-poolable, 1-per-user), no-capacity-preallocation architecture (vs. Disaster Recovery Plus), fixed 4vCPU/16GB/128GB spec, geography-only targeting, deprovisioning asymmetry (natural expiry snapshots, manual Return doesn't), full unsupported-feature boundary |
+| `Scripts/Get-Windows365ReserveAudit.ps1` | Reserve audit: active Reserve Cloud PC inventory with status, duplicate-active-Reserve-PC detection (should never occur under the 1-per-user rule), provisioning policy cross-reference — read-only; cannot evaluate the 7-day eligibility delay (portal-only) |
 
 ---
 
@@ -57,6 +60,10 @@ Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts 
 | "No apps ever show up as Ready to publish" | `CloudApps-B.md` → Fix 2 (custom image discovery) or Fix 6 (Autopilot Device Prep checkbox) |
 | "App stuck in Failed or Preparing in All Cloud Apps" | `CloudApps-B.md` → Fix 4 (Failed — unpublish/republish) or Fix 5 (Preparing — reprovision) |
 | "Outlook opened Edge and nobody published Edge — is that a bug?" | `CloudApps-B.md` → Fix 8 — expected cross-app launch behavior, not a fault |
+| "User's laptop was stolen/broken, needs temporary access from another device" | `Reserve-B.md` → Triage — confirm 7-day activation delay and existing active Reserve Cloud PC first |
+| "License assigned today but Reserve Cloud PC won't provision" | `Reserve-B.md` → Fix 1 — mandatory, non-bypassable 7-day activation delay |
+| "Client wants Reserve to behave like disaster recovery / guarantee capacity" | `Reserve-B.md` → Fix 4 — Reserve is not a DR add-on, see `Flex-A.md` for Cross-region DR/DR Plus instead |
+| "User Returned their Reserve Cloud PC and lost data" | `Reserve-B.md` → Fix 6 — manual deprovision takes no snapshot, unlike natural 10-day expiry |
 
 ---
 

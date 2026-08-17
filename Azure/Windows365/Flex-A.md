@@ -68,7 +68,7 @@ Unlike Windows 365 Enterprise/Business (one license = one Cloud PC = one user, d
 
 As of this writing, Windows 365 Flex does **not** support:
 - **Resize** as a remote action (the Resize workflow described in `Windows365-A.md`/`Windows365-B.md` Fix 5 does not apply to Flex Cloud PCs — right-sizing a Flex user means moving them to a different provisioning policy/license tier, not resizing in place)
-- **Cross-region disaster recovery**
+- **Cross-region disaster recovery** — note this is architecturally unrelated to **Windows 365 Reserve** (`Reserve-A.md`/`Reserve-B.md`), a separate standalone offering for users with no Cloud PC of their own, not a DR mechanism for an existing one
 
 ### Purview Customer Key
 
