@@ -22,7 +22,7 @@
 | Product | Azure Backup for Azure VMs, via Recovery Services Vault (RSV) |
 | Applies to | IaaS Azure VMs (Windows and Linux), managed disks |
 | Backup model | Agentless, snapshot-based (Azure Backup VM extension orchestrates guest-level consistency) |
-| Out of scope | Azure Site Recovery (ASR) — shares the vault construct but is a distinct DR/replication service with its own Mobility Service agent and RPO model; on-premises/MARS agent backup (files/folders, not full VM); SQL/SAP HANA workload backup within Azure Backup (separate protection intent, different cmdlets) |
+| Out of scope | Azure Site Recovery (ASR) — shares the vault construct but is a distinct DR/replication service with its own Mobility Service agent and RPO model; see `Azure/SiteRecovery/SiteRecovery-A.md` for continuous replication, crash/app-consistent recovery points, and failover/reprotect/failback; on-premises/MARS agent backup (files/folders, not full VM); SQL/SAP HANA workload backup within Azure Backup (separate protection intent, different cmdlets) |
 | Related | `M365/Backup/` covers SaaS data protection (Exchange/SharePoint/OneDrive mailbox and file backup) — a completely different service and threat model from infrastructure-level VM backup covered here |
 
 ---

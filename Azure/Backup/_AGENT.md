@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Runbooks and scripts for **Azure Backup via Recovery Services Vault (RSV)**, scoped to Azure VM (IaaS) protection — backup job failures, protection/coverage gaps, recovery point consistency, restores, soft delete, and vault-level configuration (redundancy, immutability, RBAC). This is infrastructure-level backup (VM disks), distinct from `M365/Backup/` (SaaS mailbox/file data protection) and out of scope for Azure Site Recovery (ASR) replication/DR, which is a related but separate service built on the same vault construct.
+Runbooks and scripts for **Azure Backup via Recovery Services Vault (RSV)**, scoped to Azure VM (IaaS) protection — backup job failures, protection/coverage gaps, recovery point consistency, restores, soft delete, and vault-level configuration (redundancy, immutability, RBAC). This is infrastructure-level backup (VM disks), distinct from `M365/Backup/` (SaaS mailbox/file data protection) and out of scope for Azure Site Recovery (ASR) replication/DR, which is a related but separate service built on the same vault construct — see `Azure/SiteRecovery/` for continuous block-level replication, crash/app-consistent recovery point tracks, and the failover/reprotect/failback lifecycle.
 
 ---
 
