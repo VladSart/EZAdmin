@@ -34,7 +34,7 @@
 - **Azure Load Balancer** — regional Layer 4, covered in `LoadBalancer-A.md`/`LoadBalancer-B.md`. Architecturally unrelated to Front Door beyond both being traffic-distribution resources.
 - **Azure Traffic Manager** — DNS-based global traffic distribution, a different mechanism entirely (no proxying, no caching, no WAF; just DNS responses). Referenced only where a client might be choosing between the two.
 - **CDN-specific rules engine actions beyond routing/security** (image optimization, compression tuning, advanced rule set actions for URL rewrite/redirect) — the Rule Set engine is documented here only as far as the Route Configuration Override behavior that affects routing/origin selection; the full rules engine action catalog is a possible future topic if ticket volume justifies it.
-- **Private Link origins** — Premium-tier support for privately connecting to an origin (Storage, App Service, or an internal Load Balancer) without public exposure; flagged as a likely follow-up topic given how often "keep the origin off the public internet entirely" comes up, not covered in depth here.
+- **Private Link origins** — Premium-tier support for privately connecting to an origin (Storage, App Service, or an internal Load Balancer) without public exposure; now its own dedicated topic — see `FrontDoorPrivateLink-A.md`/`FrontDoorPrivateLink-B.md`.
 
 **Assumptions:**
 - Standard or Premium tier (or a Classic profile being assessed for migration)
