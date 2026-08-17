@@ -21,7 +21,7 @@
 
 **Out of scope / see elsewhere:**
 - Full Active Directory Domain Services replication, FSMO roles, and the domain/forest schema — see `Troubleshooting/Replication/`. AD LDS's replication model is architecturally *similar* (same multi-master, same conflict-resolution rule) but is a **completely separate, per-instance** topology with no shared state, sites, or KCC awareness with AD DS.
-- Azure AD Domain Services — despite the similar name, this is an unrelated managed Microsoft cloud service, not AD LDS.
+- Azure AD Domain Services (now **Microsoft Entra Domain Services**) — despite the similar name, this is an unrelated, fully managed, cloud-hosted domain with real domain join and Kerberos/NTLM, synchronized one-way from Entra ID; not AD LDS. See `Azure/EntraDomainServices/EntraDomainServices-A.md`.
 - Entra ID / Entra Connect hybrid identity — see `EntraID/`.
 - AD FS claims-based federation — a separate protocol layer; AD LDS is not a federation service.
 - Kerberos ticket issuance — AD LDS is **not a KDC**. If an AD LDS server is also domain-joined, the OS handles Kerberos for the machine/domain logon independently of anything AD LDS itself does; AD LDS's own LDAP binds (instance-local or proxy) are a separate mechanism.
