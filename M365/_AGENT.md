@@ -18,6 +18,7 @@ Microsoft 365 service-level issues — Exchange Online, SharePoint, Teams, OneDr
 | `UniversalPrint/` | Printer connector, printer shares, driverless print job diagnostics; also covers migrating OFF an on-premises print server ONTO Universal Print (`UP-Migration-A/B.md`) — distinct from steady-state UP operation and from server-to-server print migration (`Windows/Troubleshooting/PrintServerMigration-A/B.md`) |
 | `Backup/` | Microsoft 365 Backup — protection policies/units, restore points, restore sessions, coverage-gap detection for SharePoint/OneDrive/Exchange |
 | `Apps/` | Microsoft 365 Apps desktop client stack — Click-to-Run install architecture, Office Deployment Tool, update channels (Current/Monthly Enterprise/Semi-Annual Enterprise), Shared Computer Activation and client-level activation/licensing. Distinct from `Exchange/Outlook-Client-*.md` (Outlook-specific profile/Autodiscover issues) and `Licensing/` (Entra ID license assignment) |
+| `VivaEngage/` | Viva Engage (Yammer) — the tenant-wide service-principal sign-in gate, Native Mode architecture (community ↔ connected M365 Group ↔ SharePoint/OneNote/Planner), the 7-role admin model across its 3 real assignment surfaces (Entra ID / Viva Engage-Yammer admin center / per-community), community-creation gating via the M365 Group creation policy, and the Microsoft Graph `/employeeExperience` API surface. Distinct from `Security/Purview/CommunicationCompliance-*.md`/`RetentionLabels-*.md`, which own the Purview-side policy mechanics for Viva Engage as a monitored channel |
 
 ---
 
@@ -67,6 +68,11 @@ Get-MgUserLicenseDetail -UserId <UPN> | Select SkuPartNumber
 - "Our Copilot Studio agent works fine there but won't show up in Teams/M365 Copilot" → `Copilot/AgentGovernance-B.md` Fix 5
 - "We're decommissioning our print server and moving to Universal Print" → `UniversalPrint/UP-Migration-A.md`
 - "Migration to Universal Print is 'done' but users still see the old printer / can't find the new one" → `UniversalPrint/UP-Migration-B.md`
+- "Nobody can sign in to Viva Engage / Yammer, getting a 'bad request' error" → `VivaEngage/VivaEngage-B.md` Fix 1 (tenant-wide service principal gate)
+- "No 'Create Community' option anywhere in Viva Engage" → `VivaEngage/VivaEngage-B.md` Fix 2 (this is an M365 Group creation policy setting, not a Viva Engage one)
+- "Someone was made Verified Admin / Network Admin but I can't find that role in Entra ID" → `VivaEngage/VivaEngage-B.md` Fix 5 (these roles only exist in the Viva Engage/Yammer admin center)
+- "We accidentally deleted a Viva Engage community" → `VivaEngage/VivaEngage-B.md` Fix 4 (30-day recovery window)
+- "Our Communication Compliance/retention policy shows zero Viva Engage matches" → `VivaEngage/VivaEngage-B.md` Fix 8 + cross-reference `Security/Purview/CommunicationCompliance-B.md`/`RetentionLabels-B.md`
 
 ---
 
