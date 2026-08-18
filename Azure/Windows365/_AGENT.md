@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`. Windows 365 Cloud Apps (published-application delivery layered on Flex Shared mode) is covered separately in `CloudApps-A.md`/`CloudApps-B.md` — it introduces no separate licensing/compute model of its own, only a policy property pairing and an app discovery/publish lifecycle. **Windows 365 Reserve** (short-term, on-demand Cloud PC access — up to 10 days/user/year — for users whose physical device is temporarily unavailable) is covered separately in `Reserve-A.md`/`Reserve-B.md` — a standalone offering with its own licensing/eligibility/deprovisioning model, architecturally unrelated to Windows 365 Cross-region Disaster Recovery / Disaster Recovery Plus (add-ons covered in `Flex-A.md` that protect an *existing* Enterprise/Flex Cloud PC, not a substitute for a user with none).
+Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts for MSP engineers. Covers provisioning policy pipeline, licensing (Enterprise/Business, and Windows 365 Flex — renamed from Frontline on 2026-05-08, same product), Azure Network Connections (ANC) for hybrid/AD DS domain-joined Cloud PCs, Intune enrollment of Cloud PCs as managed endpoints, resize vs. reprovision operations, and end-user client connectivity. Flex's pooled-license Dedicated/Shared modes and their concurrency mechanics are covered separately in `Flex-A.md`/`Flex-B.md` since they diverge materially from the Enterprise/Business model in `Windows365-A.md`/`Windows365-B.md`. Windows 365 Cloud Apps (published-application delivery layered on Flex Shared mode) is covered separately in `CloudApps-A.md`/`CloudApps-B.md` — it introduces no separate licensing/compute model of its own, only a policy property pairing and an app discovery/publish lifecycle. **Windows 365 Reserve** (short-term, on-demand Cloud PC access — up to 10 days/user/year — for users whose physical device is temporarily unavailable) is covered separately in `Reserve-A.md`/`Reserve-B.md` — a standalone offering with its own licensing/eligibility/deprovisioning model, architecturally unrelated to Windows 365 Cross-region Disaster Recovery / Disaster Recovery Plus (add-ons covered in `Flex-A.md` that protect an *existing* Enterprise/Flex Cloud PC, not a substitute for a user with none). **Windows 365 Link** (the purpose-built Cloud PC hardware thin-client device — a physical appliance running the minimal Windows CPC OS, GA since 2025-03-31) is covered separately in `Link-A.md`/`Link-B.md` — it is a *client device* layer, architecturally distinct from every other topic in this folder, which all cover Cloud PC provisioning/licensing/compute. Link connects to Cloud PCs provisioned under any of Enterprise, Business, or Flex, and is fully compatible with both Windows 365 Reserve and Windows 365 Boot.
 
 ---
 
@@ -34,6 +34,9 @@ Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts 
 | `Reserve-B.md` | Hotfix runbook — Windows 365 Reserve: 7-day activation-delay blocks, 1-active-Cloud-PC-per-user limit, first-assigned-policy-wins reporting gap, disaster-recovery-add-on expectation mismatch, no-capacity-guarantee during large-scale events, no-snapshot-on-manual-deprovision data loss, bulk-provisioning rate limit |
 | `Reserve-A.md` | Deep-dive reference — Reserve's standalone licensing/eligibility model (7-day delay, non-poolable, 1-per-user), no-capacity-preallocation architecture (vs. Disaster Recovery Plus), fixed 4vCPU/16GB/128GB spec, geography-only targeting, deprovisioning asymmetry (natural expiry snapshots, manual Return doesn't), full unsupported-feature boundary |
 | `Scripts/Get-Windows365ReserveAudit.ps1` | Reserve audit: active Reserve Cloud PC inventory with status, duplicate-active-Reserve-PC detection (should never occur under the 1-per-user rule), provisioning policy cross-reference — read-only; cannot evaluate the 7-day eligibility delay (portal-only) |
+| `Link-B.md` | Hotfix runbook — Windows 365 Link hardware device: automatic-enrollment not occurring, Entra join blocked, SSO-not-enabled connection error, SSO consent prompt loop, Intune features that don't apply (app mgmt/malware scan/remediation), Autopilot-not-supported, disconnected-standby-vs-stuck-remote-action, wipe/reset/BMR decision tree, restricted-network (MAC-filtered/certificate) onboarding |
+| `Link-A.md` | Deep-dive reference — Link's Windows CPC minimal-OS architecture, non-configurable secure-by-design posture, Entra-join + automatic-enrollment-only onboarding model (no Autopilot/bulk provisioning), the deliberately narrow Intune management surface (Device health-only compliance), SSO-mandatory connectivity and the consent-prompt gap, update behavior, restricted-network deployment model, and the four-tier recovery/service/self-repair model including Bare Metal Recovery |
+| `Scripts/Get-Windows365LinkAudit.ps1` | Link audit: device inventory with compliance/stale-checkin flags, tenant-wide SSO-readiness check across all provisioning policies (flags any policy that will hard-fail Link connections), optional app-policy-misassignment cross-reference against known Link device groups — read-only, no remediation |
 
 ---
 
@@ -64,6 +67,12 @@ Windows 365 Cloud PC troubleshooting runbooks and fleet-wide diagnostic scripts 
 | "License assigned today but Reserve Cloud PC won't provision" | `Reserve-B.md` → Fix 1 — mandatory, non-bypassable 7-day activation delay |
 | "Client wants Reserve to behave like disaster recovery / guarantee capacity" | `Reserve-B.md` → Fix 4 — Reserve is not a DR add-on, see `Flex-A.md` for Cross-region DR/DR Plus instead |
 | "User Returned their Reserve Cloud PC and lost data" | `Reserve-B.md` → Fix 6 — manual deprovision takes no snapshot, unlike natural 10-day expiry |
+| "Windows 365 Link device never shows up in Intune after setup" | `Link-B.md` → Fix 1 — check MDM user scope and joining user's Entra ID P1 license |
+| "Link user gets 'Cloud PC doesn't support Entra ID single sign-on'" | `Link-B.md` → Fix 3 — SSO not enabled on the target provisioning policy, no fallback exists |
+| "Link connection fails only after ~30 days or right after reprovisioning" | `Link-B.md` → Fix 4 — SSO consent-prompt loop; suppress via `Link-A.md` Playbook 4 |
+| "App/remediation/scan action stuck or failing on a Link device" | `Link-B.md` → Fix 5 — these Intune features don't apply to Link at all, not a fault |
+| "Someone tried to Autopilot-enroll a Windows 365 Link device" | `Link-B.md` → Fix 6 — Autopilot is not supported in any form for Link |
+| "Link device won't boot / needs factory reset" | `Link-B.md` → Fix 8 — decision tree across Wipe/Company Portal/WinRE/Bare Metal Recovery |
 
 ---
 
@@ -100,6 +109,10 @@ Get-MgBetaDeviceManagementVirtualEndpointFrontLineServicePlan | Select DisplayNa
 # Identify Cloud Apps policies and confirm the validated property pairing — see CloudApps-A.md How It Works
 Get-MgBetaDeviceManagementVirtualEndpointProvisioningPolicy -All |
     Where-Object { $_.UserExperienceType -eq 'cloudApp' } | Select DisplayName,UserExperienceType,ProvisioningType
+
+# Inventory Windows 365 Link hardware devices and confirm SSO readiness of what they connect to — see Link-A.md
+Get-MgDeviceManagementManagedDevice -Filter "model eq 'Windows 365 Link'" | Select DeviceName,SerialNumber,ComplianceState
+Get-MgBetaDeviceManagementVirtualEndpointProvisioningPolicy | Select DisplayName,MicrosoftEntraSingleSignOnStatus
 ```
 
 ---
