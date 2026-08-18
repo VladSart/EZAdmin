@@ -14,6 +14,7 @@ Covers:
 - **Automation** — Platform scripts, Proactive Remediations
 - **Reporting** — compliance dashboards, device inventory, assignment/coverage reports, Graph queries, Endpoint analytics (Startup performance / Application reliability / Work from anywhere scoring)
 - **Remote Help** — Entra-authenticated helper/sharer remote assistance app, tenant enablement, RBAC, licensing (both helper AND sharer need one), deployment, Conditional Access integration — distinct from Windows 365/AVD's own connection stack and from the separate `remoteAssistancePartner` third-party ISV onboarding feature
+- **Surface Management Portal** — the Intune admin center workspace (All services > Surface Management Portal) for Surface-brand hardware: warranty/protection-plan coverage, support requests, service orders (replacement/repair), device Insights, and Security Copilot integration. Not a separate license — gated only by an enrolled Surface device plus a Microsoft 365 admin role (assigned via `admin.microsoft.com`, not Intune RBAC). Has no comprehensive Graph API of its own; only the compliance/encryption/storage/OS-eligibility slice of its Insights overlaps standard Intune Graph data
 
 ---
 
@@ -60,6 +61,7 @@ Covers:
 | `Troubleshooting/ScopeTags-B.md` / `-A.md` | Hotfix / deep dive: Scope Tags / RBAC visibility issues |
 | `Troubleshooting/Security-Baselines-B.md` / `-A.md` | Hotfix / deep dive: Endpoint Security Baseline Error/Conflict states |
 | `Troubleshooting/WUfB-B.md` / `-A.md` | Hotfix / deep dive: Windows Update for Business ring assignment, GPO conflicts |
+| `Troubleshooting/SurfaceManagementPortal-B.md` / `-A.md` | Hotfix / deep dive: Surface Management Portal access issues, the Hardware Warranty role + Global Reader co-requirement, empty-portal data-population timing, support/service-order backend drift, Security Copilot plugin enablement |
 | `Scripts/Get-IntuneDeviceStatus.ps1` | Device compliance + enrollment state via Graph |
 | `Scripts/Invoke-IntuneSync.ps1` | Force policy sync on device or bulk |
 | `Scripts/Get-IntuneAssignmentReport.ps1` | Comprehensive assignment report — policies/apps/scripts with group targets + filters |
@@ -85,6 +87,7 @@ Covers:
 | `Scripts/Get-PlatformScriptRunStatus.ps1` | IME health locally and/or fleet-wide Platform Script run status via Graph |
 | `Scripts/Get-RemediationRunHistory.ps1` | Fleet-wide Proactive Remediations run-state report via Graph |
 | `Scripts/Get-RemoteHelpReadinessAudit.ps1` | Tenant-wide Remote Help readiness audit (enablement, RBAC combo completeness, scope-group gaps, app deployment) + optional local client/IME/WebView2/event-log diagnostics |
+| `Scripts/Get-SurfaceManagementPortalAudit.ps1` | Tenant-wide Surface-model device audit via Graph (compliance/encryption/storage/first-signin-signal, mirroring the Graph-derivable subset of the portal's own Insights cards) + Hardware Warranty Administrator/Specialist role-holder audit flagging missing Global Reader co-assignment |
 | `Scripts/Get-ScopeTagRBACAudit.ps1` | Tenant-wide Scope Tag / RBAC role assignment audit; optional per-admin effective-visibility check |
 | `Scripts/Get-SecurityBaselineDrift.ps1` | Fleet-wide baseline Error/Conflict/Pending report across assigned baselines |
 | `Scripts/Get-WUfBDeploymentStatus.ps1` | WUfB ring assignment, local policy state, and GPO conflicts |
@@ -132,6 +135,7 @@ Covers:
 - "Admin can't see/manage a device they should (or can see one they shouldn't)" → `Troubleshooting/ScopeTags-B.md` + `Scripts/Get-ScopeTagRBACAudit.ps1`
 - "Windows Update for Business ring not applying / stuck deferring" → `Troubleshooting/WUfB-B.md` + `Scripts/Get-WUfBDeploymentStatus.ps1`
 - "Remote Help session won't start / notification never arrives / can't get elevation" → `Troubleshooting/RemoteHelp-B.md` + `Scripts/Get-RemoteHelpReadinessAudit.ps1`
+- "Can't find Surface Management Portal" / "portal shows no devices" / "warranty admin role assigned but still no data" / "how do we automate Surface warranty reporting" / "Security Copilot doesn't know about our Surface devices" → `Troubleshooting/SurfaceManagementPortal-B.md` + `Scripts/Get-SurfaceManagementPortalAudit.ps1`
 
 ---
 
