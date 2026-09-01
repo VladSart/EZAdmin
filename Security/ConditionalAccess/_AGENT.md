@@ -70,6 +70,7 @@ Result: ALL matching policies' controls must be satisfied
 | `Scripts/Get-TokenProtectionCoverageAudit.ps1` | Token protection policy design audit — browser client-app risk, Office 365 app-group targeting, missing device filter exclusions, stale report-only, non-Windows platform gap |
 | `Scripts/Get-AuthStrengthCoverageAudit.ps1` | Authentication strength policy design audit, CA policy reference report, tenant-wide phishing-resistant-method registration coverage gaps, federated domain MFA trust check |
 | `Scripts/Get-AuthContextAudit.ps1` | Authentication Context audit — unpublished/unreferenced contexts, risky CA-policy states (Off/Report-only/user-excluded) that defeat PIM's backup protection, SharePoint tenant + direct site-tag check, PIM role Activation-setting cross-reference |
+| `CustomControlsRetirement-B.md` | Hotfix: Conditional Access Custom Controls retirement — Sept 2026 creation/modification cutoff, existing controls keep working until May 2027 full retirement, migration to External Authentication Methods (External MFA) |
 
 ---
 
@@ -93,6 +94,7 @@ Result: ALL matching policies' controls must be satisfied
 - "PIM role activation only asked for plain MFA, we configured a stronger method" → `AuthenticationContext-B.md` Fix 6 (Cause B) — check the paired CA policy's State/exclusions, not the PIM setting itself
 - "User says they were never prompted for anything extra but the sign-in log shows the policy applied" → `AuthenticationContext-A.md` "Opportunistic (implicit) ACRS evaluation" — expected behavior, not a bug
 - "One SharePoint feature (OneDrive sync, Outlook, mobile app, Teams webinar) broke after we tagged a site with a context" → `AuthenticationContext-A.md` "SharePoint's specific, permanent app-compatibility limitations" before treating as a bug
+- "Can't create/edit a Custom Control anymore" / "third-party MFA (Duo/RSA) redirect policy greyed out" / "Custom Controls retirement" by name → `CustomControlsRetirement-B.md` — migrate to External Authentication Methods (External MFA); see also `EntraID/Troubleshooting/ExternalMFA-B.md`/`-A.md` for the External MFA feature itself
 
 ---
 
