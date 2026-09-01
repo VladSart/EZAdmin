@@ -12,6 +12,7 @@ Covers:
 - **TPM issues** — attestation failures, firmware version problems
 - **Network requirements** — firewall/proxy requirements for Autopilot to reach Microsoft
 - **Windows Autopilot device preparation (APDP)** — the newer, Entra-join-only enrollment mode built on Enrollment Time Grouping; architecturally distinct from classic Autopilot above (no ESP, no dynamic-group wait) — classic Autopilot always takes precedence if a device matches both
+- **Device association** (GA, Intune August 2026) — a device-preparation-only feature that binds a physical device to the tenant *before* MDM enrollment by writing a TPM-attested tenant-affinity marker into UEFI; unlocks device-targeted policy, OOBE page-skipping, device naming templates, and automatic corporate-owned marking. Physical devices only (no VM support), requires TPM 2.0 + Windows 11 24H2/25H2 with KB5120998. Association removal is on-device-script-only — not available from Intune, and the UEFI marker survives a plain OS reset
 
 ---
 
@@ -59,6 +60,7 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 - "White Glove / pre-provisioning red error screen at Technician flow" / "TPM attestation fails right after pressing Provision" / "error 0x800705B4 or 0x81036502 during provisioning" → `Troubleshooting/WhiteGlove-B.md` (hotfix) / `WhiteGlove-A.md` (deep dive — Technician flow vs. User flow, device-vs-user targeting boundary, 90-minute/6-month timing windows) + `Scripts/Get-WhiteGloveReadiness.ps1`
 - "Device won't go through pre-provisioning again after a failed or completed attempt" → `Troubleshooting/WhiteGlove-B.md` Fix 7 (delete the Intune device record — no automatic re-enrollment path exists)
 - "Stuck at 'Joining your organization's network' during White Glove Technician flow" (hybrid join) → `Troubleshooting/WhiteGlove-B.md` Fix 3 (cross-ref `HybridJoin-Autopilot-B.md`)
+- "Device won't associate / stuck at Pre-associated / device-targeted policy or OOBE customization (skip pages, device naming) not applying" / "how do we remove a device's tenant association before resale/transfer" → `Troubleshooting/DeviceAssociation-B.md` (hotfix) / `DeviceAssociation-A.md` (deep dive — pre-associate/associate/remove lifecycle, UEFI marker architecture) + `Scripts/Get-DeviceAssociationAudit.ps1`
 
 ---
 
@@ -85,6 +87,8 @@ Get-WinEvent -LogName "Microsoft-Windows-ModernDeployment-Diagnostics-Provider/A
 | `Scripts/Get-AutopilotResetReadinessAudit.ps1` | Fleet-wide pre-flight audit of Autopilot Reset eligibility via Graph — flags hybrid-joined devices and stale MDM sync before a bulk reset is attempted |
 | `Troubleshooting/WhiteGlove-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot pre-provisioning (White Glove) — Technician flow vs. User flow architecture, TPM-attestation-gated eligibility, device-vs-user targeting boundary during Technician flow, the 90-minute/6-month timing windows between flows, one-way-door re-enrollment behavior |
 | `Scripts/Get-WhiteGloveReadiness.ps1` | Device-local read-only readiness/failure-signature check for pre-provisioning — TPM state, endpoint reachability, ESP tracking registry state, recent Autopilot/MDM event log entries, IME log failure scan, heuristic 90-minute/6-month timing-window check |
+| `Troubleshooting/DeviceAssociation-B.md` / `-A.md` | Hotfix / deep dive: Windows Autopilot device association (GA, Intune Aug 2026) — pre-associate/associate/remove lifecycle, UEFI tenant-affinity marker + TPM attestation architecture, device-targeted policy and OOBE-customization gating, on-device-only removal path |
+| `Scripts/Get-DeviceAssociationAudit.ps1` | Device-local eligibility audit (TPM state, physical-vs-VM, OS build/edition/KB) plus optional tenant-level device preparation policy and licensing signal check via Graph |
 
 > ⚠️ Not listed above: `Troubleshooting/Autopilot-Troubleshooting2.ps1` and `Troubleshooting/Autopilot-Network-Connectivity.ps1` (misfiled `.ps1` scripts sitting under `Troubleshooting/` rather than `Scripts/`, one a near-duplicate of `Test-AutopilotNetworkRequirements.ps1`) are flagged since run 30 for interactive user review (rename/relocate/dedupe), not touched autonomously.
 
