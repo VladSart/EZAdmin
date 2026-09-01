@@ -14,6 +14,7 @@ Covers:
 - **Outlook desktop client** — classic Outlook vs. New Outlook architecture split, Autodiscover resolution, connection status states, OST corruption, credential/token loops, COM add-in conflicts
 - **Direct Send abuse** — unauthenticated SMTP delivery to the tenant's own MX endpoint spoofing internal senders, `RejectDirectSend` mitigation, SPF/anti-phishing hardening — distinct from the unrelated "direct send" hybrid outbound-routing term used in `Mail-Flow-A.md` (see that file's disambiguation note)
 - **Mailbox migration batches** — Cutover, Staged (legacy Exchange 2003/2007 only), IMAP (incl. Google Workspace), Remote Move (hybrid onboarding/offboarding), and Cross-tenant (tenant-to-tenant) migration batch mechanics, throttling, and cross-tenant organization-relationship prerequisites — distinct from `Hybrid-Coexistence-A.md`, which covers the hybrid topology/HCW/mail-routing side, not batch migration internals
+- **Cloud-managed remote mailboxes** — `IsExchangeCloudManaged` per-mailbox Exchange-attribute SOA transfer to Exchange Online (the "retire the Last Exchange Server" on-ramp), writeback to on-prem AD via Microsoft Entra Cloud Sync, and the tenant-wide SOA default — distinct from object-level SOA (identity attributes), which this topic explicitly does not cover
 
 ---
 
@@ -44,6 +45,8 @@ Covers:
 | `DirectSendAbuse-A.md` | Deep dive: why Direct Send bypasses the intra-org SPF exemption, the 2025–2026 abuse campaign and Microsoft's architectural-limitation stance, RejectDirectSend mechanics, KQL detection query |
 | `MigrationBatches-B.md` | Hotfix: stalled/failed migration batches, WLM/MRS throttling vs. real failure, AutoSuspended/Synced stuck users, MRSProxy connection limit, cutover single-batch limit, cross-tenant org-relationship pre-checks |
 | `MigrationBatches-A.md` | Deep dive: Cutover/Staged/IMAP/Remote Move/Cross-tenant migration architecture, MRS/MRSProxy/WLM throttling stack, Data Consistency Score skipped-item handling, cross-tenant pre-staging playbook |
+| `CloudManagedMailboxes-B.md` | Hotfix: SOA transfer command fails/reverts, writeback not reaching on-prem, race condition from flipping the flag too soon, tenant-wide SOA enabled too early, offboarding a cloud-managed mailbox |
+| `CloudManagedMailboxes-A.md` | Deep dive: `IsExchangeCloudManaged` architecture, identity vs. Exchange attribute model, writeback-supported attribute allow-list, Cloud Sync writeback configuration, tenant-wide SOA sequencing risk, LES decommission on-ramp |
 | `Scripts/Get-MessageTrace.ps1` | Mail flow trace wrapper for stuck/bounced messages |
 | `Scripts/Get-DirectSendExposureAudit.ps1` | RejectDirectSend state, per-domain SPF enforcement qualifier, anti-phish spoof intelligence, message-trace sweep flagging candidate Direct Send senders |
 | `Scripts/Get-OutlookClientHealth.ps1` | Device-local Outlook client diagnostic — client type, profile, OST freshness, Autodiscover DNS, cached credentials, COM add-ins, optional CA sign-in check |
@@ -58,6 +61,7 @@ Covers:
 | `Scripts/Get-SharedMailboxAudit.ps1` | Fleet-wide shared mailbox type/delegation/licensing/quota/sign-in audit |
 | `Scripts/Get-TransportRuleConflictAudit.ps1` | Tenant-wide ETR conflict audit — stuck test mode, priority short-circuits, broad conditions, unscoped high-impact actions, DLP overlap review |
 | `Scripts/Get-MigrationBatchHealth.ps1` | Tenant-wide migration batch/user health audit — real failures vs. throttling, skipped-item approval status, cutover limit risk, optional cross-tenant org-relationship and post-migration licensing checks |
+| `Scripts/Get-CloudManagedMailboxAudit.ps1` | Read-only audit of `IsExchangeCloudManaged` fleet state, tenant-wide SOA default, on-prem Connect Sync build compliance, and recent-on-prem-change race-condition flagging |
 
 ---
 
@@ -92,6 +96,12 @@ Covers:
 - "Cross-tenant mailbox migration batch won't create / fails pre-check" → `MigrationBatches-B.md` Fix 6, `MigrationBatches-A.md` Playbook 3 (pre-staging is the most common cause)
 - "Migration report shows skipped items / data loss warning" → `MigrationBatches-B.md` Fix 4
 - "Fleet audit of all migration batches before/after a cutover weekend" → `Scripts/Get-MigrationBatchHealth.ps1`
+- "Can't edit a mailbox's custom attribute / proxy address from Exchange Online, only works on-prem" → `CloudManagedMailboxes-B.md` Fix 1/2 (confirm `IsExchangeCloudManaged` state and sync timing first)
+- "Edited an attribute in EXO and it reverted back" → `CloudManagedMailboxes-B.md` Fix 2 (race condition — flipped SOA too soon after last on-prem change)
+- "Attribute change in Exchange Online isn't showing up in on-prem AD" → `CloudManagedMailboxes-B.md` Fix 3 (writeback configuration or attribute not on the writeback allow-list)
+- "Can't change a cloud-managed user's display name / title from Exchange Online" → `CloudManagedMailboxes-B.md` Fix 5 (expected — identity attributes are always on-prem-only)
+- "New on-prem mailboxes broken after turning on cloud-managed-by-default" → `CloudManagedMailboxes-B.md` Fix 6 (unsupported sequencing — escalate to Microsoft Support, do not self-remediate)
+- "Fleet audit of cloud-managed mailbox state / SOA rollout readiness" → `Scripts/Get-CloudManagedMailboxAudit.ps1`
 
 ---
 
