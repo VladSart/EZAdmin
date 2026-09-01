@@ -59,6 +59,7 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | `Scripts/Get-PrivaReadinessAudit.ps1` | Priva RBAC (all 5 role groups) + Unified Audit Log prerequisite + Privacy Risk Management policy inventory audit — flags EMPTY_RBAC, NO_AUDIT_LOG, POLICY_IN_TEST_MODE, CMDLET_UNAVAILABLE; Subject Rights Requests are portal-only and out of scope for this script |
 | `Scripts/Get-AuditLogHealthCheck.ps1` | Tenant-wide Unified Audit Log health check — ingestion status, mailbox audit bypass sweep (flags real UserMailboxes separately from resource/service accounts), retention policy inventory, and a live control search that flags the silent 100-record cap; best-effort tenant Premium SKU signal |
 | `Scripts/Get-AdaptiveProtectionAudit.ps1` | Cross-arm Adaptive Protection audit — licensing (P2/E5), CA policies referencing insider risk (flags Report-only + wrong-risk-signal naming mismatches), best-effort DLP rule text-search for the Adaptive Protection condition (flags simulation mode), upstream IRM enabled-policy check, and orphaned-CA-policy detection when no IRM signal is live |
+| `Scripts/Get-ComplianceManagerReadinessAudit.ps1` | Compliance Manager prerequisite audit — compliance-tier licensing (Get-MgSubscribedSku), Compliance Manager's own 4-role-group RBAC (Reader/Contributor/Assessor/Administrator, checked independently of Entra directory roles and broader Purview role groups), Unified Audit Log ingestion state; flags EMPTY_ROLE_GROUPS, NO_COMPLIANCE_LICENSE, NO_AUDIT_LOG — does not audit assessment/action inventory or Compliance Score, which are portal-only |
 
 ---
 
@@ -112,6 +113,7 @@ Microsoft Purview runbooks covering **Data Loss Prevention (DLP)**, Information 
 | "User has Global Admin but can't update Compliance Manager actions" | `ComplianceManager-B.md` → Fix 4 (Compliance Manager has its own separate role group) |
 | "Compliance Score dropped with no apparent change" | `ComplianceManager-A.md` → Remediation Playbook 2 |
 | "Compliance Score vs. Secure Score — why don't they match?" | `ComplianceManager-A.md` → Scope & Assumptions / Remediation Playbook 4 (different tools, different signal domains) |
+| "Before troubleshooting a specific Compliance Manager action, rule out licensing/RBAC/audit-log gaps" | `Scripts/Get-ComplianceManagerReadinessAudit.ps1` |
 | "Client's DSPM screen doesn't match the documentation/training we saw" | `DSPM-for-AI-B.md` → Fix 1 (they're likely in the classic experience, not the current unified one, or vice versa) |
 | "Compliance Administrator can see DSPM reports but not the actual prompt/response text" | `DSPM-for-AI-B.md` → Fix 4 (separate AI Content Viewer role, not implied by any general DSPM role) |
 | "DSPM data risk assessment shows nothing / hasn't updated" | `DSPM-for-AI-B.md` → Fix 5 (check the ~4-day default / ~48-hour custom stabilization window before assuming a fault) |
