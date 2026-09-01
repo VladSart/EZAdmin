@@ -71,6 +71,8 @@ Result: ALL matching policies' controls must be satisfied
 | `Scripts/Get-AuthStrengthCoverageAudit.ps1` | Authentication strength policy design audit, CA policy reference report, tenant-wide phishing-resistant-method registration coverage gaps, federated domain MFA trust check |
 | `Scripts/Get-AuthContextAudit.ps1` | Authentication Context audit — unpublished/unreferenced contexts, risky CA-policy states (Off/Report-only/user-excluded) that defeat PIM's backup protection, SharePoint tenant + direct site-tag check, PIM role Activation-setting cross-reference |
 | `CustomControlsRetirement-B.md` | Hotfix: Conditional Access Custom Controls retirement — Sept 2026 creation/modification cutoff, existing controls keep working until May 2027 full retirement, migration to External Authentication Methods (External MFA) |
+| `CustomControlsRetirement-A.md` | Deep dive: retirement mechanics and why (thin legacy trust model vs. External MFA's claims-based OIDC contract), the two-cutoff operational trap, Graph's inability to resolve which provider a Custom Control points to, and the full parallel-run migration playbook (mirrors External MFA's own Playbook 2) |
+| `Scripts/Get-CACustomControlsMigrationAudit.ps1` | Impact assessment + migration-readiness audit — flags every CA policy still on a Custom Control grant, cross-checks against configured External MFA methods, timeline-aware risk flags |
 
 ---
 
@@ -95,6 +97,7 @@ Result: ALL matching policies' controls must be satisfied
 - "User says they were never prompted for anything extra but the sign-in log shows the policy applied" → `AuthenticationContext-A.md` "Opportunistic (implicit) ACRS evaluation" — expected behavior, not a bug
 - "One SharePoint feature (OneDrive sync, Outlook, mobile app, Teams webinar) broke after we tagged a site with a context" → `AuthenticationContext-A.md` "SharePoint's specific, permanent app-compatibility limitations" before treating as a bug
 - "Can't create/edit a Custom Control anymore" / "third-party MFA (Duo/RSA) redirect policy greyed out" / "Custom Controls retirement" by name → `CustomControlsRetirement-B.md` — migrate to External Authentication Methods (External MFA); see also `EntraID/Troubleshooting/ExternalMFA-B.md`/`-A.md` for the External MFA feature itself
+- "Do we have any Custom Controls at all / are we affected by this retirement" / "planning the Custom Controls → External MFA migration project" → `CustomControlsRetirement-A.md` + `Scripts/Get-CACustomControlsMigrationAudit.ps1` for the tenant-wide impact assessment and per-policy migration-readiness report
 
 ---
 
