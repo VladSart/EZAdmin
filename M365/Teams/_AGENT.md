@@ -1,7 +1,7 @@
 # Microsoft Teams — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, and Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention).
+Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention), and the passwordless Entra Resource Accounts authentication transition for shared devices (GA August 2026).
 
 ## Before responding, also check
 - `M365/_AGENT.md` — M365-wide triage starting points and licensing checks
@@ -23,6 +23,8 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | `Meeting-Policies-A.md` | Meeting policy deep dive — policy sync, group assignment rank conflicts, organizer-vs-attendee precedence |
 | `Teams-Rooms-A.md` | Teams Rooms (MTR) deep dive — resource account model, licensing, device management plane |
 | `Teams-Rooms-B.md` | Teams Rooms hotfix — device not signing in, offline, wrong meeting policy |
+| `PasswordlessResourceAccounts-A.md` | Passwordless Entra Resource Accounts deep dive (GA Aug 2026) — device-bound credential architecture, migration mechanics, hybrid-sync password limitations, WHfB-equivalent trust model |
+| `PasswordlessResourceAccounts-B.md` | Passwordless Entra Resource Accounts hotfix — migration eligibility failures, stuck-on-sign-in-screen, device reset/replacement recovery |
 | `ExternalAccess-B.md` | External collaboration hotfix — federation blocked, guest invite stuck, shared channel/B2B direct connect failures |
 | `ExternalAccess-A.md` | External collaboration deep dive — the three distinct architectures (federation, guest access, Teams Connect shared channels), cross-tenant access precedence, mutual B2B direct connect config |
 | `Scripts/Get-TeamsCallQuality.ps1` | Call quality dashboard (CQD-style) for a user or fleet |
@@ -30,6 +32,7 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | `Scripts/Get-TeamsRoomDeviceHealth.ps1` | Teams Rooms resource account and licensing health fleet report |
 | `Scripts/Get-TeamsDevicePolicyAudit.ps1` | Device account health, update/IP-phone policy assignment, and calendar auto-accept audit for resource accounts |
 | `Scripts/Get-TeamsExternalAccessAudit.ps1` | Tenant-wide federation, guest invite, and cross-tenant B2B direct connect posture audit — flags stale invites, dormant guests, incomplete partner overrides |
+| `Scripts/Get-PasswordlessMigrationReadiness.ps1` | Entra ID-side readiness audit for passwordless resource-account migration — license eligibility, hybrid-sync password-cleanup path, password-expiration policy, sign-in staleness heuristic |
 
 ## Common entry points
 
@@ -46,6 +49,9 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 - "Guest can't access team" / guest invite stuck pending → `ExternalAccess-B.md` Fix 3/4 (guest access)
 - "Can't add external partner to a shared channel" / "Teams Connect not working" → `ExternalAccess-B.md` Fix 5/6 (B2B direct connect)
 - "Can't record meetings" → check Teams meeting policy (AllowCloudRecording)
+- "Room won't migrate to passwordless / migration option missing in PMP" → `PasswordlessResourceAccounts-B.md` Triage — check license SKU and PMP Migration tab
+- "Teams Rooms on Windows stuck on sign-in screen after migration" → `PasswordlessResourceAccounts-B.md` Fix 5
+- "Device was reset/replaced and now needs a password again" → `PasswordlessResourceAccounts-B.md` Fix 6 — this is expected, not a bug
 
 ## Key diagnostic commands
 
