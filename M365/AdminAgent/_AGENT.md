@@ -23,6 +23,9 @@ The Microsoft 365 Admin agent — Microsoft's first-party, pre-installed natural
 | `AdminAgent-B.md` | Hotfix runbook — triage in under 10 min: missing from a surface, "can't do X"/limited-data complaints, confirmed action that didn't apply, blocking/scoping the agent, finding what it changed, data/privacy questions, over-broad confirmations, "does this replace an MSP" |
 | `AdminAgent-A.md` | Deep dive reference — full architecture (three surfaces, one continuous session), the RBAC-reflection model, the confirmation gate, the six task categories, Registry governance, audit trail inheritance, data/privacy posture |
 | `Scripts/Get-AdminAgentGovernanceAudit.ps1` | Graph script — tenant-wide Agent Registry state for the Admin agent (Block/scope status), which roles can govern it, and current Copilot/Agent 365 SKU inventory for context |
+| `LegacyAdminAppRetirement-B.md` | Hotfix runbook — retirement of the unrelated, older Teams/Outlook/Microsoft365.com "Admin app" (MC1462922, VSB-scoped, retiring Oct 2026) — triage rollout phase, confirm admin role intact, redirect to a replacement surface |
+| `LegacyAdminAppRetirement-A.md` | Deep dive — full MC1462922 timeline and architecture, Symptom→Cause map, migration playbooks (admin center, Teams admin center, or this same folder's Admin Agent as Microsoft's own documented successor) |
+| `Scripts/Get-LegacyAdminAppUsageAudit.ps1` | Teams PowerShell script — rollout-phase evidence, app catalog identity check (avoids confusing the retiring first-party app with a same-named custom app), and App Setup Policy pin state |
 
 ---
 
@@ -37,6 +40,8 @@ The Microsoft 365 Admin agent — Microsoft's first-party, pre-installed natural
 - "Agent suggested disabling a security-relevant setting and an admin confirmed it without review" → `AdminAgent-B.md` Fix 7 — consider scoping the agent's deployment to a smaller, more experienced admin group via Fix 4
 - "SMB client asks if the Admin agent replaces their MSP" → `AdminAgent-B.md` Fix 8
 - "Admins report the agent 'remembers' something from a different surface" → `AdminAgent-B.md` Fix 9
+- "The old Admin app disappeared from Teams/Outlook/Microsoft365.com" → `LegacyAdminAppRetirement-B.md` — this is the OLDER, unrelated VSB app retiring per MC1462922 (Oct 2026), not this folder's AI Admin agent; confirm which one the client means before troubleshooting
+- "Client asks what replaces the retiring Admin app" → `LegacyAdminAppRetirement-A.md` Playbook 2 — Microsoft's own documented answer is this same folder's Admin Agent
 - "How does the Admin agent actually work / what can it do?" → `AdminAgent-A.md` § How It Works
 - "Full RBAC-reflection or confirmation-gate architecture question" → `AdminAgent-A.md` § How It Works / Troubleshooting Steps by Phase
 - "Audit governance state across the tenant for this agent" → `Scripts/Get-AdminAgentGovernanceAudit.ps1`
