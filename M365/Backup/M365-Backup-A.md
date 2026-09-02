@@ -75,6 +75,11 @@ Microsoft 365 Backup does not move your data to a separate backup vault. Backups
 | **Express restore point** | A tool-recommended restore point (SharePoint/OneDrive only) that yields materially faster restores than an arbitrary point in time — always prefer these when the exact minute doesn't matter |
 | **Restore session** | The actual restore operation once triggered — tracks status, errors, and completion time |
 | **Browse session** | Used for granular restore — lets an admin browse/search a restore point's file tree without doing a full rollback |
+| **Full Workload Backup** *(Preview)* | An auto-protection policy, enabled independently per workload (SharePoint/OneDrive/Exchange), that automatically covers every eligible protection unit **not already** in a custom policy or on its exclusion list. Checks for newly created sites/accounts/mailboxes every 24 hours. |
+| **Exclusion list** *(Preview)* | Per-workload list of protection units deliberately kept out of Full Workload Backup's coverage. Applies only to Full Workload Backup — an excluded item can still be protected by a custom policy without restriction. |
+| **Dynamic rule** *(Preview)* | A group-membership-based rule (distribution list or security group) that keeps a custom policy's user-account scope current automatically, without manual updates when membership changes. Distinct from Full Workload Backup — dynamic rules scope a *custom* policy, Full Workload Backup has no membership concept at all. |
+
+**Policy precedence (critical for troubleshooting):** custom backup policies **always** take precedence over Full Workload Backup. If a protection unit already in a custom policy is somehow also eligible for Full Workload Backup, it stays with the custom policy. Conversely, adding a Full-Workload-Backup-protected item to a custom policy **moves** it to that custom policy automatically, with no gap in recovery-point coverage.
 
 </details>
 
@@ -94,10 +99,14 @@ Microsoft 365 Backup does not move your data to a separate backup vault. Backups
   SharePoint protection policy  ──┐
   OneDrive protection policy    ──┼─ each independently created, activated, billed
   Exchange protection policy    ──┘
+  Custom policy(ies) — up to 100 per workload, precedence over Full Workload Backup
+  Full Workload Backup policy *(Preview)* — one per workload, catches everything
+    not already in a custom policy or its own exclusion list
          │
 [Tier 3 — Protection units]
   Individual sites / OneDrive accounts / mailboxes
-  added directly OR matched by an inclusion rule
+  added directly, matched by an inclusion/dynamic rule (custom policy),
+  OR auto-covered by Full Workload Backup (checked every 24h for new items)
          │
 [Tier 4 — Restore points]
   Generated automatically once policy is active
@@ -118,7 +127,7 @@ Microsoft 365 Backup does not move your data to a separate backup vault. Backups
 | Symptom | Most Likely Cause | Check |
 |---------|-------------------|-------|
 | Microsoft 365 Backup pane missing/greyed out in admin center | Billing not linked, or signed-in account lacks SharePoint/Exchange/Global Admin | Admin center → Settings → Microsoft 365 Backup; confirm role via Entra |
-| New site/mailbox/OneDrive can't be restored at all | Never added to a protection policy — policies don't auto-expand without an inclusion rule | `Get-MgSolutionBackupRestoreProtectionPolicy`, then check protection units/inclusion rules on that policy |
+| New site/mailbox/OneDrive can't be restored at all | Never added to a protection policy — a *custom* policy doesn't auto-expand without an inclusion rule; check whether Full Workload Backup (Preview) is enabled for that workload first, and whether the item is on its exclusion list | `Get-MgSolutionBackupRestoreProtectionPolicy`, look for a `Full <Workload> Backup` policy, then check protection units/inclusion rules or the exclusion list |
 | "No restore points available before <date>" | Item was added to the policy after that date — retention doesn't back-fill | Compare protection unit's "date added" to requested restore date |
 | Restore to same URL/mailbox rejected | Strict SEC 17a-4(f) hold in place | Purview `Get-RetentionCompliancePolicy` against the target location |
 | Restore session `failed`, error references quota/count | New-URL restore counter hit its ~1,000 ceiling for that site | Look for accumulated `...R0`, `...R1`, ... restored copies; clean up old ones |
@@ -176,9 +185,9 @@ Good: restore session reaches `Status: succeeded` within the expected performanc
 3. Confirm the admin's role matches the workload they're trying to configure (SharePoint Admin ≠ can manage Exchange Backup).
 
 **Phase 2 — Policy & coverage**
-4. Enumerate all policies per workload; confirm `Status: active`.
-5. Diff protection-unit counts against actual tenant inventory (sites/OneDrives/mailboxes) to catch silent coverage gaps.
-6. Review inclusion rules — confirm the rule criteria actually matches how new sites/mailboxes get provisioned in this tenant (e.g., a rule scoped to "Team site" template won't catch communication sites).
+4. Enumerate all policies per workload; confirm `Status: active`. Note whether a `Full <Workload> Backup` policy exists — its presence changes how you interpret an apparent coverage gap.
+5. Diff protection-unit counts against actual tenant inventory (sites/OneDrives/mailboxes) to catch silent coverage gaps. With Full Workload Backup enabled, a gap almost always means the item is on the exclusion list rather than "never added" — check there first.
+6. Review inclusion/dynamic rules on custom policies — confirm the rule criteria actually matches how new sites/mailboxes get provisioned in this tenant (e.g., a rule scoped to "Team site" template won't catch communication sites). Remember custom-policy precedence: even with Full Workload Backup on, a misconfigured inclusion rule on a *custom* policy doesn't get backstopped unless the item is also outside every custom policy and its own exclusion list.
 
 **Phase 3 — Restore point depth**
 7. Confirm the requested restore date falls within the retention window for that workload (SharePoint/OneDrive: 10-min granularity for 14 days, weekly out to 365 days; Exchange: 10-min granularity for the full 365 days).
@@ -201,6 +210,23 @@ Good: restore session reaches `Status: succeeded` within the expected performanc
 4. Re-run the coverage audit after ~1 hour to confirm the new units show `protectionState: protected` and have begun generating restore points.
 
 **Rollback:** Removing a protection unit from a policy stops future backups but does not delete existing restore points — those remain available for the standard retention window.
+
+</details>
+
+<details><summary>Playbook 1b — Adopt Full Workload Backup to eliminate recurring coverage gaps (Preview)</summary>
+
+Use when Playbook 1's coverage-gap cycle keeps recurring quarter over quarter because inclusion rules can't keep up with how the tenant actually provisions new sites/mailboxes/OneDrives.
+
+1. Confirm this is worth doing: Full Workload Backup is enabled **independently per workload** — you can adopt it for SharePoint only, for example, while leaving OneDrive and Exchange on custom policies.
+2. In the Microsoft 365 admin center, on the workload's backup setup flow, choose **Back up all \<SharePoint sites|OneDrive accounts|Exchange mailboxes\>** instead of a custom selection method.
+3. Decide on an exclusion list up front if there are protection units that should genuinely never be backed up (e.g., a decommissioned test site) — bulk-upload via CSV, up to 10,000 exclusions in one operation.
+4. Existing custom policies are unaffected and keep precedence — Full Workload Backup only picks up what isn't already covered. There's no need to dismantle existing custom policies first.
+5. After enabling, any protection unit you explicitly add to a custom policy later is **automatically moved** out of Full Workload Backup and into that custom policy, with no gap in recovery-point coverage — useful if you want tighter control (e.g., a shorter recovery window) for a specific subset later.
+6. Re-run the coverage audit after ~24 hours (Full Workload Backup's new-item check interval) to confirm previously-gapped items are now `protected`.
+
+**Rollback:** Turning off Full Workload Backup removes that policy; protection units covered *only* by it move to the **Removed items** tab — existing backups remain restorable per their retention window, but no new backups are taken unless the item is added to a custom policy or Full Workload Backup is re-enabled. Protection units also covered by a custom policy are unaffected.
+
+**Preview caveat:** confirm current availability/GA status in the tenant before committing this as the standing recommendation — Microsoft's own documentation labels this feature Preview as of this writing (Learn page last updated 2026-08-21).
 
 </details>
 
@@ -302,8 +328,9 @@ $evidence | ConvertTo-Json -Depth 6 | Out-File ".\M365Backup-Evidence-$(Get-Date
 ## 🎓 Learning Pointers
 
 - **This is not a licensing feature — it's pay-as-you-go Azure billing.** E3/E5 licensing has no bearing on whether Backup is active; an Azure subscription must be linked and billing enabled first. This is the most common "why isn't backup running, we pay for E5" support call.
-- **Protection policies are workload-specific and don't cross-pollinate.** A SharePoint policy says nothing about OneDrive or Exchange coverage — each workload needs its own policy and its own inclusion-rule strategy.
+- **Protection policies are workload-specific and don't cross-pollinate.** A SharePoint policy says nothing about OneDrive or Exchange coverage — each workload needs its own policy and its own inclusion-rule (or Full Workload Backup) strategy.
+- **Full Workload Backup (Preview) doesn't replace custom policies — it backstops them.** Custom policies always win on precedence; Full Workload Backup only auto-protects what falls outside every custom policy and its own exclusion list, re-checking for new items every 24 hours. This is the closest thing to solving the "new site never got backed up" ticket permanently, but it's still Preview as of this writing — verify current status before recommending it as a standing fix. [Full Workload Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-view-edit-policies?view=o365-worldwide#full-workload-backup)
 - **Append-only storage, not full immutability — know the difference for compliance conversations.** Backups can still be deleted (with a 90-day grace period), which matters for GDPR erasure requests; they just can't be silently altered.
 - **Term Store and calendar-attendee sync are documented, permanent limitations, not bugs** — don't burn escalation time chasing them as defects.
-- **Official docs:** [Overview of Microsoft 365 Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-overview?view=o365-worldwide) | [Set up Microsoft 365 Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-setup?view=o365-worldwide) | [Restore data in Microsoft 365 Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-restore-data?view=o365-worldwide) | [Microsoft 365 Backup FAQ](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-faq?view=o365-worldwide) | [Microsoft.Graph.BackupRestore module reference](https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.backuprestore/?view=graph-powershell-1.0)
+- **Official docs:** [Overview of Microsoft 365 Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-overview?view=o365-worldwide) | [Set up Microsoft 365 Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-setup?view=o365-worldwide) | [Create, view, and edit backup policies (incl. Full Workload Backup, dynamic rules)](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-view-edit-policies?view=o365-worldwide) | [Restore data in Microsoft 365 Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-restore-data?view=o365-worldwide) | [Microsoft 365 Backup FAQ](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-faq?view=o365-worldwide) | [Microsoft.Graph.BackupRestore module reference](https://learn.microsoft.com/en-us/powershell/module/microsoft.graph.backuprestore/?view=graph-powershell-1.0)
 - **Community:** Microsoft 365 Backup is new enough (broad GA in 2024–2025) that r/Office365 and the Microsoft 365 Tech Community are still the best sources for real-world edge cases beyond the official docs.

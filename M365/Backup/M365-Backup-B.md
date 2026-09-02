@@ -23,6 +23,8 @@ Connect-MgGraph -Scopes "BackupRestore-Configuration.Read.All","BackupRestore-Co
 Get-MgSolutionBackupRestore | Select-Object Id, ServiceStatus
 
 # 3. List every protection policy and its activation state
+#    (a policy named "Full <Workload> Backup" means Full Workload Backup is enabled
+#    for that workload — see Fix 3 before assuming an item is uncovered)
 Get-MgSolutionBackupRestoreProtectionPolicy | Select-Object Id, DisplayName, Status
 
 # 4. Confirm the affected protection unit (site/OneDrive/mailbox) is actually IN a policy
@@ -38,7 +40,7 @@ Get-MgSolutionBackupRestoreSession | Select-Object Id, Status, CreatedDateTime |
 |--------|--------|
 | `ServiceStatus` is anything other than `enabled` | → Fix 1: Enable the Backup Storage service |
 | Protection policy `Status` is `activating` for > 2 hours | → Fix 2: Stalled policy activation |
-| Target site/OneDrive/mailbox is missing from the protection unit list entirely | → Fix 3: Item was never added to a policy |
+| Target site/OneDrive/mailbox is missing from the protection unit list entirely | → Fix 3: Item was never added to a policy (check for Full Workload Backup first — Preview) |
 | Restore session `Status` shows `failed` | → Fix 4: Failed restore session |
 | Restore blocked with a hold/lock error | → Fix 5: Preservation hold blocking in-place restore |
 | Admin can't reach the Microsoft 365 Backup pane at all | → Fix 6: Billing/subscription not linked |
@@ -167,8 +169,19 @@ If individual protection units show `protectionState: pending` well past the exp
 
 Use when: the site, OneDrive account, or mailbox the user needs restored doesn't appear in any protection-unit list at all.
 
+**First, check whether Full Workload Backup (Preview) is already enabled for this workload** — if it is, and the item is still missing, the cause is different from the legacy "no inclusion rule matched" story below:
+
 ```powershell
-# Add a SharePoint site to an existing policy (admin center is the primary path;
+# A policy literally named "Full <Workload> Backup" (e.g., "Full SharePoint Backup")
+# indicates Full Workload Backup is on for that workload
+Get-MgSolutionBackupRestoreProtectionPolicy | Where-Object { $_.DisplayName -like "Full *Backup*" }
+```
+
+- If a Full Workload Backup policy **exists** for the workload: the item may be on the **exclusion list** (Full Workload Backup skips anything explicitly excluded), or it may be a genuinely ineligible item type. Check: Microsoft 365 admin center > Microsoft 365 Backup > Backup policies > **Full Workload Backup** policy for that workload > **Excluded** tab. Remove it from the exclusion list to bring it back into protection.
+- If a Full Workload Backup policy does **not** exist for the workload, or the item is in neither a custom policy nor the exclusion list: fall through to the legacy custom-policy/inclusion-rule path below.
+
+```powershell
+# Add a SharePoint site to an existing custom policy (admin center is the primary path;
 # PowerShell bulk-addition uses a job object — see Microsoft.Graph.BackupRestore
 # siteProtectionUnitsBulkAdditionJob cmdlets for scripted bulk adds)
 
@@ -176,13 +189,15 @@ Use when: the site, OneDrive account, or mailbox the user needs restored doesn't
 # Settings > Microsoft 365 Backup > [SharePoint|OneDrive|Exchange] > Manage backup > Add
 ```
 
-**Root cause reminder:** protection policies do not automatically expand to cover new sites/mailboxes/OneDrives created after the policy was set up, unless the policy uses an **inclusion rule** (e.g., "all sites matching a template" or "all licensed users"). Check whether an inclusion rule exists and why it didn't match:
+**Root cause reminder:** a **custom** protection policy does not automatically expand to cover new sites/mailboxes/OneDrives created after the policy was set up, unless the policy uses an **inclusion rule** (e.g., "all sites matching a template" or "all licensed users") — or unless Full Workload Backup is separately enabled for that workload, which auto-protects everything not already in a custom policy or exclusion list (checked every 24 hours for newly created items). Check whether an inclusion rule exists and why it didn't match:
 
 ```powershell
 Get-MgSolutionBackupRestoreSharePointProtectionPolicySiteInclusionRule -SharePointProtectionPolicyId <PolicyId>
 ```
 
-**Important:** even after adding the item, restore points don't exist retroactively — the earliest point you can restore to is whenever the initial backup completes after being added (roughly 15 minutes per 1,000 units added).
+**Important:** even after adding the item (by any path), restore points don't exist retroactively — the earliest point you can restore to is whenever the initial backup completes after being added (roughly 15 minutes per 1,000 units added).
+
+**Note:** Full Workload Backup is a **Preview** feature as of this writing — confirm it's actually available/enabled in this tenant before assuming it applies.
 
 **Rollback:** N/A — additive only.
 
@@ -265,7 +280,7 @@ Steps Already Tried         :
 ---
 ## 🎓 Learning Pointers
 
-- **Protection policies don't auto-expand.** A new SharePoint site, OneDrive account, or mailbox created after a policy exists will **not** be backed up unless it matches an inclusion rule or is added manually — this is the #1 "why isn't this restorable" root cause.
+- **Protection policies don't auto-expand — unless Full Workload Backup (Preview) is on.** A new SharePoint site, OneDrive account, or mailbox created after a *custom* policy exists will **not** be backed up unless it matches an inclusion rule or is added manually — this remains the #1 "why isn't this restorable" root cause for tenants on custom policies alone. Tenants that have enabled Full Workload Backup for a workload get automatic same-day-ish coverage of new items instead (checked every 24 hours), with custom policies always taking precedence when both exist. [Full Workload Backup](https://learn.microsoft.com/en-us/microsoft-365/backup/backup-view-edit-policies?view=o365-worldwide#full-workload-backup)
 - **Restore points don't exist before the item was added to a policy.** Adding an item today does not let you restore to last week — the retention clock starts at first successful backup, not at policy creation.
 - **In-place restore is destructive by design.** OneDrive/SharePoint accounts and sites aren't locked read-only during a pending restore — a user can keep editing and lose that work when the rollback lands. Warn the user before restoring in place.
 - **SEC 17a-4(f) holds block in-place restores on purpose** — this preserves the immutability guarantee. New-URL/new-folder restore is the only path around it.
