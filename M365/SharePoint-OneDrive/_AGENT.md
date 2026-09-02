@@ -23,12 +23,15 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Advanced-Management-A.md` | SAM deep dive — RAC/RCD/DAG/Site Lifecycle Management architecture, licensing fork (Copilot licence vs. SAM Plan 1 add-on), dependency stack, remediation playbooks |
 | `HubSites-B.md` | Hub site hotfix — association fails/greyed out, navigation not showing, hub-to-hub nesting issues, permission-inheritance misunderstandings |
 | `HubSites-A.md` | Hub site deep dive — registration/association mechanics, hub-of-hubs architecture, search scoping, why permissions are never inherited from hub association |
+| `Agents-B.md` | Agents in SharePoint hotfix — Agent icon missing (RCD side effect), empty/generic answers, 20-source cap, non-Copilot licensing/pay-as-you-go, org-wide sharing scope, Knowledge Agent scope exclusions |
+| `Agents-A.md` | Agents deep dive — ready-made vs. custom vs. Knowledge Agent architecture, licensing paths (Copilot licence vs. pay-as-you-go metered billing), why RCD suppresses agents entirely, Copilot Control System oversight, KnowledgeAgentScope allow-list-via-exclusion caveat |
 | `Scripts/Get-SharePointSiteReport.ps1` | Tenant-wide site inventory — storage, quota, sharing, orphaned-owner report |
 | `Scripts/Get-SharePointPermissionAudit.ps1` | Site sharing-capability alignment, unique-permission sprawl, M365 Group disconnection, guest redemption audit |
 | `Scripts/Get-SharePointMigrationStatus.ps1` | Dual-mode: local SPMT agent/connectivity/log check + destination SPO quota/site-admin check + source pre-scan (oversized files, long paths, bad characters) |
 | `Scripts/Get-OneDriveSyncClientHealth.ps1` | Local ODC diagnostic: process/version, Entra join + PRT state, multi-account conflict detection, event log errors, path-length compliance, KFM registry/redirection check |
 | `Scripts/Get-SPAdvancedManagementAudit.ps1` | Read-only SAM audit: tenant RAC/RCD delegation flags, per-site RAC group count/enforceability, RCD-on-OneDrive misconfiguration, site lock state, optional DAG report status / idle sign-out / restricted-site-creation checks |
 | `Scripts/Get-SPHubSiteAudit.ps1` | Read-only hub structure audit: registration/association inventory, orphan hub detection, tenant limit tracking (2,000 hubs), hub-to-hub nesting depth check, permission-independence snapshot |
+| `Scripts/Get-SharePointAgentsAudit.ps1` | Read-only agents audit: tenant Knowledge Agent scope + exclusion-list drift flag, per-site RCD agent-suppression scan, legacy promo opt-in status, optional Copilot licence assignment summary via Graph |
 
 ## Common entry points
 
@@ -49,6 +52,7 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 - "Hub navigation not showing on an associated site" → `HubSites-B.md` Fix 2 — usually a propagation delay (2-4h)
 - "Associating with a hub didn't change who can access the site" → `HubSites-B.md` Fix 4 — expected behaviour, hub association never inherits permissions
 - "Audit our hub site structure / how many hubs do we have" → `Scripts/Get-SPHubSiteAudit.ps1` for a tenant-wide report with orphan/limit flags
+- "The Agent icon disappeared from a site" / "SharePoint agent won't create / gives empty answers" / "sources limit exceeded" / "non-Copilot user can't use agents" → `Agents-B.md` — check RCD state first (Fix 1), then permissions, source count, or licensing/pay-as-you-go path; run `Scripts/Get-SharePointAgentsAudit.ps1` for a full tenant + site posture check
 
 ## Key diagnostic commands
 
