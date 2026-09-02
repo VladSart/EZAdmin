@@ -22,8 +22,9 @@
 (Get-ADGroup -Filter * -ResultSetSize $null).Count +
 (Get-ADObject -Filter 'objectClass -eq "contact"' -ResultSetSize $null).Count
 
-# 2. Is this tenant relying on Hybrid Azure AD Join device sync? (Cloud Sync does not
-#    support device sync — this is the single most common near-term migration blocker)
+# 2. Is this tenant relying on Hybrid Azure AD Join device sync? (Cloud Sync now has a
+#    PREVIEW device sync feature closing this gap as of end of July 2026 -- see
+#    CloudSyncDeviceSync-B.md -- but Cloud Kerberos Trust is still the GA-supported path)
 Get-MgDevice -Filter "trustType eq 'ServerAd'" -ConsistencyLevel eventual -CountVariable deviceCount -Top 1
 $deviceCount
 
@@ -49,7 +50,7 @@ Get-MgDomain -All | Where-Object { $_.AuthenticationType -eq 'Federated' } | Sel
 | Triage result | Interpretation | Do this |
 |---|---|---|
 | Combined user+group+contact count per domain exceeds ~150,000 | Above Cloud Sync's documented per-domain object scale limit | Fix 1 |
-| `$deviceCount` > 0 | Hybrid Azure AD Join device sync in active use — Cloud Sync doesn't support it | Fix 2 |
+| `$deviceCount` > 0 | Hybrid Azure AD Join device sync in active use — Cloud Sync has a preview-status Device sync feature now, GA alternative is Cloud Kerberos Trust | Fix 2 |
 | Non-default sync rule count > 0 | Custom/advanced sync rules exist that Cloud Sync's expression builder may not replicate | Fix 3 |
 | A group shows a member count near or above 50,000 | Above Cloud Sync's group-size cap (also the Group Provisioning to AD DS cap) | Fix 4 |
 | Customer wants to actually start the migration | This is the "how do I do it" fix path — pilot via a scoped OU, not a big-bang cutover | Fix 5 |
@@ -77,7 +78,9 @@ migration is Microsoft-phased, not a self-service flag flip for every tenant
    │     ├─ Object scale: <150,000 objects per AD domain
    │     ├─ Group scale: <50,000 members per group
    │     ├─ Not dependent on Hybrid Azure AD Join device sync (or willing to move
-   │     │     to Cloud Kerberos Trust first/alongside)
+   │     │     to Cloud Kerberos Trust first/alongside, OR willing to accept
+   │     │     preview-status risk on Cloud Sync's own Device sync feature --
+   │     │     see CloudSyncDeviceSync-B.md)
    │     ├─ Not dependent on Advanced Sync Rules, cross-forest references, or
    │     │     out-of-band reconciliation (none of these exist in Cloud Sync)
    │     └─ OU-based filtering rather than complex attribute-based filtering
@@ -128,14 +131,14 @@ This isn't a hard technical wall the same way a licensing gate is, but Microsoft
 
 <details><summary>Fix 2 — Hybrid Azure AD Join device sync is in active use</summary>
 
-Cloud Sync does not sync devices at all — Device Synchronization is a hard ✗ in Microsoft's own feature comparison table. A tenant relying on Hybrid Azure AD Join needs to plan a transition to **Cloud Kerberos Trust** (the modern hybrid-join alternative that doesn't depend on the sync engine for device objects) either before or alongside the user/group migration to Cloud Sync — this is a separate project with its own prerequisites, not a Cloud Sync configuration toggle.
+As of end of July 2026, Cloud Sync has its own **Device sync (preview)** feature that synchronizes AD computer objects for Hybrid Azure AD Join purposes — this row in Microsoft's feature comparison table is no longer a flat ✗ (see `CloudSyncDeviceSync-A.md`/`-B.md` for full setup and troubleshooting). It is still preview-only: no GA SLA, one-directional (AD→Entra, no device writeback), and subject to change. A tenant relying on Hybrid Azure AD Join has two paths, not one: transition to **Cloud Kerberos Trust** (GA, the modern hybrid-join alternative that doesn't depend on the sync engine for device objects at all), or pilot Cloud Sync's own Device sync preview feature if the tenant is comfortable with preview-status risk. Either way this is a separate project with its own prerequisites, not a same-day Cloud Sync configuration toggle.
 
 ```powershell
-# Confirm the scale of the dependency before scoping the Cloud Kerberos Trust project
+# Confirm the scale of the dependency before scoping either path
 Get-MgDevice -Filter "trustType eq 'ServerAd'" -All | Measure-Object
 ```
 
-**Rollback:** none — this is a planning finding. Do not proceed with the Cloud Sync migration for device-dependent OUs until Cloud Kerberos Trust is in place.
+**Rollback:** none — this is a planning finding. Do not proceed with the Cloud Sync migration for device-dependent OUs until either Cloud Kerberos Trust is in place or the Device sync preview feature has been deliberately piloted and validated (`CloudSyncDeviceSync-B.md`).
 </details>
 
 <details><summary>Fix 3 — Custom/advanced Entra Connect sync rules are in use</summary>
@@ -243,6 +246,6 @@ Specific blocker (if any): ____________________
 - **This is a Microsoft-mandated direction, not an optional modernization project.** All customers ultimately move from Connect Sync to Cloud Sync — the open questions are timing and readiness, not whether. Build this into every customer's hybrid-identity roadmap conversation now rather than waiting for their eligibility notification. [Migrate from Microsoft Entra Connect to Cloud Sync: Decision Guide](https://learn.microsoft.com/en-us/entra/identity/hybrid/cloud-sync/connect-to-cloud-sync-decision-guide)
 - **Readiness and eligibility are two different gates.** Microsoft's wave notification tells you *when* you're invited to migrate; it says nothing about whether your specific configuration (device sync, advanced sync rules, scale) is actually a good fit yet. Run the readiness triage independently of any notification timeline.
 - **The cloudNoFlow rule pair is the real mechanism behind "no side-by-side sync."** Understanding that Connect Sync has to be told to explicitly stop exporting an OU (not just told that Cloud Sync now also covers it) explains most of the "why are both tools touching this user" tickets during a migration in progress.
-- **Device sync is the single most common near-term blocker** — Hybrid Azure AD Join has no Cloud Sync equivalent, and Cloud Kerberos Trust is a separate project with its own timeline. Flag this dependency early in any migration conversation, since it often becomes the long pole.
+- **Device sync is no longer an automatic blocker — but it's still preview, so treat it as a risk conversation, not a solved problem.** Cloud Sync's own Device sync (preview) feature can now close a Hybrid Azure AD Join dependency (see `CloudSyncDeviceSync-A.md`/`-B.md`), but Cloud Kerberos Trust (GA) remains the safer default for a production-critical dependency. Flag this early in any migration conversation either way, since whichever path is chosen is a separate project with its own timeline.
 - **Treat the config backup as non-negotiable, not a nice-to-have.** There is no in-place downgrade for a Connect Sync server the way there's no rollback for a Cloud Sync migration without one — the Import/Export settings backup is the entire safety net. [Import and export Microsoft Entra Connect configuration settings](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-import-export-config)
 - **Don't decommission Connect Sync the same day as the final OU cutover.** Microsoft explicitly recommends a soak period with the service stopped-but-installed before uninstalling — this is the difference between a same-day rollback and a full disaster-recovery rebuild if something surfaces late.

@@ -61,7 +61,7 @@ Microsoft's own decision guide publishes a detailed capability-by-capability com
 | Single Connected Forest | ✓ | ✓ | Both support standard single-forest topologies |
 | Multiple Connected Forests | ✓ | ✓ | Both support multiple connected forest scenarios |
 | Disconnected Forest Support | ✗ | ✓ | Cloud Sync-only — a genuine migration *driver* for M&A scenarios, not a blocker |
-| Device Synchronization | ✓ | ✗ | Connect supports Hybrid Azure AD Join; not currently supported in Cloud Sync — the most common near-term blocker |
+| Device Synchronization | ✓ | ⚠ Preview | Connect supports Hybrid Azure AD Join natively; Cloud Sync closed this gap via the **Device sync (preview)** feature (end of July 2026) — see `CloudSyncDeviceSync-A.md`/`-B.md`. Still preview-only (no GA SLA, one-directional AD→Entra, no device writeback) — Cloud Kerberos Trust remains the GA-supported alternative for production-critical dependencies |
 | Multiple Active Sync Instances | ✗ | ✓ | Cloud Sync agents provide automatic failover/load distribution |
 | Scale Limits per Domain | Unlimited | 150K objects | Hard planning ceiling for large tenants |
 | Large Group Support | 250K members | 50K members | Also the Group Provisioning to AD DS cap |
@@ -95,7 +95,7 @@ This table shifts as Cloud Sync closes gaps — treat it as a living reference a
 Microsoft's own decision framework sorts a tenant into one of three buckets:
 
 - **Ready for immediate migration:** under 150,000 objects/domain, groups under 50,000 members, not dependent on Hybrid Azure AD Join (or willing to transition to Cloud Kerberos Trust), PHS or independently-managed ADFS/PTA, OU-based rather than complex attribute-based filtering, single or connected-forest topology.
-- **Plan for near-term migration:** depends on a feature with an active Microsoft roadmap item (device sync, advanced attribute filtering, user provisioning to AD) — monitor the feature-comparison table and plan migration timing around actual GA, not an assumed date.
+- **Plan for near-term migration:** depends on a feature with an active Microsoft roadmap item (advanced attribute filtering, user provisioning to AD) or on a preview-status feature the tenant isn't yet comfortable relying on for production (device sync — see `CloudSyncDeviceSync-A.md`/`-B.md`) — monitor the feature-comparison table and plan migration timing around actual GA, not an assumed date.
 - **Evaluate for future migration:** large-scale deployments beyond the scale limits, extensive custom sync rules, cross-forest dependencies, or a hard dependency on reconciliation — for these, segmenting migration by domain/OU may offer a partial path even before full parity exists.
 
 ### The migration mechanism — how objects actually move without a collision
@@ -126,8 +126,11 @@ Layer 5 — Eligibility / wave assignment (Microsoft-controlled, notification-dr
 Layer 4 — Readiness assessment (customer/MSP-controlled — do this independently
           of any wave notification)
           ├─ Object scale (<150K/domain) and group scale (<50K members)
-          ├─ Device sync dependency (Hybrid Azure AD Join → needs Cloud Kerberos
-          │       Trust first/alongside)
+          ├─ Device sync dependency (Hybrid Azure AD Join → GA path is Cloud
+          │       Kerberos Trust first/alongside; a preview-status Cloud Sync
+          │       Device sync feature also now exists — see
+          │       CloudSyncDeviceSync-A.md/-B.md — but weigh preview risk
+          │       before relying on it for a production migration)
           ├─ Advanced Sync Rules / cross-forest / reconciliation dependencies
           │       (no Cloud Sync equivalent — redesign or defer)
           └─ Filtering complexity (OU-based fine; complex attribute-based limited)
@@ -161,7 +164,7 @@ A gap anywhere in Layer 4 (readiness) should stop forward progress regardless of
 | Users/groups in a "migrated" OU still show Connect Sync export activity, or objects intermittently flap/duplicate | The `cloudNoFlow` outbound rule's scoping filter isn't correctly excluding that OU from Connect Sync's export | Inspect the outbound rule's scope condition and confirm every object in the OU actually has `cloudNoFlow = True` set by the inbound rule |
 | A pilot OU migrates cleanly but a later, larger OU migration fails or behaves unexpectedly | The larger OU has a dependency the pilot OU didn't (advanced sync rule, larger nested-OU structure, group over 50K members) | Re-run the readiness checks scoped specifically to the next OU before migrating it — don't assume pilot success generalizes |
 | New users created after cutover aren't appearing in Microsoft Entra ID for a migrated OU | Cloud Sync job's OU scope doesn't actually include the new user's OU, or the Cloud Sync job itself isn't running | Confirm the job's scoping configuration and agent health — see `CloudSync-B.md` for Cloud Sync-specific provisioning troubleshooting once migration itself is confirmed correctly configured |
-| Devices stop appearing/updating in Microsoft Entra ID after a migration | Device sync was in use and had no Cloud Kerberos Trust replacement in place before cutover | Confirm device-sync dependency was assessed (readiness Layer 4) before this OU/tenant migrated — this is a planning gap, not a Cloud Sync bug |
+| Devices stop appearing/updating in Microsoft Entra ID after a migration | Device sync was in use and had no Cloud Kerberos Trust (or, as of preview, Cloud Sync Device sync) replacement in place before cutover | Confirm device-sync dependency was assessed (readiness Layer 4) before this OU/tenant migrated — this is a planning gap, not a Cloud Sync bug; see `CloudSyncDeviceSync-A.md`/`-B.md` if a preview Device sync deployment itself needs troubleshooting |
 | A previously-working custom attribute transform stops working post-migration | The transform relied on an Advanced Sync Rule capability with no Cloud Sync equivalent | Re-check the feature comparison table for that specific capability; redesign via Cloud Sync's expression builder if a supported equivalent exists, otherwise keep that OU on Connect Sync |
 | Team wants to migrate faster than the assigned window but Microsoft support says no | Migration timing is Microsoft-controlled per the phased rollout, not customer-accelerable by default | Confirm there's no legitimate exception-request path being missed (this applies to *delaying* past a window per the FAQ — accelerating ahead of an assigned window isn't a documented option either) |
 | Rollback is needed but no config backup exists | The mandatory pre-migration backup step (Import/Export settings) was skipped | Restore from a VM snapshot if one exists; otherwise this is a rebuild-from-scratch situation — escalate and treat as a process-gap finding for next time |
@@ -345,7 +348,7 @@ Get-ADUser -Filter * -SearchBase "<DN path of OU>" | Measure-Object
 
 - **This is a direction, not a deadline — until it is one.** Unlike the hard 30 September 2026 Connect Sync version-EOL date (`ConnectSyncUpgrade-A.md`), Cloud Sync migration is phased and notification-driven per tenant. Don't import the urgency of one topic into the other when advising a customer. [Migrate from Microsoft Entra Connect to Cloud Sync: Decision Guide](https://learn.microsoft.com/en-us/entra/identity/hybrid/cloud-sync/connect-to-cloud-sync-decision-guide)
 - **`cloudNoFlow` is the single most important technical detail in this entire topic.** Every "why are both tools touching this object" ticket during an in-progress migration traces back to this rule pair's scoping — understanding it as a Connect-Sync-side export opt-out (not a Cloud-Sync-side setting) is what makes those tickets fast to diagnose.
-- **Device sync has no Cloud Sync equivalent, full stop.** This single feature-comparison row (✓ in Connect, ✗ in Cloud Sync) is the most common reason a tenant lands in "plan for near-term" rather than "ready now" — flag it as the first question in any readiness conversation.
+- **Device sync is no longer a hard Cloud Sync gap — but it is still preview.** As of end of July 2026, Cloud Sync has a Device sync (preview) feature closing this row (see `CloudSyncDeviceSync-A.md`/`-B.md` for the full mechanics). It's no longer an automatic "plan for near-term" blocker, but preview status (no GA SLA, one-directional, no writeback) is still a legitimate reason to keep a production-critical hybrid-join dependency on Cloud Kerberos Trust rather than this feature for now — flag *that* nuance, not a flat unsupported claim, as the first question in any readiness conversation.
 - **The feature comparison table is a living document, not a fixed spec.** Cloud Sync is actively closing parity gaps (Source of Authority conversion, Group Provisioning to AD, improved Exchange Hybrid support were all recent additions) — re-check the current table before treating any "Evaluate for future" classification as permanent.
 - **Config backup is the entire safety net.** There's no in-place "undo migration" button — the Import/Export settings backup, taken before the first change, is what makes Playbook 2/3's rollback paths possible at all. [Import and export Microsoft Entra Connect configuration settings](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-import-export-config)
 - **A pilot OU's success doesn't generalize automatically.** Re-run the readiness checks per OU during a phased rollout — a later, larger OU can carry a dependency (an advanced sync rule, a near-50K-member group, device-sync-dependent users) the pilot never exercised.
