@@ -4819,4 +4819,21 @@ Backfilled `Security/Purview/_AGENT.md` and `Intune/_AGENT.md` (overview clauses
 
 ---
 
-Last updated: 2026-09-02 (auto-build, run 218, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+## New Topics — Windows SSO Permission Auto-Accept (KB5101650) + Purview Time-Boxed Role Group Assignments (run 219)
+| File | Status | Assigned |
+|------|--------|----------|
+| `Windows/Troubleshooting/SSOPermissionAutoAccept-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/SSOPermissionAutoAccept-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-SSOPermissionAutoAcceptAudit.ps1` | ✅ | auto-build |
+| `Windows/_AGENT.md` (backfilled — 1 new overview clause, 2 new Folder-contents rows, 1 new Common-entry-point bullet) | ✅ | auto-build |
+| `Security/Purview/TimeBoxedRoleGroups-B.md` | ✅ | auto-build |
+| `Security/Purview/TimeBoxedRoleGroups-A.md` | ✅ | auto-build |
+| `Security/Purview/Scripts/Get-TimeBoxedRoleGroupAudit.ps1` | ✅ | auto-build |
+| `Security/Purview/_AGENT.md` (backfilled — 1 new overview-paragraph clause, 2 new Folder-contents rows, 4 new Common-entry-point bullets) | ✅ | auto-build |
+| `AGENT_INDEX.md` (2 new rows inserted directly after the existing Windows Autopatch Cloud-Based Quality Update Policies row) | ✅ | auto-build |
+
+_2026-09-02 (run 219, scheduled task "ezadmin-night-build"): started with the standing fresh-clone check against `origin/master` before touching anything — cloned a fresh `/tmp` scratch directory, checked out `master`, and confirmed HEAD at `8d7624f` (run 218, Purview Network Data Security + Windows Autopatch Quality Update Policies) with no concurrent-run conflicts. Manifest had zero genuinely queued (⬜) items — the 6 literal matches were the Status Key legend itself, not real queued rows — so this run went straight to EXPANSION RULES: ran a live `WebSearch`/`web_fetch` sweep for September 2026 Microsoft admin news, cross-checked candidate topics (Entra Tenant Governance, App Proxy, WHfB, Teams Rooms, macOS DDM/MDM-update deprecation, Purview non-Microsoft-app DLP, Defender Unified RBAC) against the existing repo via `grep`/`find` and confirmed each was already covered before selecting two genuinely uncovered, dated, sourced topics: (1) **Windows SSO Permission Auto-Accept (KB5101650)** — confirmed via a live Microsoft Learn fetch of "Admin control for SSO prompts in Windows" (`ms.date` 2026-07-14) and the Windows IT Pro Blog launch post — the registry-based `AutoAcceptSsoPermission` policy that suppresses the EEA "Continue to sign in?" Windows SSO consent prompt on managed Windows 11 24H2/25H2 devices, with eligibility enforced by Windows itself (build/update/join-state/account-type) rather than by registry-value presence alone, and (2) **Microsoft Purview Time-Boxed Role Group Assignments** — confirmed via a live fetch of AdminDroid's "Auto-Expiring Role Group Assignments in Microsoft Purview" (published/updated August 2026) — the native 1-day-to-2-year role-group-member expiration feature that partially replaces the indirect PIM-for-Groups JIT pattern, ships with no PowerShell/Graph cmdlet surface for reading expiration state, and is explicitly unsupported for the eDiscovery Manager/Administrator role groups. Built both topics as full A/B/script sets matching the existing format spec, backfilled `Windows/_AGENT.md` and `Security/Purview/_AGENT.md` (overview clauses, folder-contents rows, entry-point bullets), and appended 2 `AGENT_INDEX.md` rows after the Windows Autopatch Cloud-Based Quality Update Policies row. No roadblocks hit this run — all planned files built successfully.
+
+---
+
+Last updated: 2026-09-02 (auto-build, run 219, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
