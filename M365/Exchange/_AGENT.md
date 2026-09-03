@@ -15,6 +15,7 @@ Covers:
 - **Direct Send abuse** — unauthenticated SMTP delivery to the tenant's own MX endpoint spoofing internal senders, `RejectDirectSend` mitigation, SPF/anti-phishing hardening — distinct from the unrelated "direct send" hybrid outbound-routing term used in `Mail-Flow-A.md` (see that file's disambiguation note)
 - **Mailbox migration batches** — Cutover, Staged (legacy Exchange 2003/2007 only), IMAP (incl. Google Workspace), Remote Move (hybrid onboarding/offboarding), and Cross-tenant (tenant-to-tenant) migration batch mechanics, throttling, and cross-tenant organization-relationship prerequisites — distinct from `Hybrid-Coexistence-A.md`, which covers the hybrid topology/HCW/mail-routing side, not batch migration internals
 - **Cloud-managed remote mailboxes** — `IsExchangeCloudManaged` per-mailbox Exchange-attribute SOA transfer to Exchange Online (the "retire the Last Exchange Server" on-ramp), writeback to on-prem AD via Microsoft Entra Cloud Sync, and the tenant-wide SOA default — distinct from object-level SOA (identity attributes), which this topic explicitly does not cover
+- **Cross-tenant Calendar/Free-Busy/MailTips sharing (EWS → M365 XTAP)** — migrating tenant-to-tenant Organization Relationship, Availability Address Space (OrgWideFBToken), and Sharing Policy configurations to Microsoft 365 Cross-Tenant Access Policy ahead of the October 1, 2026 EWS deprecation deadline in Exchange Online — distinct from `EntraID/Troubleshooting/CrossTenant-B.md` (B2B guest collaboration), which the new XTAP capability layer builds on top of rather than replaces
 
 ---
 
@@ -62,6 +63,9 @@ Covers:
 | `Scripts/Get-TransportRuleConflictAudit.ps1` | Tenant-wide ETR conflict audit — stuck test mode, priority short-circuits, broad conditions, unscoped high-impact actions, DLP overlap review |
 | `Scripts/Get-MigrationBatchHealth.ps1` | Tenant-wide migration batch/user health audit — real failures vs. throttling, skipped-item approval status, cutover limit risk, optional cross-tenant org-relationship and post-migration licensing checks |
 | `Scripts/Get-CloudManagedMailboxAudit.ps1` | Read-only audit of `IsExchangeCloudManaged` fleet state, tenant-wide SOA default, on-prem Connect Sync build compliance, and recent-on-prem-change race-condition flagging |
+| `CrossTenantCalendarSharing-B.md` | Hotfix: EWS-dependent legacy config inventory, Entra M365 Collaboration trust + XTAP capability precedence checks, migrating a partner before the Oct 1 2026 EWS deprecation deadline, MailTips-vs-Free/Busy independent capability gotcha, inbound-only/non-reciprocal bidirectional gap |
+| `CrossTenantCalendarSharing-A.md` | Deep dive: legacy object-per-relationship vs. new capability-per-partner architecture, two-layer Entra-trust + M365-capability model, inbound-only non-reciprocal design, legacy-always-wins precedence rule, multi-domain Sharing Policy security-group-scoping migration playbook |
+| `Scripts/Get-CrossTenantSharingMigrationAudit.ps1` | Read-only inventory of legacy Organization Relationship/Availability Address Space/Sharing Policy objects, mailbox blast-radius sizing, and Entra Cross-Tenant Access Policy partner trust/XTAP capability presence check |
 
 ---
 
@@ -102,6 +106,9 @@ Covers:
 - "Can't change a cloud-managed user's display name / title from Exchange Online" → `CloudManagedMailboxes-B.md` Fix 5 (expected — identity attributes are always on-prem-only)
 - "New on-prem mailboxes broken after turning on cloud-managed-by-default" → `CloudManagedMailboxes-B.md` Fix 6 (unsupported sequencing — escalate to Microsoft Support, do not self-remediate)
 - "Fleet audit of cloud-managed mailbox state / SOA rollout readiness" → `Scripts/Get-CloudManagedMailboxAudit.ps1`
+- "Calendar Free/Busy or MailTips broken with an external partner after Sept/Oct 2026" → `CrossTenantCalendarSharing-B.md` Triage (check legacy-object precedence and Entra trust layer first)
+- "Need to migrate cross-tenant calendar/Free-Busy/MailTips sharing before EWS deprecation" → `CrossTenantCalendarSharing-B.md` Fix 1, `CrossTenantCalendarSharing-A.md` Playbook 1
+- "Fleet audit of legacy EWS-dependent sharing config before the Oct 2026 deadline" → `Scripts/Get-CrossTenantSharingMigrationAudit.ps1`
 
 ---
 
