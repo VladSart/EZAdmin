@@ -1,7 +1,7 @@
 # Microsoft Teams — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention), and the passwordless Entra Resource Accounts authentication transition for shared devices (GA August 2026). Also covers **Automatic/Compliance Recording for Call Queue** (GA-track August 2026, PowerShell-only configuration) — automatic inbound call-queue recording/transcription to SharePoint, distinct from general Teams meeting cloud recording and from per-user compliance recording policies.
+Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention), and the passwordless Entra Resource Accounts authentication transition for shared devices (GA August 2026). Also covers **Automatic/Compliance Recording for Call Queue** (GA-track August 2026, PowerShell-only configuration) — automatic inbound call-queue recording/transcription to SharePoint, distinct from general Teams meeting cloud recording and from per-user compliance recording policies. Also covers **Unified App & Agent Management** (Teams admin center ↔ Microsoft 365 admin center convergence, Phase A/availability GA + Phase B/installation rolling out late Aug-mid Sept 2026 per MC796790) — the phased architecture unifying app/agent availability and installation governance across TAC and MAC, including the permanent app-setup-policy installation exclusion.
 
 ## Before responding, also check
 - `M365/_AGENT.md` — M365-wide triage starting points and licensing checks
@@ -36,6 +36,9 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | `CallQueueRecording-B.md` | Call Queue recording hotfix — template not assigned, Conference mode/routing prerequisites, agents can't view recordings, SharePoint site drift, outbound calls not recorded |
 | `Scripts/Get-CallQueueRecordingAudit.ps1` | Fleet audit of call queues for Automatic Recording template assignment, prerequisite gaps, and SharePoint site-admin resilience; optional Queues App license check |
 | `Scripts/Get-PasswordlessMigrationReadiness.ps1` | Entra ID-side readiness audit for passwordless resource-account migration — license eligibility, hybrid-sync password-cleanup path, password-expiration policy, sign-in staleness heuristic |
+| `UnifiedAppAgentManagement-A.md` | Unified App & Agent Management deep dive — TAC/MAC convergence architecture, Phase A (availability, GA)/Phase B (installation, rolling Aug-Sept 2026) split, the permanent app-setup-policy exclusion, Global-Admin-only consent wizard mechanics |
+| `UnifiedAppAgentManagement-B.md` | Unified App & Agent Management hotfix — TAC/MAC availability mismatches, un-unified tenant wizard walkthrough, app-setup-policy exclusion triage, stuck-wizard/Global-Admin-consent-gate tickets |
+| `Scripts/Get-UnifiedAppManagementAudit.ps1` | Teams app setup policy audit — flags every app pinned/installed via a setup policy as permanently excluded from Phase B unified installation sync, with optional app-name filter for ticket-specific checks |
 
 ## Common entry points
 
@@ -48,6 +51,7 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 - "Can't record / different users get different meeting features" → `Meeting-Policies-B.md`, use `Scripts/Get-TeamsMeetingPolicyAudit.ps1` for rank-conflict detection
 - "Call queue calls aren't being recorded / agents can't see recordings" → `CallQueueRecording-B.md` Triage — confirm template assignment and Conference mode first
 - "Agent's outbound calls from a recorded queue aren't recorded" → `CallQueueRecording-B.md` Fix 7 (expected — needs a separate per-user compliance recording policy)
+- "App/agent shows different availability or install state in Teams admin center vs. Microsoft 365 admin center" → `UnifiedAppAgentManagement-B.md` Triage — check unification phase and app-setup-policy exclusion first, `Scripts/Get-UnifiedAppManagementAudit.ps1` for setup-policy cross-reference
 - "User can't join meetings" → check `EntraID/` for auth, then CA policy
 - "Teams not syncing calendar" → `M365/Exchange/` — EWS and Autodiscover
 - "Can't chat/call someone at another company" → `ExternalAccess-B.md` Fix 1/2 (federation)
