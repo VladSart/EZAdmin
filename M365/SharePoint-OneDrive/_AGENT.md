@@ -1,7 +1,7 @@
 # SharePoint Online & OneDrive — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, and permission management. Covers both end-user-facing issues (sync client) and admin-level problems (site collections, permissions, quota, hub sites).
+Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, and permission management. Covers both end-user-facing issues (sync client) and admin-level problems (site collections, permissions, quota, hub sites). Also covers the third-generation "hero link" sharing experience rolling out worldwide August-October 2026 (single primary link per file/folder, per-site/OneDrive default-audience control, no tenant-wide equivalent).
 
 ## Before responding, also check
 - `M365/_AGENT.md` — M365-wide triage starting points
@@ -32,6 +32,9 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Scripts/Get-SPAdvancedManagementAudit.ps1` | Read-only SAM audit: tenant RAC/RCD delegation flags, per-site RAC group count/enforceability, RCD-on-OneDrive misconfiguration, site lock state, optional DAG report status / idle sign-out / restricted-site-creation checks |
 | `Scripts/Get-SPHubSiteAudit.ps1` | Read-only hub structure audit: registration/association inventory, orphan hub detection, tenant limit tracking (2,000 hubs), hub-to-hub nesting depth check, permission-independence snapshot |
 | `Scripts/Get-SharePointAgentsAudit.ps1` | Read-only agents audit: tenant Knowledge Agent scope + exclusion-list drift flag, per-site RCD agent-suppression scan, legacy promo opt-in status, optional Copilot licence assignment summary via Graph |
+| `HeroLinkSharing-B.md` | Hero link / next-gen sharing hotfix — default-audience confusion (OnlyPeopleAdded grants no access by itself), update-in-place link behaviour, legacy "Other links" coexistence, link-expiration policy scope gap, staged-rollout UI inconsistency |
+| `HeroLinkSharing-A.md` | Hero link deep dive — third-generation sharing architecture, update-in-place semantics vs. legacy multi-link model, DefaultMainLinkScope per-site/OneDrive control surface (no tenant-wide equivalent), documented expiration-policy gap for hero links, compliance mitigation via Sensitivity Labels |
+| `Scripts/Get-HeroLinkSharingAudit.ps1` | Read-only sweep of DefaultMainLinkScope across site collections (optionally OneDrive), plus tenant-wide sharing capability baseline; flags sites with unreadable/not-yet-rolled-out hero-link settings |
 
 ## Common entry points
 
@@ -53,6 +56,10 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 - "Associating with a hub didn't change who can access the site" → `HubSites-B.md` Fix 4 — expected behaviour, hub association never inherits permissions
 - "Audit our hub site structure / how many hubs do we have" → `Scripts/Get-SPHubSiteAudit.ps1` for a tenant-wide report with orphan/limit flags
 - "The Agent icon disappeared from a site" / "SharePoint agent won't create / gives empty answers" / "sources limit exceeded" / "non-Copilot user can't use agents" → `Agents-B.md` — check RCD state first (Fix 1), then permissions, source count, or licensing/pay-as-you-go path; run `Scripts/Get-SharePointAgentsAudit.ps1` for a full tenant + site posture check
+- "I shared a file/link and the recipient still can't open it" → `HeroLinkSharing-B.md` Fix 1 — default hero-link audience (`OnlyPeopleAdded`) grants zero access by itself until the sender adds the person or broadens the audience
+- "I re-shared but they say it's the same broken link" → `HeroLinkSharing-B.md` Fix 2 — expected: broadening a hero link's audience updates the SAME link in place, it does not mint a new URL
+- "Our link-expiration policy isn't being enforced on some shared files" → `HeroLinkSharing-B.md` Fix 3 — hero links are not governed by legacy expiration policies as of this writing (documented gap, not a misconfiguration)
+- "Set a different default sharing audience for new sites/OneDrive" → `HeroLinkSharing-B.md` Fix 5 — per-site/OneDrive `DefaultMainLinkScope` only, no tenant-wide switch; run `Scripts/Get-HeroLinkSharingAudit.ps1` to audit current state across sites
 
 ## Key diagnostic commands
 
