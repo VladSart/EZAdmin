@@ -40,7 +40,7 @@ Get-MgDeviceManagementCompliancePolicyDeviceStatus -DeviceCompliancePolicyId $po
 | Device shows `nonCompliant` but script logic seems correct | Check discovery script output — device may be returning unexpected JSON |
 | All devices `nonCompliant` after policy change | Script syntax error or wrong JSON key names |
 | Policy not visible on device | Assignment not targeting device's group; check group membership |
-| Script uploaded but never runs | Check platform — custom compliance scripts only run on Windows 10/11 |
+| Script uploaded but never runs | Check platform — this script was authored for Windows 10/11 (PowerShell); a macOS device needs a separate Bash discovery script, see `macOS/Troubleshooting/CustomCompliance-B.md` |
 | `error` state on device | Script crashed — check for PowerShell exceptions, missing permissions |
 
 ---
@@ -50,7 +50,7 @@ Get-MgDeviceManagementCompliancePolicyDeviceStatus -DeviceCompliancePolicyId $po
 <details><summary>What must be true</summary>
 
 ```
-Device enrolled in Intune (Windows 10/11 only — not macOS/iOS/Android)
+Device enrolled in Intune (this file covers Windows 10/11 — macOS is also now supported via a separate Bash-based model, see `macOS/Troubleshooting/CustomCompliance-A.md`/`-B.md`; iOS/Android are not documented as supported)
         │
 Intune Management Extension (IME) installed and healthy
   C:\Program Files (x86)\Microsoft Intune Management Extension\
@@ -75,7 +75,7 @@ Conditional Access evaluates compliance state (if CA policy requires compliant d
 - JSON keys must **exactly match** the compliance rule setting names (case-insensitive but consistent)
 - Scripts run in **SYSTEM context** — no user tokens or interactive sessions
 - Script must complete in **≤ 30 seconds** (default timeout; can cause errors on slow machines)
-- Custom compliance is **Windows-only** — macOS requires a different compliance model
+- This file's PowerShell-specific mechanics (IME, 30-second timeout, JSON-only-output model) are **Windows-specific** — macOS uses a Bash discovery script with its own limits (10-minute run time) and a dual exit-code + JSON contract with no Windows equivalent; see `macOS/Troubleshooting/CustomCompliance-A.md`/`-B.md` rather than assuming this file's numbers apply cross-platform
 
 </details>
 
@@ -335,7 +335,7 @@ Business impact: ___________________________
 
 ## 🎓 Learning Pointers
 
-- **Custom compliance is Windows-only** — there is no equivalent for macOS, iOS, or Android in the same script-based model. macOS compliance uses built-in settings only (as of mid-2026). This is a frequent source of confusion when trying to standardise compliance checks across platforms.
+- **Custom compliance is no longer Windows-only** — as of the current Microsoft Learn documentation, macOS is a fully supported third platform using a Bash discovery script + JSON rules model, distinct enough from this Windows/PowerShell model (dual exit-code/JSON contract, different limits) that it's covered as its own file: `macOS/Troubleshooting/CustomCompliance-A.md`/`-B.md`. iOS/Android remain unsupported for this specific feature. Correct this if you've told a customer otherwise based on older guidance.
 
 - **Discovery script context** — scripts run as SYSTEM with no network proxy and limited access. Avoid anything that requires user context, network credentials, or COM automation. Use `Start-Job` with timeouts for any network-dependent checks.
 

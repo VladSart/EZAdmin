@@ -35,9 +35,10 @@
 - Admin roles: Intune Administrator or Policy and Profile Manager
 
 **Out of scope:**
-- macOS custom compliance (not currently supported — only built-in settings)
-- iOS/Android custom compliance
-- Non-Windows platform scripting
+- macOS custom compliance — **corrected 2026-09-03: this is no longer accurate.** Custom Compliance Settings now documents macOS as a fully supported platform alongside Windows and Linux (Bash discovery script + JSON rules model). See `macOS/Troubleshooting/CustomCompliance-A.md`/`-B.md` for the macOS-specific version of this feature, including a dual exit-code/JSON contract that has no Windows equivalent.
+- Linux custom compliance (POSIX shell script model — see Microsoft Learn; not covered in this repo as a dedicated file at this time)
+- iOS/Android custom compliance (not currently a documented supported platform for this feature)
+- Non-Windows platform scripting beyond the macOS cross-reference above
 
 ---
 

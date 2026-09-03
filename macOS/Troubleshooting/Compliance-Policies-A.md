@@ -79,6 +79,7 @@ Intune compliance has a **grace period** (default: 30 days for new policy, confi
 - **Compliance settings** are MDM-native checks that Intune evaluates automatically
 - **Custom Attributes** are shell scripts (run as user or system) that return a string/integer/date; you then create a **custom compliance policy** in Intune that evaluates the returned value
 - Custom Attributes require the Intune Management Extension (IME) — `com.microsoft.intuneMDMAgent`
+- **Terminology note:** Microsoft's current documentation calls this feature **Custom Compliance Settings** — a JSON rules file + a Bash discovery script that can report multiple keys at once, richer than the single-value description above. For the current, fully worked-out version of this feature (including a dual exit-code/JSON contract that is easy to get wrong), see `CustomCompliance-A.md`/`-B.md` in this same folder.
 
 ### Policy Assignment and Precedence
 - Compliance policies are assigned to **user groups** or **device groups**
