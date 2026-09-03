@@ -45,6 +45,7 @@ This runbook covers **agent lifecycle governance** (approval, publishing, owners
 | Copilot Studio agent won't appear in Teams/M365 even though it works in Copilot Studio itself | → Fix 5: Separate Copilot Studio license from Power Platform app-access control |
 | SharePoint agent access behaving differently than expected | → Fix 6: Governed by Site Assets file permissions, not the Copilot Control System |
 | "Governance policy applied but Researcher/Analyst still behaves oddly" | → Not a bug — Researcher and Analyst are core Copilot Chat experiences and explicitly do NOT fall under agent-related governance settings |
+| "Active users"/"Agent run-time" on Overview dashboard shows 0 or looks far too low | → Fix 7: Check Agent 365 license activation date — these metrics only count from activation, not historical usage |
 
 ---
 ## Dependency Cascade
@@ -181,6 +182,21 @@ SharePoint agents are represented as `.agent` files inside each site's **Site As
 3. Use `Get-SPOCopilotAgentInsightsReport` to view status/details across all active and available SharePoint Copilot agents in the tenant when auditing at scale.
 
 **Rollback:** Adjust site/library permissions back if wider access was granted in error — standard SharePoint permission-change caution applies.
+
+</details>
+
+---
+
+<details><summary>Fix 7 — Agent overview analytics (Active users / Agent run-time / trend cards) shows 0 or unexpectedly low</summary>
+
+**This is expected behavior for a newly-licensed tenant, not a telemetry bug — confirm the activation date before investigating further.**
+
+1. Microsoft 365 admin center > **Billing** > **Licenses** > **Subscriptions** — confirm when Microsoft Agent 365 licensing was activated for the tenant.
+2. Active users, Agent run-time, and the "Active users over time" / "Trending agents" cards all begin counting from that activation date, NOT from the tenant's creation date or from an agent's first build/publish date. A tenant one week into Agent 365 licensing will show at most 7 days of data inside a nominally-30-day window.
+3. If the activation date is genuinely more than 30 days in the past and the dashboard still shows near-zero: confirm agents are actually being used (check Registry > individual agent > usage details) rather than assuming the Overview aggregation itself is broken — a real adoption gap looks identical to a display bug at the dashboard level.
+4. Registry total agent count is unaffected by this activation-window behavior — it's a live catalog snapshot, not a rolling 30-day metric — so if Registry count looks right but Active users/Agent run-time look wrong, that itself confirms the issue is the activation-window behavior, not a broader data pipeline failure.
+
+**Rollback:** N/A — informational/diagnostic path, no configuration change involved.
 
 </details>
 

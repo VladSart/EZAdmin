@@ -45,6 +45,7 @@ Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled
 | Policy shows "Off" in portal | Fix 3 — Activate policy |
 | No indicators triggering in portal | Fix 4 — Verify indicator configuration |
 | User not in policy scope | Fix 5 — Add user to policy scope |
+| Investigator says Content preview tab missing on an alert activity | Fix 6 — Confirm Investigator role, activity type, and rollout status |
 
 ---
 
@@ -224,6 +225,25 @@ Write-Host "Licence assigned" -ForegroundColor Green
 3. Save and allow 24h for evaluation to begin
 
 > For large organisations, scoping to "All users" is common but has licensing implications — every user in scope needs E5 Compliance.
+
+</details>
+
+<details>
+<summary>Fix 6 — Content preview tab missing on an activity (Activity explorer)</summary>
+
+**Not a bug in most cases — three gates have to be true simultaneously before the tab appears, and any one being false hides it silently with no error message.**
+
+1. **Role check** — Content preview is visible ONLY to users in the *Insider Risk Management Investigators* role group (or *Insider Risk Management*, which contains it). *Insider Risk Management Analysts* and other roles never see it, by design.
+   - Purview portal → **Settings** → **Roles and scopes** → **Roles** → confirm the user is a member of one of the two groups above.
+
+2. **Activity-type check** — Content preview only supports activities that access or transmit still-existing content:
+   - Supported: SharePoint/OneDrive file accessed, file download, full file sync download; Exchange email sent (hygiene events), DLP rule matches.
+   - NOT supported: deletions/recycle-bin, Endpoint activities (copy/print/USB), browser or removable-media events, metadata-only events (user/group changes, Power BI export/deletion), renamed files.
+   - If the flagged activity is in the unsupported list, there is no fix — the tab will never appear for that activity type. This is expected, not a defect.
+
+3. **Rollout check** — GA completed worldwide/GCC/GCC-High/DoD by late July 2026 (MC1244281). If the tenant is newly licensed for Insider Risk Management or is in a sovereign/air-gapped cloud outside that list, the feature may not have reached it yet. Confirm current rollout status against the Message Center record before escalating as a bug.
+
+> **Don't confuse this with the case-level Content explorer** (requires an active case + content download enabled + snapshot population time). Content preview is pre-case, inside Activity explorer, view-only, with zero export capability. If the user's actual ask is "I need to download/export this file for the case," that's a different, already-covered workflow — a case content-download question, not a Content-preview question.
 
 </details>
 

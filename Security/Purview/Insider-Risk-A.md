@@ -104,6 +104,28 @@ When Adaptive Protection is enabled, IRM risk levels (Minor/Moderate/Elevated �
 
 > **This section is intentionally brief.** For the full architecture — insider risk level vs. alert severity, Quick vs. Custom Setup, the DLP/CA/DLM three-way integration, the permissions model, and the disable/orphaned-policy lifecycle — see the dedicated **`AdaptiveProtection-A.md`** / **`AdaptiveProtection-B.md`** pair in this folder. Do not duplicate that depth here.
 
+### Content Preview in Activity Explorer (Preview)
+
+Rolled out worldwide/GCC/GCC-High/DoD between mid-June and late-July 2026 (Message Center MC1244281, Roadmap ID 557189), **Content preview** is a new tab inside the **Activity explorer** tab of an alert's details pane. It lets an investigator open a supported file or message directly from the alert — inline, without leaving the alert view — to judge in seconds whether the activity is a false positive, benign, or worth escalating to a full case.
+
+**The single highest-value fact:** this exists specifically to remove the "create a case just to look at the file" step from early triage. Before this feature, confirming whether a flagged SharePoint download actually contained sensitive data required either trusting the sensitive-info-type tag on the alert or spinning up a full case with content download enabled and waiting for the snapshot to populate — both slower and, in the case-creation path, permanently increasing that user's footprint in the system regardless of whether the alert turns out to be nothing. Content preview answers the same question in-line, pre-case.
+
+**Access is gated by role, not license, once the feature is enabled:** the tenant either has the feature (enabled by default for any tenant licensed for Insider Risk Management — no admin action needed to turn it on) or it doesn't yet appear (still completing rollout). Within a tenant that has it, only users holding the **Insider Risk Management Investigators** role (or the broader **Insider Risk Management** role group, which contains it) see the Content preview tab at all — Analysts and other IRM roles do not, which is a frequent source of "I don't see a preview option" tickets that are role gaps, not feature-availability bugs.
+
+**Supported vs. unsupported activities — memorize this boundary, it is the #1 source of confusion:**
+
+| Supported (preview available) | Not supported |
+|---|---|
+| SharePoint: file accessed, file download, full file sync download | File/folder deletion, recycle bin events |
+| OneDrive for Business: file accessed, file download, full file sync download | Endpoint activities (file deletion, copy, print, USB transfer) |
+| Exchange: email sent (hygiene events), DLP rule matches | Browser or removable media events |
+| — | Metadata-only events (user/group changes, Power BI export/deletion) |
+| — | Renamed files |
+
+The underlying principle: Content preview only applies to activities that involve **accessing or transmitting** content that still exists in a readable state. State changes, permission changes, and deletions have nothing left to preview by definition — this is not a coverage gap Microsoft intends to close, it's structural.
+
+**This is a separate feature from the case-level Content explorer** (`insider-risk-management-content-explorer`) — that older, GA capability requires an active case and downloads a full snapshot of case-scoped content for export as PDF/original format. Content preview is pre-case, alert-scoped, and view-only inside the Activity explorer pane; it does not create a snapshot, does not require content download to be enabled, and cannot be exported. Don't conflate the two when a ticket says "content explorer isn't working" — confirm which surface the user actually means first.
+
 </details>
 
 ---
@@ -152,6 +174,7 @@ Insider Risk Management Engine
 | Case evidence (content) unavailable in case | User mailbox/SPO not covered by hold or eDiscovery scope | Check case → Evidence → Content locations |
 | False positive storm after policy change | Indicators set too sensitive or weights too high | Review indicator configuration and tune thresholds |
 | Pseudonymization preventing user identification | Privacy setting is on; requires Analyst+ role to de-anonymize | Purview → IRM Settings → Privacy |
+| Investigator can't find "Content preview" tab on an activity | Missing Investigator role, unsupported activity type, or tenant still mid-rollout | Confirm Insider Risk Management Investigators role; check activity against Supported/Not-supported table |
 
 ---
 
@@ -528,3 +551,5 @@ Get-MgUser -All | Where-Object { $_.AssignedLicenses.SkuId -notcontains $compSku
 - **HRMS connector unlocks the most powerful policies.** The "Departing user" template generates significantly more actionable alerts than always-on policies because it focuses signal around the highest-risk period. Budget time to connect HR data. [HR connector setup](https://learn.microsoft.com/en-us/purview/import-hr-data)
 
 - **IRM is not a forensics tool.** It surfaces risk signals and timelines — it does not retain content. When a case reaches legal hold territory, integrate with Purview eDiscovery immediately. Content not under hold is at risk of deletion. [eDiscovery integration](https://learn.microsoft.com/en-us/purview/insider-risk-management-cases)
+
+- **Content preview is a triage accelerant, not a replacement for case content.** It lets an Investigator rule out false positives in seconds without creating a case, but it has no export and no snapshot — if the alert genuinely warrants investigation, still confirm the alert and create a case to get durable, exportable evidence. [Activity explorer content preview](https://learn.microsoft.com/en-us/purview/insider-risk-management-activities#content-preview-preview)

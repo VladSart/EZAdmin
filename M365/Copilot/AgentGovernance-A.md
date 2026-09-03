@@ -115,6 +115,23 @@ The Overview dashboard surfaces four categories of "Top actions," each mapped to
 - **Agents at risk** — aggregated **high-severity** risk signals pulled from Microsoft Entra, Microsoft Defender, and Microsoft Purview; this closes what Microsoft explicitly frames as "a critical visibility gap for IT administrators responsible for governing AI agents" — meaning the Registry is a surfaced view of security findings that live natively elsewhere, not an independent risk-scoring engine
 - **Agents with exceptions** — agents generating conversational errors, a functional-health rather than security signal
 
+### Agent Overview analytics: hero metrics and the license-activation data window
+
+Distinct from the four governance "Top actions" cards above, the Overview dashboard also surfaces an **analytics** layer — hero metrics and trend cards intended to answer "how much agent activity is actually happening," not "what needs my approval":
+
+| Hero metric | What it counts |
+|---|---|
+| **Agent registry** | Total agents in the org catalog (Microsoft-built, partner-built, custom LOB) — the same Registry count discussed above |
+| **Active users** | Unique users who sent a prompt to, and received a response from, at least one agent in the last 30 days, across Microsoft and non-Microsoft channels |
+| **Agent run-time** | Total hours worked by agents in the last 30 days, from request start to completion, aggregated across tool calls and response preparation |
+| **Registry sync** | Which connected external (non-Microsoft) platforms were scanned to populate the Registry |
+
+Below the hero metrics, the **Agent analytics** section adds four trend/breakdown cards: **Agents by creators** (your organization / third party / Microsoft), **Top platforms used to build agents** (top 5 shown by default; the full list lives in Registry), **Active users over time** (a 30-day daily trend line), and **Trending agents by active users**.
+
+**The single most important operational fact about this whole analytics layer:** Active users, Agent run-time, and the two "over time" trend cards **only begin counting from the moment the tenant activates Microsoft Agent 365 licensing** — not from historical usage before that point. A tenant that just turned on Agent 365 will show a near-empty or fast-climbing 30-day window for several weeks, which is expected ramp-up, not a broken integration or a sign that agents aren't being used. This is the single most common "why does my dashboard show almost nothing" ticket for a newly-licensed tenant, and it resolves itself with time, not configuration.
+
+**Registry count vs. Overview hero-metric count can legitimately differ**, and this is a separate, already-documented phenomenon (see the Registry counting section above) — the two draw from the Agent Registry and usage-analytics pipelines respectively, which sync on different cadences. Don't chase exact parity between the Registry total and the Overview "Agent registry" hero number; check that both are directionally moving the same way over time instead.
+
 ### Researcher and Analyst: the explicit governance carve-out
 
 Researcher and Analyst are first-party Microsoft experiences built on the Microsoft 365 Copilot foundation, available under **Tools** in Copilot Chat, operating entirely within the Microsoft 365 commercial data-processing boundary and inheriting all standard security/privacy/compliance commitments. Despite architecturally coexisting alongside agents and "abiding by" agent-related governance capabilities in a general sense, Microsoft's documentation is explicit that these tools **will not fall under any agent-related settings** — meaning an agent-blocking or agent-scoping policy has no effect on them. This is a deliberate design choice, not a governance gap to be escalated as a bug.
@@ -190,6 +207,7 @@ Agent available to its scoped audience; tracked continuously in the Registry
 | SharePoint agent's access behaves like a permissions issue, not a governance-policy issue | Because it is — SharePoint agents are governed by `.agent` file/library permissions, never routed through Requests | Standard SharePoint site/library permission check |
 | Governance policy scoped to "block risky agents" doesn't affect Researcher/Analyst | Expected — Researcher and Analyst are explicitly carved out of all agent-related governance settings | Confirm via documentation before treating as a defect |
 | Agent count in Overview doesn't match a manual count from Registry | Minor variance between Registry and usage-analytics pipelines due to ingestion timing | Expected within normal bounds; re-check trend direction, not exact parity |
+| Active users / Agent run-time shows 0 or unexpectedly low right after enabling Agent 365 | Metric only counts from the moment Agent 365 licensing was activated, not historical usage | Check license activation date; expect the 30-day window to fill in over subsequent weeks |
 | Draft agent from Agent Builder/Foundry/SharePoint not appearing anywhere in Registry | Draft-agent visibility currently supports Copilot Studio only | Confirm the agent's actual state on its native creation platform, not just the Registry |
 | Frontier-type agent (App Builder / Workflows) behaves inconsistently between M365 admin center and Power Platform admin center | Both surfaces can manage these agent types independently — changes in one may not immediately reflect in the other | Confirm which surface was actually used for the most recent change |
 | "Governance seems to be working differently than our old plugin/add-in model" | Agents use the unified Microsoft 365 app model (extends the Teams app platform), a deliberate architectural convergence — not the same governance model as classic Office add-ins/plugins | Confirm the ticket isn't scoped against legacy add-in expectations |
@@ -408,3 +426,5 @@ notepad $outPath
 - **Researcher and Analyst are explicitly and permanently outside agent governance scope**, despite living in the same Copilot Chat surface as agents. Don't burn troubleshooting time trying to make an agent policy affect them — check the documentation's carve-out before assuming a bug. [MS Docs: Agent settings in Microsoft 365 admin center](https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-settings)
 
 - **Draft-agent visibility in the Registry currently only covers Copilot Studio.** An agent built in Agent Builder, Foundry, or SharePoint that's still in draft state will not appear in the Registry yet — absence from the Registry does not mean the agent doesn't exist, only that it isn't (yet) formally tracked there. [MS Docs: Agent overview in Microsoft 365 admin center](https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-365-overview)
+
+- **The Overview analytics cards (Active users, Agent run-time, and both "over time" trends) have a hidden zero point: Agent 365 license activation, not tenant creation or first agent build.** A newly-licensed tenant's near-empty dashboard in week one is the expected ramp-up curve, not a broken telemetry pipeline — don't spend troubleshooting time on it before checking the activation date. [MS Docs: Agent overview in Microsoft 365 admin center](https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-365-overview)

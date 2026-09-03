@@ -2,7 +2,7 @@
 
 ## What's in this folder
 
-Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission troubleshooting — covers Word, Excel, PowerPoint, Outlook, and Teams Copilot experiences. Also covers **agent lifecycle governance** (approval, publishing, ownership, risk, access) for agents surfaced through Copilot — declarative agents, Copilot Studio agents, Agent Builder agents, SharePoint agents, and Frontier agents. For Copilot Studio's own security/governance controls (per-agent authentication, DLP, CMK), see `PowerAutomate/PowerApps/CopilotStudio-Security-A.md`/`-B.md` instead.
+Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission troubleshooting — covers Word, Excel, PowerPoint, Outlook, and Teams Copilot experiences. Also covers **agent lifecycle governance** (approval, publishing, ownership, risk, access) for agents surfaced through Copilot — declarative agents, Copilot Studio agents, Agent Builder agents, SharePoint agents, and Frontier agents. For Copilot Studio's own security/governance controls (per-agent authentication, DLP, CMK), see `PowerAutomate/PowerApps/CopilotStudio-Security-A.md`/`-B.md` instead. `AgentGovernance-A/B.md` also covers the Agent Overview dashboard's analytics layer (Active users, Agent run-time, Registry sync, and trend cards) and its most common gotcha — these metrics only start counting from Microsoft Agent 365 license activation, not historical usage.
 
 ---
 
@@ -36,6 +36,7 @@ Microsoft 365 Copilot licensing, enablement, policy, and grounding/permission tr
 - "Copilot blocked entirely, can't sign in to it" → `Copilot-B.md` § Fix 5 — Conditional Access scoping
 - "We just tightened SharePoint sharing and now Copilot answers got worse" → `Copilot-B.md` § Learning Pointers — expected behavior, not a bug
 - "Who approved this agent / who owns it / can end users publish their own agents" → `AgentGovernance-B.md` § Triage — agent lifecycle governance, not a licensing issue
+- "Agent overview dashboard shows 0 active users / run-time right after we turned on Agent 365" → `AgentGovernance-B.md` § Fix 7 — metrics only count from license activation date, not historical usage
 
 ---
 
