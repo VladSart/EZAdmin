@@ -136,6 +136,7 @@ A label can optionally be marked as a **record label** (`IsRecordLabel = $true`)
 | Disposition review appears but no reviewer acts | Reviewer left the org / was never actually assigned | `ReviewerEmail` on the label — cross-check against active directory |
 | Regulatory record can't be modified/removed | Working as designed — irreversible by anyone | Confirm with client this was the intended configuration at creation time |
 | Adaptive scope missing recently-added users/sites | Scope hasn't re-evaluated yet (scheduled, not real-time) | `Get-AdaptiveScope` → `LastQueryTime` |
+| Adaptive scope unexpectedly includes/excludes inactive mailboxes (post-Sep 2026) | Lifecycle status evaluation controls (MC1450128) — new scopes default to **active recipients/site owners only** | Check whether the scope was created after rollout; use the advanced query builder's `IsInactiveMailbox` OPATH property to confirm intended behavior |
 | Auto-apply not tagging obvious matches | Trainable classifier confidence too low, or content type unsupported | Test via Content Explorer sample matches |
 | Teams/Viva Engage retry not working with `Set-RetentionCompliancePolicy` | Wrong cmdlet — Teams/Viva Engage use the App variant | Use `Set-AppRetentionCompliancePolicy -RetryDistribution` instead |
 
@@ -173,6 +174,8 @@ Any populated value here names a specific failed location — usually a deleted/
 Get-AdaptiveScope -Identity "<SCOPE_NAME>" | Select-Object Name, ScopeType, LastQueryTime
 ```
 Compare `LastQueryTime` against when the target user/site was actually added to the underlying attribute — a stale scope is the most common "label isn't reaching this new user" root cause.
+
+> **Upcoming change (MC1450128 / Roadmap 568785):** starting with Public Preview in mid-September 2026 (GA mid-October–mid-November 2026), newly created adaptive scopes will evaluate **only active recipients and site owners by default** — inactive and soft-deleted accounts are excluded unless explicitly configured to include them. Existing scopes are **not** automatically changed by this rollout and keep their current behavior. If a client reports a scope "suddenly" missing departing/departed staff after this window, first confirm whether the scope was newly created (new default applies) or pre-existing (old behavior persists until an admin explicitly opts it into the new lifecycle-status criteria). See Remediation Playbook 5.
 
 **5. Enumerate everything that could apply to a given location (conflict surfacing)**
 ```powershell
@@ -308,6 +311,35 @@ Write-Host "Bulk location update submitted as a single distribution job." -Foreg
 
 </details>
 
+<details><summary>Playbook 5 — Handle adaptive scope lifecycle status controls (MC1450128, Preview mid-Sep 2026 / GA mid-Oct 2026)</summary>
+
+```powershell
+Connect-IPPSSession -UserPrincipalName <admin@tenant.com>
+
+# Pre-GA / manual workaround: the advanced query builder already supports explicit
+# inclusion/exclusion of inactive mailboxes via the OPATH property IsInactiveMailbox.
+# Use this today to make lifecycle-status behavior explicit rather than implicit,
+# ahead of the native lifecycle-status controls landing on the Adaptive Scopes page.
+
+# Exclude inactive mailboxes from a user-type adaptive scope (matches the new default):
+# Advanced query builder value: (Department -eq "Legal") -and (IsInactiveMailbox -eq "False")
+
+# Target ONLY inactive mailboxes (e.g. to build a separate legal-hold retention scope):
+# Advanced query builder value: (IsInactiveMailbox -eq "True")
+
+# Validate the query independently before wiring it into a live scope:
+Get-Recipient -RecipientTypeDetails UserMailbox,MailUser -Filter {Department -eq "Legal" -and IsInactiveMailbox -eq "False"} -ResultSize Unlimited
+
+# After GA: review each existing adaptive scope and decide, per client policy,
+# whether to opt it into explicit lifecycle-status evaluation criteria (portal-driven,
+# no dedicated cmdlet documented as of this writing — confirm current state in
+# Purview portal > Settings > Roles and scopes > Adaptive scopes > scope > Details).
+Get-AdaptiveScope | Select-Object Name, ScopeType, LastQueryTime
+```
+**Rollback:** existing scopes are unaffected by the rollout itself — there is nothing to roll back unless an admin has already opted a scope into the new criteria and wants to revert; do so via the same portal page that was used to opt in.
+
+</details>
+
 ---
 ## Evidence Pack
 
@@ -379,3 +411,4 @@ Write-Host "Evidence pack written to $OutputPath" -ForegroundColor Green
 - **New label publishing takes up to 7 days to fully roll out** — set this expectation with clients up front so a "the label isn't showing yet" ticket doesn't get treated as an incident on day 2.
 - **Use the correct retry cmdlet for the workload** — `Set-RetentionCompliancePolicy -RetryDistribution` does not retry Teams/Viva Engage distribution; that requires `Set-AppRetentionCompliancePolicy -RetryDistribution` against a separate backend. [MS Docs — Resolve errors in retention and retention label policies](https://learn.microsoft.com/en-us/troubleshoot/microsoft-365/purview/retention/resolve-errors-in-retention-and-retention-label-policies)
 - **Disposition review has no proactive notice** — it only surfaces once the retention clock has fully completed, with no advance list. If a client wants a heads-up before disposition, that has to be a separately built report, not an assumed platform feature.
+- **Adaptive scopes are gaining explicit lifecycle-status controls (MC1450128, Preview mid-Sep 2026 / GA mid-Oct–mid-Nov 2026)** — new scopes will default to active-only membership, a behaviour change from today's implicit inclusion of inactive/soft-deleted accounts unless the OPATH `IsInactiveMailbox` workaround was already in use. Existing scopes are untouched by the rollout; flag this proactively with clients who rely on adaptive scopes for legal-hold or offboarding-adjacent retention scenarios. See Remediation Playbook 5. [Microsoft Learn — Adaptive scopes](https://learn.microsoft.com/en-us/purview/purview-adaptive-scopes)

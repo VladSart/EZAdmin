@@ -81,6 +81,16 @@ Tasks can only be selected from Microsoft's built-in task template catalog; ther
 
 Editing a workflow's tasks or execution conditions creates a new **version** of that workflow, which is tracked and reported separately from prior versions in workflow history (Users / Runs / Tasks views). This is by design (so historical runs remain attributable to the exact configuration that produced them) but frequently looks to an admin like "history got reset" after an edit.
 
+### Update user attributes task (Preview, added ~mid-2026)
+
+A built-in task type that sets or clears attribute values on cloud-managed users when a lifecycle event fires — e.g. clearing `department`/`jobTitle` on a leaver, or setting a directory extension attribute on a joiner. Supports built-in attributes, on-premises extension attributes (`extensionAttribute1`-`15`), and directory extension attributes; **does not support custom security attributes**. Up to **10 attribute updates per task instance**. Requires Microsoft Entra ID Governance or Entra Suite licensing (same licensing tier as the rest of Lifecycle Workflows — no separate SKU).
+
+Two limitations matter more than they first appear:
+- **Synced (AD DS) users are not supported** — this task only runs for cloud-managed users, unlike the AD DS account tasks in Playbook 2 which have their own separate on-prem prerequisite chain. A hybrid tenant cannot use this task to clear/set attributes on synced users at all; that has to remain an on-prem process (e.g. a scheduled AD script or the sync engine's own attribute flow).
+- **`employeeLeaveDateTime` is not currently a supported target attribute** — Microsoft has stated GA support is planned, but as of Preview it cannot be set/cleared by this task. Don't scope a leaver-workflow design around this task managing that specific field until it's confirmed GA.
+
+[Microsoft Learn — Update user attributes with Lifecycle Workflows (Preview)](https://learn.microsoft.com/en-us/entra/id-governance/how-to-lifecycle-workflow-update-user-attributes)
+
 </details>
 
 ---
@@ -141,6 +151,8 @@ Task execution (ordered, ≤25 tasks/workflow, ≤100 workflows/tenant)
 | Workflow history looks fragmented after an edit | Editing tasks/conditions creates a new workflow **version**, tracked separately | Check version filter in Workflow History |
 | A manual "Run on demand" test succeeded but the ticket says scheduled automation is broken | On-demand bypasses scope matching entirely — proves tasks work, not that scheduling logic works | Re-verify scope match independently before closing |
 | Need a workflow task that calls an internal system/API | Not supported natively — task catalog is fixed | Scope as a Logic Apps task integration, not a workflow feature request |
+| Update user attributes task has no effect for a specific user | User is AD DS-synced — this task only runs for cloud-managed users | `Get-MgUser` → `onPremisesSyncEnabled`; if `true`, this task cannot apply to them |
+| `employeeLeaveDateTime` isn't updating via the Update user attributes task | Attribute not yet supported by this task (Preview limitation) | Confirm against current Microsoft Learn page before assuming misconfiguration |
 
 ---
 ## Validation Steps
@@ -219,6 +231,19 @@ No destructive steps; safe to iterate.
 </details>
 
 ---
+<details><summary>Playbook 5 — Add an Update user attributes task to an existing workflow (Preview)</summary>
+
+1. Confirm the target population is cloud-managed (not AD DS-synced) — `Get-MgUser -Filter "onPremisesSyncEnabled eq true"` to identify exclusions up front.
+2. In the workflow's Tasks list, select **Add task** → **Update user attributes (Preview)**.
+3. Select up to 10 attributes to update; leave a value empty to clear that attribute rather than set it.
+4. Do not include `employeeLeaveDateTime` as a target attribute — not yet supported (Preview limitation).
+5. Save (creates a new workflow version, as with any task edit) and validate with an on-demand run against a test cloud-managed user before relying on the scheduled run.
+
+No destructive steps against AD; safe to iterate. Rollback is simply removing the task from the workflow (already-applied attribute changes on already-processed users are not reverted).
+
+</details>
+
+---
 ## Evidence Pack
 
 ```powershell
@@ -278,3 +303,4 @@ Export each block to CSV and attach alongside the affected user's current `emplo
 - Case-sensitive rule matching (including for custom security attributes) is explicitly called out in Microsoft's own FAQ as one of the most common points of confusion — worth testing rule expressions against real attribute casing before assuming a logic error. [Lifecycle workflows FAQs](https://learn.microsoft.com/en-us/entra/id-governance/workflows-faqs)
 - The extensibility model (built-in task catalog + Logic Apps task for anything custom) is a hard architectural boundary — don't scope a "custom Graph call" as a Lifecycle Workflows task; it has to be a Logic App the workflow calls into. [Lifecycle Workflow built-in tasks](https://learn.microsoft.com/en-us/entra/id-governance/lifecycle-workflow-tasks)
 - Worth a deeper look when time allows: [Lifecycle Workflows service limits](https://learn.microsoft.com/en-us/entra/id-governance/governance-service-limits#lifecycle-workflows) (workflow/task counts, run history retention) and [custom attribute triggers (Preview)](https://learn.microsoft.com/en-us/entra/id-governance/workflow-custom-triggers) for scenarios beyond the standard employeeHireDate/employeeLeaveDateTime model.
+- **The new Update user attributes task (Preview) inherits the same cloud-only boundary as every other Lifecycle Workflows task** — it cannot touch AD DS-synced users, and `employeeLeaveDateTime` specifically isn't a supported target yet. Treat it as an addition to the cloud-native attribute-hygiene toolkit, not a replacement for on-prem attribute management in hybrid environments. [Microsoft Learn — Update user attributes with Lifecycle Workflows (Preview)](https://learn.microsoft.com/en-us/entra/id-governance/how-to-lifecycle-workflow-update-user-attributes)

@@ -114,6 +114,7 @@ Get-AdaptiveScope -Identity "<SCOPE_NAME>" | Select-Object Name, ScopeType, Last
 Get-RetentionCompliancePolicy -Identity "<LABEL_POLICY_NAME>" | Select-Object -ExpandProperty AdaptiveScopeLocation
 ```
 - Adaptive scopes re-evaluate on a schedule (not instantly). A user/site added to the underlying attribute query won't get the label until the next scope refresh.
+- **Incoming change (MC1450128):** Public Preview mid-Sep 2026 / GA mid-Oct–mid-Nov 2026 — new adaptive scopes will default to active-recipients/site-owners-only membership. Existing scopes keep current behavior unless an admin opts them into the new lifecycle-status criteria. If inactive-mailbox members suddenly stop appearing, check scope creation date before assuming breakage — see Fix 7.
 
 **Step 5 — Confirm conflict resolution outcome on a specific item**
 ```powershell
@@ -232,6 +233,28 @@ Get-ComplianceTag -Identity "<LABEL_NAME>" | Select-Object Name, RetentionAction
 </details>
 
 ---
+<details><summary>Fix 7 — Adaptive Scope Unexpectedly Missing Inactive/Departed Users (MC1450128 rollout)</summary>
+
+**Symptom:** A retention label stops applying to a departed employee's inactive mailbox, and the adaptive scope used to include them until recently.
+
+```powershell
+Connect-IPPSSession -UserPrincipalName <admin@tenant.com>
+
+# Check when the scope was created/last modified — scopes created after the
+# MC1450128 rollout (Preview mid-Sep 2026, GA mid-Oct 2026) default to active-only.
+Get-AdaptiveScope -Identity "<SCOPE_NAME>" | Select-Object Name, ScopeType, LastQueryTime, WhenCreated
+
+# Validate independently whether the mailbox is flagged inactive
+Get-Mailbox -InactiveMailboxOnly -Identity "<UPN_OR_ALIAS>" -ErrorAction SilentlyContinue
+
+# Confirm what the scope's underlying query actually says (advanced query builder value
+# is visible in the Purview portal — look for IsInactiveMailbox explicitly set to False)
+```
+If the scope is new (post-rollout) and no `IsInactiveMailbox` criterion was explicitly added, the platform default now excludes inactive mailboxes — this is expected behavior, not a fault. Work with the client to decide whether the scope should be updated to explicitly include inactive/soft-deleted accounts (legal-hold and offboarding retention scenarios usually want this).
+
+</details>
+
+---
 ## Escalation Evidence
 
 ```
@@ -263,3 +286,4 @@ Support path:                Microsoft 365 Admin → Support → New service req
 - **Records vs. regular retention labels** are a one-way door: a regulatory record can never be un-declared by anyone, and a standard record can only be un-declared by a Records Manager role. Confirm with the client which behaviour they actually want before publishing — this is a common mismatch between compliance intent and IT delivery.
 - **Use `-RetryDistribution` before escalating any distribution error** — the two cmdlets (`Set-RetentionCompliancePolicy` for Exchange/SharePoint/OneDrive, `Set-AppRetentionCompliancePolicy` for Teams/Viva Engage) both self-heal most transient distribution failures. [MS Docs — Resolve retention policy/label errors](https://learn.microsoft.com/en-us/troubleshoot/microsoft-365/purview/retention/resolve-errors-in-retention-and-retention-label-policies)
 - **Disposition review has no early-warning surface** — it only appears in the portal once the retention clock has fully expired. If a client expects proactive notice before disposition, that has to be built as a separate process (e.g. a scheduled report), not assumed from the platform.
+- **Adaptive scopes are changing their default lifecycle-status behavior (MC1450128, Preview mid-Sep 2026 / GA mid-Oct 2026)** — new scopes will evaluate active recipients/site owners only unless explicitly configured otherwise. This is a silent behavior change for anyone creating scopes after rollout; existing scopes are unaffected. [Microsoft Learn — Adaptive scopes](https://learn.microsoft.com/en-us/purview/purview-adaptive-scopes)

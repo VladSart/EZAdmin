@@ -119,6 +119,7 @@ Bad: a reviewer was added as a group (unsupported — silently ignored) or lacks
 Open the policy → **Users and groups**.
 Good: affected user is in "All users", an explicitly listed user/group, or an adaptive scope that currently matches them.
 Bad: user was added via a **dynamic** distribution group, **nested** distribution group, or M365 group with **dynamic membership** — none of these are supported for scoping and the user is silently never evaluated.
+Also check adaptive-scope lifecycle-status behavior if the affected user's mailbox is inactive: scopes created after the MC1450128 rollout (Preview mid-Sep 2026 / GA mid-Oct 2026) default to active-recipients-only, so a newly-inactive mailbox can silently drop out of an otherwise-correct scope.
 
 **Step 6 — Confirm processing latency hasn't been mistaken for a failure**
 Good: message sent more than 24h ago (email) or 48h ago (Teams/Viva Engage/third-party) and still no alert.
@@ -258,3 +259,4 @@ Tenant ID required: (Get-MgOrganization).Id
 - **Reviewers can never be groups — only individual users**, and they must have an Exchange Online mailbox. This is different from scoped/excluded users, which do support Distribution Groups and Microsoft 365 Groups. Mixing these two rules up is a common configuration mistake.
 - **Under the hood, Communication Compliance is still "Supervisory Review"** — the legacy feature name survives in the compliance-boundary mailbox pattern (`Mailbox_Name -like 'SupervisoryReview{*'`) used by `New-ComplianceSecurityFilter`. If a client's environment has compliance boundaries configured for eDiscovery, CC admins/reviewers can be silently blocked from the mailboxes they need — see `CommunicationCompliance-A.md` Remediation Playbook 3.
 - **Processing latency is real and asymmetric: ~24h for email, ~48h for Teams/Viva Engage/third-party.** Declaring a brand-new policy "broken" inside that window is the single most common false-positive escalation for this feature.
+- **Adaptive scopes default to active-recipients-only starting with MC1450128 (Preview mid-Sep 2026 / GA mid-Oct 2026)** — if monitoring for a specific user quietly stops, check whether their mailbox recently went inactive and whether the scope was created before or after this rollout. [Microsoft Learn — Adaptive scopes](https://learn.microsoft.com/en-us/purview/purview-adaptive-scopes)

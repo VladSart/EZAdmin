@@ -231,6 +231,20 @@ No fix here in the traditional sense — if a requester wants logic beyond the b
 </details>
 
 ---
+<details><summary>Fix 8 — Update user attributes task (Preview) has no effect for a user</summary>
+
+**Symptom:** An Update user attributes task is configured on a workflow, but a specific user's attributes never change.
+
+```powershell
+# Confirm the user is cloud-managed, not AD DS-synced -- this task only runs for cloud users
+Get-MgUser -UserId "<UPN>" -Property onPremisesSyncEnabled | Select-Object onPremisesSyncEnabled
+```
+- `onPremisesSyncEnabled = $true` explains it completely — this task has no effect on synced users, by design. There is no workaround inside Lifecycle Workflows for this; the attribute has to be managed on-prem or via the sync engine instead.
+- If the user is cloud-managed and still unaffected, confirm the target attribute isn't `employeeLeaveDateTime` (not yet a supported target in Preview) and that the task instance has fewer than 10 attribute updates configured (the documented per-task limit).
+
+</details>
+
+---
 ## Escalation Evidence
 
 ```
@@ -266,3 +280,4 @@ Steps already attempted: <bullet list>
 - **For AD DS-synced users, Enable/Disable/Delete tasks have real infrastructure prerequisites** (provisioning agent version, correct extension mode, gMSA rights, Recycle Bin for Delete) that are completely separate from the cloud-only tasks in the same workflow — a workflow can be "half-working" by design until these are set up. See [Managing users synchronized from AD DS with Lifecycle Workflows](https://learn.microsoft.com/en-us/entra/id-governance/lifecycle-workflow-on-premises).
 - **Rule matching is case-sensitive, including for custom security attributes** — this is one of the most-reported "why didn't my rule match" issues in Microsoft's own FAQ. See [Lifecycle workflows FAQs](https://learn.microsoft.com/en-us/entra/id-governance/workflows-faqs).
 - Cross-reference: Lifecycle Workflows is layered automation on top of account existence — it does not create the account (that's [HR-driven provisioning](https://learn.microsoft.com/en-us/entra/identity/app-provisioning/what-is-hr-driven-provisioning)), and it's a distinct system from `Troubleshooting/AccessReviews-B.md` (periodic recertification) and `Troubleshooting/PIM-B.md` (role activation) — don't conflate ticket types.
+- **The Update user attributes task (Preview) is cloud-managed-users only** — same boundary as every other Lifecycle Workflows task, and `employeeLeaveDateTime` specifically isn't supported as a target yet. Don't scope a hybrid-tenant leaver process around this task until both limitations are confirmed resolved at GA. [Microsoft Learn — Update user attributes with Lifecycle Workflows (Preview)](https://learn.microsoft.com/en-us/entra/id-governance/how-to-lifecycle-workflow-update-user-attributes)
