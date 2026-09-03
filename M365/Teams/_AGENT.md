@@ -1,7 +1,7 @@
 # Microsoft Teams — Agent Instructions
 
 ## What's in this folder
-Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention), and the passwordless Entra Resource Accounts authentication transition for shared devices (GA August 2026).
+Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Covers calling/PSTN problems, device policies, meeting configuration, Teams-specific governance topics (external access/federation, guest access, shared channels, channel policies, retention), and the passwordless Entra Resource Accounts authentication transition for shared devices (GA August 2026). Also covers **Automatic/Compliance Recording for Call Queue** (GA-track August 2026, PowerShell-only configuration) — automatic inbound call-queue recording/transcription to SharePoint, distinct from general Teams meeting cloud recording and from per-user compliance recording policies.
 
 ## Before responding, also check
 - `M365/_AGENT.md` — M365-wide triage starting points and licensing checks
@@ -32,6 +32,9 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | `Scripts/Get-TeamsRoomDeviceHealth.ps1` | Teams Rooms resource account and licensing health fleet report |
 | `Scripts/Get-TeamsDevicePolicyAudit.ps1` | Device account health, update/IP-phone policy assignment, and calendar auto-accept audit for resource accounts |
 | `Scripts/Get-TeamsExternalAccessAudit.ps1` | Tenant-wide federation, guest invite, and cross-tenant B2B direct connect posture audit — flags stale invites, dormant guests, incomplete partner overrides |
+| `CallQueueRecording-A.md` | Automatic/Compliance Recording for Call Queue deep dive — the three separate recording mechanisms (Automatic, Compliance for Call Queue, per-user Compliance Recording Policy), SharePoint provisioning coupling, immutable template fields |
+| `CallQueueRecording-B.md` | Call Queue recording hotfix — template not assigned, Conference mode/routing prerequisites, agents can't view recordings, SharePoint site drift, outbound calls not recorded |
+| `Scripts/Get-CallQueueRecordingAudit.ps1` | Fleet audit of call queues for Automatic Recording template assignment, prerequisite gaps, and SharePoint site-admin resilience; optional Queues App license check |
 | `Scripts/Get-PasswordlessMigrationReadiness.ps1` | Entra ID-side readiness audit for passwordless resource-account migration — license eligibility, hybrid-sync password-cleanup path, password-expiration policy, sign-in staleness heuristic |
 
 ## Common entry points
@@ -43,6 +46,8 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 - "Teams device won't update firmware" → `Device-Policies-B.md` Fix 4
 - "Room shows wrong meeting info / calendar not auto-accepting" → `Device-Policies-B.md` Fix 6, or `Scripts/Get-TeamsDevicePolicyAudit.ps1` for a fleet-wide check
 - "Can't record / different users get different meeting features" → `Meeting-Policies-B.md`, use `Scripts/Get-TeamsMeetingPolicyAudit.ps1` for rank-conflict detection
+- "Call queue calls aren't being recorded / agents can't see recordings" → `CallQueueRecording-B.md` Triage — confirm template assignment and Conference mode first
+- "Agent's outbound calls from a recorded queue aren't recorded" → `CallQueueRecording-B.md` Fix 7 (expected — needs a separate per-user compliance recording policy)
 - "User can't join meetings" → check `EntraID/` for auth, then CA policy
 - "Teams not syncing calendar" → `M365/Exchange/` — EWS and Autodiscover
 - "Can't chat/call someone at another company" → `ExternalAccess-B.md` Fix 1/2 (federation)
