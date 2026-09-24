@@ -4691,7 +4691,7 @@ _2026-09-02 (run 210, scheduled task "ezadmin-day-build"): started this run from
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 250, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 251, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ---
 
@@ -4988,7 +4988,7 @@ _2026-09-03 (run 229, scheduled task "ezadmin-night-build"): started with the st
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 250, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 251, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ## New Topic — AD FS DKM Container ACL Hardening / CVE-2026-56155 (run 230)
 | File | Status | Assigned |
@@ -5280,6 +5280,26 @@ _2026-09-25 (run 250, scheduled task "ezadmin-night-build"): fresh `/tmp` clone 
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) per runs 248/249. Watch MC1477185 for the PAYG GA date and whether per-user scoping exists, then resolve the flagged conflict in OneDriveStorageQuota-A/B. Watch MC1463510 for the promised throttling admin alert (ExternalMessagingLimits-A Playbook 4). Candidates remaining from the expansion list: WDAC policy conflicts, Universal Print, Entra App Proxy. Grep first, since several may already exist._
 
+
+## New Topics — Microsoft 365 Companion Apps Retirement + Microsoft Publisher Retirement (run 251)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Apps/CompanionAppsRetirement-B.md` | ✅ | auto-build |
+| `M365/Apps/CompanionAppsRetirement-A.md` | ✅ | auto-build |
+| `M365/Apps/Scripts/Remove-M365CompanionApps.ps1` | ✅ | auto-build |
+| `M365/Apps/PublisherRetirement-B.md` | ✅ | auto-build |
+| `M365/Apps/PublisherRetirement-A.md` | ✅ | auto-build |
+| `M365/Apps/Scripts/Get-PublisherRetirementReadiness.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 251, scheduled task "ezadmin-night-build"): fresh `/tmp` clone, `master` HEAD `2745e3a` (run 250). The mount is still stale, so it wasn't used for git. The queue was empty, so Expansion Rules applied. Run 250's remaining candidates (WDAC, Universal Print, Entra App Proxy) all already exist (`Security/Defender/WDAC-*`, `M365/UniversalPrint/`, `EntraID/Troubleshooting/AppProxy-*`), so a fresh news sweep was run instead. Two uncovered, time-critical retirements were picked (repo-wide grep confirmed zero coverage). **Companion apps:** MC1474111 (mc.merill.net, 18 Sept 2026), Learn "Microsoft 365 companion apps retirement" (17 Sept 2026) read in full, and LazyAdmin (23 Sept 2026) for the `Microsoft.M365Companions` package name. **Publisher:** Microsoft Support KB 5035623 (updated 16 Sept 2026) read in full, plus LazyAdmin (9 Sept 2026) for inventory/conversion practice and the PS 7 interop caveat. Both topics sit in `M365/Apps/`. `_AGENT.md` and AGENT_INDEX were updated._
+
+## ⚠️ Skipped Items / Notes (run 251)
+- There's still no PowerShell parser in the sandbox. Both new `.ps1` files passed a bracket-balance check and were hand-reviewed for StrictMode and 5.1 compatibility. Treat the first real run as validation. The Publisher COM calls (`Open(path,$true)`, `ExportAsFixedFormat(2,…)`) and Word calls (`Documents.Open(pdf,$false,$true)`, `SaveAs2(docx,16)`) use documented positional parameters but weren't executed.
+- The TechCommunity post "Keep Windows activation automation working with PowerShell" (slmgr.vbs replacement) couldn't be fetched (provenance restriction). **VBScript deprecation** (FOD disabled by default ~2026–27; hits `slmgr.vbs` and `OSPP.VBS`, which `M365/Apps` diagnostics still reference) is uncovered and is a strong next candidate.
+- There's no documented Graph/PowerShell surface for the M365 Apps admin center "Enable automatic installation of Microsoft 365 companion apps" toggle, so the runbooks give portal steps only.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and confirm Publisher post-retirement behaviour (does the binary get removed, or just blocked?) to firm up PublisherRetirement-B triage. Candidates: VBScript deprecation / slmgr.vbs + OSPP.VBS PowerShell replacements (Windows), the Intune assignment-filter `osVersion` property replacement (burgerhout.org, Sept 2026; check `Intune/Troubleshooting/Filters-A.md` first), and Exchange admin center "Other features" page retirement (Sept 2026 – Feb 2027, small; probably a note in an existing EAC file rather than its own topic)._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 250, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 251, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

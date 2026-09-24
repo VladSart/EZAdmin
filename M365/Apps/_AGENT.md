@@ -23,6 +23,12 @@ Does not cover Outlook-specific profile/Autodiscover/OST/COM add-in issues (`M36
 |------|---------------|
 | `Deployment-UpdateChannels-B.md` | Hotfix runbook — channel/activation triage, diagnosis, and fix paths in under 10 minutes |
 | `Deployment-UpdateChannels-A.md` | Deep-dive reference — full Click-to-Run architecture, channel resolution precedence, July 2026 SAC/MEC unification, Symptom → Cause map, remediation playbooks |
+| `CompanionAppsRetirement-B.md` | Hotfix — Microsoft 365 companion apps (Calendar/People/Files, AppX `Microsoft.M365Companions`) retirement under MC1474111: close install vectors (admin-center toggle, Intune Required/Available), remove per-user + provisioned package, stop reinstalls before 16 Dec 2026 |
+| `CompanionAppsRetirement-A.md` | Deep dive — packaging, the four install vectors, registered-vs-provisioned AppX, Intune `/assign` replace semantics, Remediation-based fleet removal, golden-image clean-up |
+| `Scripts/Remove-M365CompanionApps.ps1` | Detect (exit 1/0, Remediation-ready) or `-Remediate` removal of the companion apps for all users + provisioned copy + leftover data folders, with CSV report |
+| `PublisherRetirement-B.md` | Hotfix — Microsoft Publisher end of life (M365 access ends 1 Oct 2026; perpetual support ends 13 Oct 2026): subscription vs perpetual triage, `.pub` inventory, bulk PDF/DOCX conversion while a Publisher engine exists |
+| `PublisherRetirement-A.md` | Deep dive — format-extinction framing, Publisher COM object model (`ExportAsFixedFormat` PDF=2), PS 5.1 interop requirement, Search vs Purview discovery, perpetual "conversion station", LibreOffice fallback |
+| `Scripts/Get-PublisherRetirementReadiness.ps1` | Publisher install-type detection + recursive `.pub` inventory (optional Microsoft Search via Graph) + optional `-Convert`/`-AlsoWord` bulk conversion with log |
 | `Scripts/Get-M365AppsHealth.ps1` | Read-only fleet/device health check: install type, resolved update channel + authority (GPO/ODT/admin center), update task state, CDN reachability, activation status |
 
 ---
@@ -34,6 +40,9 @@ Does not cover Outlook-specific profile/Autodiscover/OST/COM add-in issues (`M36
 - "Unlicensed Product / can't sign in" on a shared or kiosk device → `Deployment-UpdateChannels-B.md` § Fix 4 — Shared Computer Activation quota/token issue
 - "User has the right license in Entra but Office still shows Unlicensed" → `Deployment-UpdateChannels-B.md` § Fix 5 — stale local licensing cache
 - "A feature disappeared after an update" → `Deployment-UpdateChannels-A.md` § Symptom → Cause Map — expected per-channel feature rollout variance, confirm channel before treating as a bug
+- "Calendar/People/Files apps keep coming back on the taskbar" / "how do we remove the companion apps" → `CompanionAppsRetirement-B.md` § Fix 2 then Fix 3
+- "User can't open their .pub flyer" / "Publisher disappeared from Office" → `PublisherRetirement-B.md` (expected after 1 Oct 2026 — convert on a perpetual install)
+- "Find and convert all our Publisher files before the deadline" → `Scripts/Get-PublisherRetirementReadiness.ps1` + `PublisherRetirement-A.md` § Troubleshooting phases
 - "Why is our Semi-Annual Enterprise Channel device updating monthly now" → `Deployment-UpdateChannels-A.md` § July 2026 SAC/MEC unification — expected platform change, not a misconfiguration
 
 ---
@@ -54,6 +63,10 @@ Get-ScheduledTaskInfo -TaskName "Office Automatic Updates 2.0" | Select-Object L
 
 # Confirm activation/licensing state
 & "$env:ProgramFiles\Microsoft Office\Office16\OSPP.VBS" /dstatus
+
+# Retirements (Sept–Dec 2026)
+Get-AppxPackage -AllUsers -Name 'Microsoft.M365Companions'                     # companion apps (retire 16 Dec 2026)
+(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration').ProductReleaseIds   # O365* = loses Publisher 1 Oct 2026
 ```
 
 ---
