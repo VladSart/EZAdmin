@@ -5205,4 +5205,20 @@ _2026-09-24 (run 246, scheduled task "ezadmin-night-build"): fresh uniquely-name
 
 ---
 
-Last updated: 2026-09-24 (auto-build, run 246, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+## New Topics — Outlook for Mac (new vs legacy, EWS retirement) + Microsoft Teams for Mac (run 247)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/OutlookMac-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/OutlookMac-A.md` | ✅ | auto-build |
+| `macOS/Scripts/Get-OutlookMacHealth.sh` | ✅ | auto-build |
+| `macOS/Troubleshooting/TeamsMac-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/TeamsMac-A.md` | ✅ | auto-build |
+| `macOS/Scripts/Get-TeamsMacHealth.sh` | ✅ | auto-build |
+
+_2026-09-24 (run 247, scheduled task "ezadmin-night-build"): fresh uniquely-named `/tmp` clone (note: the clone's default branch is not `master` — `git checkout master` required; HEAD `ccb75c1`, run 246). Connected-folder mount still stale (shows run 169 + uncommitted edits) — untouched. Queue empty → Expansion Rules, taking run 246's two macOS candidates. **Outlook for Mac** is time-critical: live-fetched Microsoft Support "End of support for legacy Outlook for Mac" (updated 2026-09-18) confirms legacy uses EWS and stops working against Exchange Online from October 2026 (EWS in EXO retires 1 Oct 2026; on-prem SE security-only to 9 Oct 2029) and that Outlook still respects the `EnableNewOutlook` admin key — so fleets pinned to 0/1 will break. Key matrix from Microsoft Learn `microsoft-365-apps/mac/preferences-outlook` (ms.date 2026-09-17). `MacOutlookEnabled` (EXO-only, Microsoft Sync technology) vs `EwsAllowMacOutlook` verified against the live Set-CASMailbox reference; an unverified org-level `MacOutlookEnabled` was deliberately **not** used. **Teams for Mac** sourced from Learn `teams-client-mac-install-prerequisites` (cache paths, permission flow) and `teams-client-bulk-install` (ms.date 2026-07-16; `CloudType` in `com.microsoft.teams2`) plus `log-files`. Community-only details are labelled as such (`IsRunningNewOutlook` indicator, Office identity keychain label suffix). Both `.sh` scripts are read-only, CSV to /tmp, pass `bash -n`; fence/details balance checked. Updated `macOS/_AGENT.md` (2 overview bullets, 2 entry points, 4 folder rows), `AGENT_INDEX.md` (2 rows), and cross-links in `M365/Teams/_AGENT.md` and `M365/Exchange/_AGENT.md`.
+
+**For next run:** after 1 Oct 2026, re-check the legacy-Outlook support page and Message Center for any grace period or change to `EnableNewOutlook` behaviour and update OutlookMac-A/B; consider an Exchange-side "EWS retirement readiness" topic (app registrations/service principals still calling EWS — `CrossTenantCalendarSharing-A.md` only covers sharing). Remaining macOS candidate: Apple Enhanced Logging device action (awaiting a primary source)._
+
+---
+
+Last updated: 2026-09-24 (auto-build, run 247, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

@@ -21,6 +21,7 @@ Covers:
 
 ## Before responding, also check
 
+- `macOS/Troubleshooting/OutlookMac-B.md` / `-A.md` — Outlook **for Mac**: legacy (EWS) stops working against Exchange Online from October 2026; `EnableNewOutlook`, `MacOutlookEnabled` vs `EwsAllowMacOutlook`
 - `EntraID/` — authentication failures, SSO issues, OAuth token errors affecting Outlook and OWA
 - `Security/Defender/` (when built) — Defender for Office 365, Safe Links, Safe Attachments, ZAP policies
 - `M365/Licensing/` — missing Exchange Plan 1 or Plan 2 service plan; shared mailbox licensing for archiving
