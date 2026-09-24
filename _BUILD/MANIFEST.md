@@ -5186,4 +5186,23 @@ _2026-09-24 (run 244, scheduled task "ezadmin-day-build"): fresh-clone check aga
 
 ---
 
-Last updated: 2026-09-24 (auto-build, run 245, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+## New Topics — OneDrive Sync App for Mac + macOS ADE Local Admin Account with LAPS (run 246)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/OneDriveMac-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/OneDriveMac-A.md` | ✅ | auto-build |
+| `macOS/Scripts/Get-OneDriveMacHealth.sh` | ✅ | auto-build |
+| `macOS/Troubleshooting/MacLAPS-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/MacLAPS-A.md` | ✅ | auto-build |
+| `macOS/Scripts/Get-MacLAPSAudit.ps1` | ✅ | auto-build |
+
+_2026-09-24 (run 246, scheduled task "ezadmin-night-build"): fresh uniquely-named `/tmp` clone, `master` HEAD `a974dbe` (run 245), queue empty — Expansion Rules mode. Continued the macOS gap sweep: repo-wide grep found no OneDrive-for-Mac coverage (Sync-Issues-A/B is Windows-only) and `Intune/Troubleshooting/LAPS-A.md` explicitly excludes macOS LAPS. Built both from live-fetched Microsoft Learn sources: `sharepoint/deploy-and-configure-on-macos` (ms.date 2026-08-19), `sharepoint/redirect-known-folders-macos`, and `intune/device-security/laps/setup-macos` (updated 2026-07-01; includes the pre-macOS 26.4 forced admin reset known issue and the no-secure-token limitation). `Get-OneDriveMacHealth.sh` follows the folder's device-local `.sh` convention (read-only, CSV, passes `bash -n`); `Get-MacLAPSAudit.ps1` is a read-only Graph beta audit that matches ADE-profile account properties by prefix rather than hard-coding beta field names (documented as a heuristic — the Passwords and keys pane remains authoritative). Fence/details balance checked; PS bracket balance checked via Python (no pwsh in sandbox). Updated `macOS/_AGENT.md` (2 overview bullets, 2 entry points, 4 folder-contents rows) and `AGENT_INDEX.md` (2 rows).
+
+## ⚠️ Skipped Items / Notes (run 246)
+- A stray staging folder `_BUILD/.r246/` (one draft copy of OneDriveMac-B.md) was accidentally written into the mounted connected folder and cannot be deleted from the sandbox (FUSE blocks delete). It is **not** committed to git; safe for the user to delete locally.
+
+**For next run:** remaining macOS candidate gaps — Teams for Mac client troubleshooting, new Outlook for Mac account/profile issues, Apple Enhanced Logging device action (still awaiting a primary source)._
+
+---
+
+Last updated: 2026-09-24 (auto-build, run 246, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

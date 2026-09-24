@@ -30,6 +30,8 @@ Covers:
 - **Custom Compliance Settings for macOS** — the JSON-rules + Bash-discovery-script compliance model, now documented as a third supported platform alongside Windows and Linux. Headline gotcha: a macOS discovery script has a **dual contract** (Bash exit code = script execution success/failure; STDOUT JSON = the actual discovered values) that has no Windows equivalent and is easy to get backwards. Also corrects a previously-stale claim in `Intune/Troubleshooting/CustomCompliance-A.md`/`-B.md` that macOS wasn't supported at all, and clarifies terminology against this folder's own older "Custom Attributes" description in `Compliance-Policies-A.md`
 - **Microsoft 365 Apps for Mac** — Intune suite delivery (no config options, no Intune uninstall), subscription vs LTSC volume-licence precedence (`com.microsoft.office.licensingV2.plist`), and Microsoft AutoUpdate (`com.microsoft.autoupdate2` preferences, `msupdate` CLI, sticky update deadlines).
 - **Kerberos SSO extension** — Apple's `com.apple.AppSSOKerberos.KerberosExtension` for SSO to on-prem AD file shares/intranet from unbound Macs, standalone or fed by Platform SSO TGTs (`tgt_ad`/`tgt_cloud`); explicitly out of scope of the Platform SSO runbooks.
+- **OneDrive sync app for Mac** — standalone (`com.microsoft.OneDrive`) vs Mac App Store (`com.microsoft.OneDrive-mac`) preference-domain split (the #1 "policy didn't apply" cause), Files On-Demand on Apple File Provider (`~/Library/CloudStorage/OneDrive-*`), Folder Backup/KFM (standalone + Full Disk Access + tenant GUID; `KFMBlockOptIn` 1 vs 2; cross-tenant empty-Desktop caveat), tenant allow/block lists, Background Services login item on macOS 13+ (`OpenAtLogin` deprecated)
+- **macOS ADE local admin account with LAPS (Intune)** — Account settings on the macOS ADE profile creating a local admin with a 15-char Intune-escrowed password (180-day auto rotation + optional period + manual device action); new-ADE-enrollment-only (no `profiles renew`), custom RBAC role (Enrollment programs → View/Rotate macOS admin password), LAPS admin never gets a secure token, Settings-catalog-only password policy, pre-macOS 26.4 forced-reset known issue
 
 ---
 
@@ -101,6 +103,8 @@ sudo profiles -e /tmp/MDMProfile.plist
 
 - "Office on Mac says Unlicensed Product / keeps asking to activate" / "Mac shows Volume License instead of Microsoft 365" / "Office for Mac stuck on an old build / MAU not updating" / "apps force-closed for updates" → `Troubleshooting/M365AppsMac-B.md` + `Troubleshooting/M365AppsMac-A.md` + `Scripts/Get-M365MacAppsHealth.sh`
 - "Mac keeps prompting for credentials on file shares / intranet" / "Kerberos menu extra says Not signed in" / "no tgt_ad after Platform SSO" / "Azure Files from Mac with cloud Kerberos" → `Troubleshooting/KerberosSSO-B.md` + `Troubleshooting/KerberosSSO-A.md` + `Scripts/Get-KerberosSSOStatus.sh`
+- "OneDrive on Mac not syncing / policy not applying" / "Desktop & Documents not backing up on Mac" / "empty Desktop after Folder Backup" / "OneDrive doesn't start at login on Mac" → `Troubleshooting/OneDriveMac-B.md` + `Troubleshooting/OneDriveMac-A.md` + `Scripts/Get-OneDriveMacHealth.sh`
+- "No LAPS password shown for this Mac" / "macOS local admin password doesn't work" / "helpdesk can't rotate the Mac admin password" / "Mac forces admin password change after ADE" → `Troubleshooting/MacLAPS-B.md` + `Troubleshooting/MacLAPS-A.md` + `Scripts/Get-MacLAPSAudit.ps1`
 ---
 
 ## Folder contents (new this run)
@@ -120,6 +124,10 @@ sudo profiles -e /tmp/MDMProfile.plist
 | `Scripts/Get-M365MacAppsHealth.sh` | Device-local read-only health check — app versions + Microsoft signing, volume-licence file, MAU preferences/msupdate config, managed-profile presence, Office CDN reachability, optional live `msupdate --list` |
 | `Troubleshooting/KerberosSSO-B.md` / `-A.md` | Hotfix / deep dive: Kerberos SSO extension — profile/realm/hosts design, standalone vs Platform SSO TGT mapping, Entra Kerberos server object, Cloud Kerberos for Azure Files, VPN/browser/clock pitfalls |
 | `Scripts/Get-KerberosSSOStatus.sh` | Device-local read-only status (run as affected user) — PSSO prerequisites, realms, tgt_ad/tgt_cloud, klist, DC SRV + 88/389 reachability, optional SMB host test, clock offset, AppSSO logs |
+| `Troubleshooting/OneDriveMac-B.md` / `-A.md` | Hotfix / deep dive: OneDrive sync app for Mac — build/domain mismatch, managed-pref apply cycle, File Provider sync root, Folder Backup (KFM) keys and rollout limits, tenant restrictions, exclusions/hydration blocks, background item, reset |
+| `Scripts/Get-OneDriveMacHealth.sh` | Device-local read-only health check — build type/version, managed prefs for matching vs mismatched domain, KFM/tenant/exclusion keys (flags Allow+Block both set, non-GUID KFM tenant), process + Background Items (sudo), sync roots, Desktop/Documents in OneDrive, disk, logs; CSV to /tmp |
+| `Troubleshooting/MacLAPS-B.md` / `-A.md` | Hotfix / deep dive: Intune macOS ADE local account configuration with LAPS — eligibility (new ADE only), account templates/variables, secure-token limitation, password-policy conflicts, pre-26.4 known issue, rotation/audit, custom RBAC |
+| `Scripts/Get-MacLAPSAudit.ps1` | Admin-side Graph audit (read-only) — ADE profiles classed LAPS_ENABLED (heuristic on beta account properties), macOS devices flagged NOT_ADE / NO_LAPS_PROFILE / OS_BELOW_26_4 / SYNC_STALE, compliance/device-restriction password conflicts, view/rotate audit events |
 ---
 
 ## Response format reminder
