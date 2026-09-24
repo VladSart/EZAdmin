@@ -16,11 +16,13 @@ Covers:
 - **Mailbox migration batches** — Cutover, Staged (legacy Exchange 2003/2007 only), IMAP (incl. Google Workspace), Remote Move (hybrid onboarding/offboarding), and Cross-tenant (tenant-to-tenant) migration batch mechanics, throttling, and cross-tenant organization-relationship prerequisites — distinct from `Hybrid-Coexistence-A.md`, which covers the hybrid topology/HCW/mail-routing side, not batch migration internals
 - **Cloud-managed remote mailboxes** — `IsExchangeCloudManaged` per-mailbox Exchange-attribute SOA transfer to Exchange Online (the "retire the Last Exchange Server" on-ramp), writeback to on-prem AD via Microsoft Entra Cloud Sync, and the tenant-wide SOA default — distinct from object-level SOA (identity attributes), which this topic explicitly does not cover
 - **Cross-tenant Calendar/Free-Busy/MailTips sharing (EWS → M365 XTAP)** — migrating tenant-to-tenant Organization Relationship, Availability Address Space (OrgWideFBToken), and Sharing Policy configurations to Microsoft 365 Cross-Tenant Access Policy ahead of the October 1, 2026 EWS deprecation deadline in Exchange Online — distinct from `EntraID/Troubleshooting/CrossTenant-B.md` (B2B guest collaboration), which the new XTAP capability layer builds on top of rather than replaces
+- **EWS retirement in Exchange Online** — phased disablement from 1 Oct 2026, permanent shutdown 1 Apr 2027; `EwsEnabled` + `EwsAllowedAppIDs` (App ID allow list, full-overwrite writes, 24 h cache, `True`+empty list = block-all under enforcement), interaction with the older user-agent `EwsApplicationAccessPolicy`/`EwsAllowList`, per-mailbox `CASMailbox.EwsEnabled`, EWS usage report + `full_access_as_app`/`EWS.AccessAsUser.All` grant audit
 
 ---
 
 ## Before responding, also check
 
+- `EntraID/Graph/GraphPowerShellSDK-B.md` — Graph PowerShell SDK auth/WAM/PS 5.1 retirement issues when Exchange admin scripts also load Microsoft.Graph (MSAL clashes with ExchangeOnlineManagement)
 - `macOS/Troubleshooting/OutlookMac-B.md` / `-A.md` — Outlook **for Mac**: legacy (EWS) stops working against Exchange Online from October 2026; `EnableNewOutlook`, `MacOutlookEnabled` vs `EwsAllowMacOutlook`
 - `EntraID/` — authentication failures, SSO issues, OAuth token errors affecting Outlook and OWA
 - `Security/Defender/` (when built) — Defender for Office 365, Safe Links, Safe Attachments, ZAP policies
@@ -67,6 +69,9 @@ Covers:
 | `CrossTenantCalendarSharing-B.md` | Hotfix: EWS-dependent legacy config inventory, Entra M365 Collaboration trust + XTAP capability precedence checks, migrating a partner before the Oct 1 2026 EWS deprecation deadline, MailTips-vs-Free/Busy independent capability gotcha, inbound-only/non-reciprocal bidirectional gap |
 | `CrossTenantCalendarSharing-A.md` | Deep dive: legacy object-per-relationship vs. new capability-per-partner architecture, two-layer Entra-trust + M365-capability model, inbound-only non-reciprocal design, legacy-always-wins precedence rule, multi-domain Sharing Policy security-group-scoping migration playbook |
 | `Scripts/Get-CrossTenantSharingMigrationAudit.ps1` | Read-only inventory of legacy Organization Relationship/Availability Address Space/Sharing Policy objects, mailbox blast-radius sizing, and Entra Cross-Tenant Access Policy partner trust/XTAP capability presence check |
+| `EWSRetirement-B.md` | Hotfix: EWS-dependent app broke after 1 Oct 2026 — org `EwsEnabled`/`EwsAllowedAppIDs` state matrix, read-merge-write allow-list edits, older UA-policy second gate, mailbox-level blocks, legacy Outlook for Mac, post-1-Apr-2027 no-fix path |
+| `EWSRetirement-A.md` | Deep dive: retirement timeline, 4-layer control model + Oct 2026 behaviour reversal, September auto-population ownership rule, discovery via usage report vs. Entra grants, scoping allow-listed apps with RBAC for Applications, dormant-grant clean-up |
+| `Scripts/Get-EWSRetirementReadiness.ps1` | Read-only: org EWS state classification, UA-policy check, optional usage-report CSV diff vs allow list, mailbox overrides, and `full_access_as_app`/`EWS.AccessAsUser.All` holders cross-checked against the list |
 
 ---
 
@@ -110,6 +115,9 @@ Covers:
 - "Calendar Free/Busy or MailTips broken with an external partner after Sept/Oct 2026" → `CrossTenantCalendarSharing-B.md` Triage (check legacy-object precedence and Entra trust layer first)
 - "Need to migrate cross-tenant calendar/Free-Busy/MailTips sharing before EWS deprecation" → `CrossTenantCalendarSharing-B.md` Fix 1, `CrossTenantCalendarSharing-A.md` Playbook 1
 - "Fleet audit of legacy EWS-dependent sharing config before the Oct 2026 deadline" → `Scripts/Get-CrossTenantSharingMigrationAudit.ps1`
+- "Vendor/backup/CRM app stopped reading mailboxes — 'EWS blocked'" / "EWS stopped working October 2026" → `EWSRetirement-B.md` Triage (read `Get-OrganizationConfig -RetrieveEwsOperationAccessPolicy` first)
+- "Add an app to the EWS allow list without wiping the others" → `EWSRetirement-B.md` Fix 2 / `EWSRetirement-A.md` Playbook 2
+- "Which apps still use EWS / who holds full_access_as_app?" → `Scripts/Get-EWSRetirementReadiness.ps1 -UsageReportCsv <export> -IncludeGraphPermissionAudit`
 
 ---
 
@@ -152,6 +160,9 @@ Get-TransportRule | Select Name, State, Priority, Description | Sort-Object Prio
 # Check connectors
 Get-InboundConnector | Select Name, Enabled, ConnectorType, TlsSenderCertificateName
 Get-OutboundConnector | Select Name, Enabled, ConnectorType, SmartHosts
+
+# EWS retirement state (list only returned with the switch)
+Get-OrganizationConfig -RetrieveEwsOperationAccessPolicy | Format-List EwsEnabled, EwsAllowedAppIDs
 
 # Check anti-spam / quarantine policies
 Get-HostedContentFilterPolicy | Select Name, SpamAction, HighConfidenceSpamAction, BulkSpamAction

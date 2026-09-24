@@ -5221,4 +5221,25 @@ _2026-09-24 (run 247, scheduled task "ezadmin-night-build"): fresh uniquely-name
 
 ---
 
-Last updated: 2026-09-24 (auto-build, run 247, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+
+## New Topics — Exchange Online EWS retirement (EWSEnabled + EWSAllowedAppIDs) + Microsoft Graph PowerShell SDK auth/WAM/PS 5.1 retirement (run 248)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/EWSRetirement-B.md` | ✅ | auto-build |
+| `M365/Exchange/EWSRetirement-A.md` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-EWSRetirementReadiness.ps1` | ✅ | auto-build |
+| `EntraID/Graph/GraphPowerShellSDK-B.md` | ✅ | auto-build |
+| `EntraID/Graph/GraphPowerShellSDK-A.md` | ✅ | auto-build |
+| `EntraID/Scripts/Get-GraphSDKReadinessAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 248, scheduled task "ezadmin-night-build"): fresh `/tmp` clone of `master` using the connected folder's credentialed remote URL (an anonymous clone lands on a different default branch with the old pre-rework tree — always clone with `-b master`). HEAD `30b4d61` (run 247). Queue empty → Expansion Rules. Took run 247's pointer: **Exchange-side EWS retirement readiness**, one week before the 1 Oct 2026 enforcement. Sources: MC1227454 (via mc.merill.net), Learn `Set-OrganizationConfig` (Example 7: `-EwsEnabled $true -EwsAllowedAppIDs`, `-RetrieveEwsOperationAccessPolicy` read switch), Learn *EWS usage report* (updated 2026-08-07). Exchange Team blog posts (*Introducing EWSAllowedAppIDs*, *Your Time is Almost Up*, *Notes from the field*) render client-side and couldn't be fetched. Their behaviour matrix, 24 h cache, full-overwrite semantics, "both checks must pass" UA-vs-AppID precedence and September auto-population ownership rule were taken from sources quoting them verbatim (ABT 2026-09-01 provenance-dated write-up, Riva and Druva vendor KBs) and are attributed as such. The Microsoft-described "set back to null" emergency re-enable is flagged in B/A as "verify against the live blog first". Second topic from a September news sweep: **Graph PowerShell SDK**. Primary source: Microsoft 365 Developer Blog (16 Sep 2026), including Microsoft engineer comment replies confirming the pre-2.36.1 cut-off is interactive-browser only (app-only/device code unaffected) and independent of the 12-month timeline. WAM specifics (`DisableLoginByWAM` ignored for the default app, own-app ≥2.35.1, `WamEnabled`, broker redirect URI/AADSTS50011) came from MSEndpointMgr 2026-08-09 quoting the SDK auth docs and release notes, after initially drafting the wrong "DisableLoginByWAM works" guidance and correcting it. GitHub #3629 itself couldn't be fetched. Both `.ps1` are read-only with CSV output. No pwsh in the sandbox (GitHub release download blocked), so they were checked for bracket balance and reviewed by hand for StrictMode and 5.1 compatibility (no ternary/null-coalescing, `@()`-wrapped counts, `$args` automatic variable avoided). Updated `M365/Exchange/_AGENT.md`, `EntraID/_AGENT.md` and `AGENT_INDEX.md` (2 rows).
+
+## ⚠️ Skipped Items / Notes (run 248)
+- Built-in browser access to techcommunity.microsoft.com wasn't pre-approved and can't be requested in an unattended run, so the Exchange Team blog was used via verbatim-quoting secondary sources (see above).
+- No PowerShell parser was available in the sandbox. First real run of `Get-EWSRetirementReadiness.ps1` / `Get-GraphSDKReadinessAudit.ps1` should be treated as validation.
+
+**For next run:** after 1 Oct 2026, re-check the live Exchange Team blog for enforcement-rollout status and the exact `$null` recovery behaviour, and update EWSRetirement-A/B and OutlookMac-A/B. Watch msgraph-sdk-powershell #3629 for the pre-2.36.1 enforcement date and the v3.0.0 alpha/beta divergence notes (update GraphPowerShellSDK-A/B). Other news-sweep candidates: OneDrive storage-quota clampdown (Office365ITPros 2026-09-23), Office 365 Connectors → Teams Workflows replacement, POP/IMAP legacy-TLS removal through 31 Dec 2026._
+
+---
+
+Last updated: 2026-09-25 (auto-build, run 248, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
