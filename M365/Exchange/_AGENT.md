@@ -72,6 +72,9 @@ Covers:
 | `EWSRetirement-B.md` | Hotfix: EWS-dependent app broke after 1 Oct 2026 — org `EwsEnabled`/`EwsAllowedAppIDs` state matrix, read-merge-write allow-list edits, older UA-policy second gate, mailbox-level blocks, legacy Outlook for Mac, post-1-Apr-2027 no-fix path |
 | `EWSRetirement-A.md` | Deep dive: retirement timeline, 4-layer control model + Oct 2026 behaviour reversal, September auto-population ownership rule, discovery via usage report vs. Entra grants, scoping allow-listed apps with RBAC for Applications, dormant-grant clean-up |
 | `Scripts/Get-EWSRetirementReadiness.ps1` | Read-only: org EWS state classification, UA-policy check, optional usage-report CSV diff vs allow list, mailbox overrides, and `full_access_as_app`/`EWS.AccessAsUser.All` holders cross-checked against the list |
+| `POPIMAPLegacyTLS-B.md` | Hotfix: POP3/IMAP4 collector (scanner, ERP, helpdesk tool) stops during the MC1293480 legacy-TLS rollout (1 Aug – 31 Dec 2026) — `AllowLegacyTLSClients` (shared with smtp-legacy!), on-host TLS 1.0/1.1/1.2 handshake probe, .NET `SchUseStrongCrypto`/`SystemDefaultTlsVersions`, Schannel TLS 1.2 client, device/vendor replace path |
+| `POPIMAPLegacyTLS-A.md` | Deep dive: TCP→TLS→XOAUTH2→CAS-flag layering (why TLS failures are invisible in EXO/Entra logs), legacy-endpoint history (2020→2023 opt-in→2026 removal), at-risk client taxonomy, usage-report + sign-in discovery, fleet .NET baseline, Graph replacement, POP/IMAP surface reduction |
+| `Scripts/Get-POPIMAPLegacyTLSReadiness.ps1` | Read-only: tenant half (legacy opt-in, CAS mailbox plans, POP/IMAP-enabled mailboxes, optional 180-day usage report and IMAP4/POP3 sign-ins) + host half (TLS 1.0/1.1/1.2 probe on 993/995, .NET and Schannel registry); `-SkipTenant` for app servers |
 
 ---
 
@@ -118,6 +121,9 @@ Covers:
 - "Vendor/backup/CRM app stopped reading mailboxes — 'EWS blocked'" / "EWS stopped working October 2026" → `EWSRetirement-B.md` Triage (read `Get-OrganizationConfig -RetrieveEwsOperationAccessPolicy` first)
 - "Add an app to the EWS allow list without wiping the others" → `EWSRetirement-B.md` Fix 2 / `EWSRetirement-A.md` Playbook 2
 - "Which apps still use EWS / who holds full_access_as_app?" → `Scripts/Get-EWSRetirementReadiness.ps1 -UsageReportCsv <export> -IncludeGraphPermissionAudit`
+- "Scanner/ERP/ticketing tool stopped collecting mail over POP/IMAP (Aug–Dec 2026)" / "works from my PC, not from the server" → `POPIMAPLegacyTLS-B.md` Triage — run the handshake probe **on the polling host**
+- "Can we turn off AllowLegacyTLSClients?" → `POPIMAPLegacyTLS-B.md` Fix 1 — check SMTP AUTH devices on `smtp-legacy.office365.com` first (same switch)
+- "Who still uses POP/IMAP?" → `Scripts/Get-POPIMAPLegacyTLSReadiness.ps1 -SkipHost -IncludeUsageReport -IncludeSignIns`
 
 ---
 

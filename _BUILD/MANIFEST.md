@@ -5242,4 +5242,25 @@ _2026-09-25 (run 248, scheduled task "ezadmin-night-build"): fresh `/tmp` clone 
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 248, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+
+## New Topics — Exchange Online POP3/IMAP4 legacy TLS retirement + Teams Office 365 Connectors → Workflows webhooks (run 249)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/POPIMAPLegacyTLS-B.md` | ✅ | auto-build |
+| `M365/Exchange/POPIMAPLegacyTLS-A.md` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-POPIMAPLegacyTLSReadiness.ps1` | ✅ | auto-build |
+| `M365/Teams/ConnectorsToWorkflows-B.md` | ✅ | auto-build |
+| `M365/Teams/ConnectorsToWorkflows-A.md` | ✅ | auto-build |
+| `M365/Teams/Scripts/Find-LegacyTeamsWebhookUrl.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 249, scheduled task "ezadmin-night-build"): fresh `/tmp` clone with `-b master` via the connected folder's credentialed remote; HEAD `79a513b` (run 248). Mount still stale — untouched. Queue empty → Expansion Rules, taking two of run 248's news-sweep candidates (both confirmed uncovered by repo-wide grep). **POP/IMAP legacy TLS:** MC1293480 (mc.merill.net archive, v2 7 Jul 2026 — timeline moved from "July" to **1 Aug – 31 Dec 2026**), Learn legacy-TLS opt-in pages for POP3/IMAP4 and SMTP AUTH (documents that `AllowLegacyTLSClients` gates both — called out as an outage trap), Exchange Team blog quoted via BleepingComputer, Office365ITPros usage-report method. **Connectors → Workflows:** MC1181996 v3 + Microsoft 365 Developer Blog full update chain (final disablement 18–22 May 2026, MessageCard/shared/private-channel parity, known limitations); operational details from Heusser (MVP) and Office365ITPros 18 Sep 2026. The `environment.api.powerplatform.com` 401-without-OAuth behaviour comes from a Power Platform Community thread only and is labelled unverified. Fence/details balance checked; PS bracket balance checked via Python (the Find script's regex literal accounts for the one-off `)`/`]` count difference); webhook URL regex tested in Python against all four URL shapes. Updated `M365/Exchange/_AGENT.md` (3 rows, 3 entry points), `M365/Teams/_AGENT.md` (3 rows, 1 entry point), `AGENT_INDEX.md` (2 rows).
+
+## ⚠️ Skipped Items / Notes (run 249)
+- Learn page `microsoftteams/m365-custom-connectors` and the Support article on Workflows incoming webhooks weren't fetchable (provenance restriction on unattended fetch); content taken from the Developer Blog, which reproduces the relevant steps.
+- No PowerShell parser in the sandbox — first real runs of `Get-POPIMAPLegacyTLSReadiness.ps1` and `Find-LegacyTeamsWebhookUrl.ps1` are the validation.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement status (EWSRetirement-A/B, OutlookMac-A/B) per run 248's pointer. Watch MC1293480 for any further timeline change and whether Microsoft announces a decommission date for `smtp-legacy.office365.com` (would need POPIMAPLegacyTLS + Mail-Flow updates). Remaining news-sweep candidate: OneDrive storage-quota clampdown (Office365ITPros 2026-09-23)._
+
+---
+
+Last updated: 2026-09-25 (auto-build, run 249, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

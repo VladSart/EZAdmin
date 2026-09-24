@@ -43,6 +43,9 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 | `PreMeetingConsent-A.md` | Mandatory pre-meeting consent deep dive (MC1454114) — join-flow acknowledgment gate architecture, universal no-exemption participant model, multi-language content/fallback, audit log recording, three-ring cloud rollout timing |
 | `PreMeetingConsent-B.md` | Mandatory pre-meeting consent hotfix — disambiguating from recording consent, policy authored-vs-enabled triage, language fallback, rollout-ring "missing entirely" checks |
 | `ExternalMessagingLimits-B.md` | External messaging limits hotfix (MC1463510) — MOERA-only tenant scope check via `Get-MgDomain`, unpublished-threshold triage, custom-domain fix to permanently exit scope |
+| `ConnectorsToWorkflows-B.md` | Office 365 Connectors retirement (disabled 18–22 May 2026, MC1181996) hotfix — legacy vs Workflows URL classification, test-card POST, 202-but-no-card run-history triage, 401/404/DLP/owner-left fixes, Flow-bot footer |
+| `ConnectorsToWorkflows-A.md` | Connectors → Workflows deep dive — stateless connector vs owned/governed flow architecture, five-extension timeline, trigger URL formats and auth modes, payload envelope vs MessageCard, service-account pattern, trigger-condition shared secret, when Graph/bots/channel email fit instead |
+| `Scripts/Find-LegacyTeamsWebhookUrl.ps1` | Scans script/config/IaC folders for retired `*.webhook.office.com` URLs and current Workflows URLs (masked output, missing-`sig` flag); optional `-TestWebhookUrl` posts one test card |
 
 ## Common entry points
 
@@ -58,6 +61,7 @@ Runbooks and scripts for Microsoft Teams issues faced by MSP L2/L3 engineers. Co
 - "App/agent shows different availability or install state in Teams admin center vs. Microsoft 365 admin center" → `UnifiedAppAgentManagement-B.md` Triage — check unification phase and app-setup-policy exclusion first, `Scripts/Get-UnifiedAppManagementAudit.ps1` for setup-policy cross-reference
 - "Meeting requires me to click agree/consent before I can even join" → `PreMeetingConsent-B.md` Triage — first confirm this is the new join-flow gate, not the existing recording-consent banner
 - "User temporarily can't message an external contact / Teams shows an external-messaging-limited notification" → `ExternalMessagingLimits-B.md` Triage — confirm tenant is MOERA-only via `Get-MgDomain` before assuming this feature is the cause
+- "Alerts/CI/monitoring notifications stopped posting to a channel (since May 2026)" / "webhook returns 202 but nothing appears" / "401 from the new webhook URL" → `ConnectorsToWorkflows-B.md` Triage; find unmigrated senders with `Scripts/Find-LegacyTeamsWebhookUrl.ps1`
 - "User can't join meetings" → check `EntraID/` for auth, then CA policy
 - "Teams not syncing calendar" → `M365/Exchange/` — EWS and Autodiscover
 - "Can't chat/call someone at another company" → `ExternalAccess-B.md` Fix 1/2 (federation)
