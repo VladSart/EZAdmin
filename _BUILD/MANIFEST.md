@@ -4691,7 +4691,7 @@ _2026-09-02 (run 210, scheduled task "ezadmin-day-build"): started this run from
 
 ---
 
-Last updated: 2026-09-02 (auto-build, run 210, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 250, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ---
 
@@ -4988,7 +4988,7 @@ _2026-09-03 (run 229, scheduled task "ezadmin-night-build"): started with the st
 
 ---
 
-Last updated: 2026-09-03 (auto-build, run 230, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 250, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ## New Topic — AD FS DKM Container ACL Hardening / CVE-2026-56155 (run 230)
 | File | Status | Assigned |
@@ -5261,6 +5261,25 @@ _2026-09-25 (run 249, scheduled task "ezadmin-night-build"): fresh `/tmp` clone 
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement status (EWSRetirement-A/B, OutlookMac-A/B) per run 248's pointer. Watch MC1293480 for any further timeline change and whether Microsoft announces a decommission date for `smtp-legacy.office365.com` (would need POPIMAPLegacyTLS + Mail-Flow updates). Remaining news-sweep candidate: OneDrive storage-quota clampdown (Office365ITPros 2026-09-23)._
 
+
+## New Topics — OneDrive storage quota enforcement + Teams MOERA-only external messaging limits deep dive (run 250)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/SharePoint-OneDrive/OneDriveStorageQuota-B.md` | ✅ | auto-build |
+| `M365/SharePoint-OneDrive/OneDriveStorageQuota-A.md` | ✅ | auto-build |
+| `M365/SharePoint-OneDrive/Scripts/Get-OneDriveQuotaEnforcementReadiness.ps1` | ✅ | auto-build |
+| `M365/Teams/ExternalMessagingLimits-A.md` | ✅ | auto-build |
+| `M365/Teams/Scripts/Get-MOERAOnlyTenantExposure.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 250, scheduled task "ezadmin-night-build"): fresh `/tmp` clone (`master` HEAD `631bf58`, run 249). Mounted working tree still stale (its `.git` ref sits at run 169 and it was missing run 249's files), so it was left out of git operations. Queue empty, so Expansion Rules applied. (1) This takes run 249's last news-sweep candidate, **OneDrive storage-quota clampdown**. A repo-wide grep confirmed it wasn't covered: only generic quota mentions in Sync-Issues. Sources: MC1310684 read in full (mc.merill.net, v5 3 Jun 2026); MC1465765 via Topedia 4 Sept 2026 (includes the Microsoft Support confirmation that 5→25 TB is gone) and Office365ITPros 23 Sept 2026; PAYG (MC1477185 / roadmap 562352) via Topedia 11 and 23 Sept 2026 and Office365ITPros; Learn "Change a specific user's OneDrive storage space" (updated 4 Sept 2026) for the SPO cmdlets, MB table and the quota diagnostic. The **PAYG per-user scoping conflict** between Topedia ("cannot") and Office365ITPros ("can") is flagged in both B and A rather than resolved. (2) Gap fill: `ExternalMessagingLimits-B.md` had no A variant and the Teams folder had no MOERA audit script. MC1463510 was re-read (single version, published 28 Aug 2026, not 29 Aug as B states); Office365ITPros 2 Sept 2026 supplied the Exchange 100-recipient cap and trial-tenant federation context. Added a cross-link and publication-date note to the B file's Learning Pointers. Updated `M365/SharePoint-OneDrive/_AGENT.md` (3 rows, 1 new entry point plus 1 amended), `M365/Teams/_AGENT.md` (2 rows, 1 amended entry point) and `AGENT_INDEX.md` (2 rows).
+
+## ⚠️ Skipped Items / Notes (run 250)
+- Learn troubleshoot page `site-storage-quota-exceeded` and the OneDrive service description couldn't be fetched (unattended provenance restriction). The read-only behaviour and entitlement table are taken from MC text quoted by Topedia/Office365ITPros and the fetched Learn change-user-storage page. The SKU→entitlement map in `Get-OneDriveQuotaEnforcementReadiness.ps1` covers common commercial SKUs only (unknown SKUs are reported, not flagged).
+- No PowerShell parser in the sandbox. Both new `.ps1` files were bracket-balance checked via Python and hand-reviewed for StrictMode and 5.1 compatibility. Treat the first real run as validation.
+- An empty `_BUILD/.run250/` staging directory was created by mistake in the mounted folder and can't be removed from the sandbox (FUSE delete restriction). Git ignores empty directories, and it can be deleted locally.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) per runs 248/249. Watch MC1477185 for the PAYG GA date and whether per-user scoping exists, then resolve the flagged conflict in OneDriveStorageQuota-A/B. Watch MC1463510 for the promised throttling admin alert (ExternalMessagingLimits-A Playbook 4). Candidates remaining from the expansion list: WDAC policy conflicts, Universal Print, Entra App Proxy. Grep first, since several may already exist._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 249, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 250, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

@@ -34,6 +34,9 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 | `Scripts/Get-SharePointAgentsAudit.ps1` | Read-only agents audit: tenant Knowledge Agent scope + exclusion-list drift flag, per-site RCD agent-suppression scan, legacy promo opt-in status, optional Copilot licence assignment summary via Graph |
 | `HeroLinkSharing-B.md` | Hero link / next-gen sharing hotfix — default-audience confusion (OnlyPeopleAdded grants no access by itself), update-in-place link behaviour, legacy "Other links" coexistence, link-expiration policy scope gap, staged-rollout UI inconsistency |
 | `HeroLinkSharing-A.md` | Hero link deep dive — third-generation sharing architecture, update-in-place semantics vs. legacy multi-link model, DefaultMainLinkScope per-site/OneDrive control surface (no tenant-wide equivalent), documented expiration-policy gap for hero links, compliance mitigation via Sensitivity Labels |
+| `OneDriveStorageQuota-B.md` | OneDrive quota enforcement hotfix — MC1310684 licence-alignment clamp (July 2026), MC1465765 Level 2 (>5 TB) expansion removal (read-only Nov 2026 – Feb 2027), read-only triage via `Get-SPOSite` LockState, clean-up incl. recycle bins/version trim, add-on vs OneDrive PAYG (MC1477185) fixes |
+| `OneDriveStorageQuota-A.md` | OneDrive quota deep dive — entitlement vs paid storage vs configured quota vs usage model, quota-refresh clamp mechanics, Level 2 history, add-on (decimal TB, $0.24/GB) vs PAYG ($0.20/GB overage, 25 TB ceiling, disputed per-user scoping), report-vs-site usage discrepancies (MO1471241), phased enforcement plan |
+| `Scripts/Get-OneDriveQuotaEnforcementReadiness.ps1` | Read-only tenant sweep of all OneDrives — flags usage/quota >5 TB, quota/usage above licence entitlement (optional Graph SKU resolution), ≥90% full, non-Unlock LockState; CSV feeds OneDriveStorageQuota-A Playbook 1 |
 | `Scripts/Get-HeroLinkSharingAudit.ps1` | Read-only sweep of DefaultMainLinkScope across site collections (optionally OneDrive), plus tenant-wide sharing capability baseline; flags sites with unreadable/not-yet-rolled-out hero-link settings |
 
 ## Common entry points
@@ -42,7 +45,8 @@ Runbooks and scripts for SharePoint Online site issues, OneDrive sync problems, 
 - "User can't access a SharePoint site" → `Permissions-B.md` — check if they're in the right group, whether inheritance is broken
 - "Sync shows red X / error 0x..." → `Sync-Issues-B.md` — Triage section maps error codes
 - "External user got an email but can't access" → `Permissions-B.md` Fix 3 (external sharing)
-- "OneDrive storage quota exceeded" → `Sync-Issues-B.md` Fix 4 (quota management)
+- "OneDrive storage quota exceeded" → `Sync-Issues-B.md` Fix 4 (quota management) for the sync-client side; if the OneDrive is `ReadOnly` or the quota "reverted" by itself → `OneDriveStorageQuota-B.md`
+- "User had 25 TB / more than 5 TB OneDrive and got a Message Center warning (MC1465765)" / "OneDrive went read-only Nov 2026 – Feb 2027" / "how do we buy more OneDrive storage / PAYG" → `OneDriveStorageQuota-B.md` Triage; tenant-wide exposure via `Scripts/Get-OneDriveQuotaEnforcementReadiness.ps1 -ResolveLicenses`; architecture and PAYG guardrails in `OneDriveStorageQuota-A.md`
 - "SharePoint sharing link stopped working" → `Permissions-B.md` Fix 2 (link policy)
 - "Site collection not showing in admin centre" → `Permissions-B.md` — check deleted sites or misrouted hub
 - "Audit permission sprawl / broken inheritance across sites" → `Scripts/Get-SharePointPermissionAudit.ps1`
