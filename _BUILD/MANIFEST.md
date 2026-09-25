@@ -5335,6 +5335,24 @@ _2026-09-25 (run 253, scheduled task "ezadmin-night-build"): This run overlapped
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). Re-check the Learn filter troubleshooting page each quarter for removal of the mobile Available-app known issue (FilterOSVersionMigration-A/B Playbook 4). Remaining small candidate: the Exchange admin center "Other features" page retirement (probably a note in an existing EAC file). Otherwise run a fresh news sweep, and grep first._
 
+
+## Gap fill + stale-record correction — User.ReadBasic.All (MC1470871) and PIM Iteration 2 deep dives (run 254)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Graph/ReadBasicAllScopeChange-A.md` | ✅ | auto-build |
+| `EntraID/Scripts/Get-ReadBasicAllAppOnlyExposure.ps1` | ✅ | auto-build |
+| `EntraID/Troubleshooting/PIMIteration2Retirement-A.md` | ✅ | auto-build |
+| `EntraID/Scripts/Find-PIMIteration2CodeReference.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 254, scheduled task "ezadmin-night-build"): fresh uniquely named `/tmp` clone, `master` HEAD `f5742b8` (run 253). Re-fetched before committing: no concurrent push. The mounted tree is still stale (local HEAD at run 169) and was left out of git operations. The queue was empty, so Expansion Rules applied. A repo-wide B-without-A scan found exactly two real gaps (`ReadBasicAllScopeChange-B`, `PIMIteration2Retirement-B`; the WSUS "gap" was a filename-with-space false positive), and this run filled both. **Stale-record correction, ReadBasicAll:** MC1470871 (read in full on mc.merill.net, published 2026-09-11) supersedes the B file's "no rollout date / delegated-only / silent failure" framing. The fix covers delegated **and app-only**, rolls out mid → late Sept 2026, and fails with permission errors. The B file got a dated correction banner and an app-only triage step. The existing `Get-ReadBasicAllUsageAudit.ps1` is delegated-only, so the new `Get-ReadBasicAllAppOnlyExposure.ps1` covers both grant types with a replacement-permission check. The MC-vs-endpoint-docs permission conflict (Our Cloud Network 12 Sep 2026, Tenant Wizards 14 Sep 2026) is flagged, not resolved. **Stale-record correction, PIM:** MC1181281 (read in full) names Groups as affected, which contradicts the B file's "Groups never part of Iteration 2". The Learn pim-apis page (ms.date 2026-04-23) and the iteration-2 migration section were read in full, and AzGovViz GitHub issue #291 was confirmed as a real affected tool. The B file's "no call telemetry exists" claim was corrected: `MicrosoftGraphActivityLogs` records RequestUri/AppId. New static scanner `Find-PIMIteration2CodeReference.ps1`: its regexes were tested in Python against Iteration 2 URLs, the Iteration 3 Groups path (no false positive), odata types and permission strings. Updated `EntraID/_AGENT.md` (4 rows, 2 entry points added, 1 amended, 2 status bullets) and `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 254)
+- Not verified against a live tenant: the exact post-fix HTTP status for `$expand=appRoleAssignments`; whether app-only `LicenseAssignment.Read.All` works on `licenseDetails`; the exact failure status of Iteration 2 calls after 2026-10-28. All are labelled in each A file's Source Confidence table.
+- There's still no PowerShell parser in the sandbox. Both new `.ps1` files passed a bracket-balance check and a hand review for StrictMode/5.1 compatibility. Treat the first real run as validation.
+- Several MS Learn endpoint pages (user-list-approleassignments, user-list-licensedetails, Graph activity logs overview) weren't fetched because of the unattended provenance restriction. Their content is cited via the community sources above, and the Graph activity log column names (`RequestUri`, `Scopes`, `Roles`, `AppId`, `ResponseStatusCode`) come from existing knowledge. Confirm them on first KQL use.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). Re-check the user-list-approleassignments / user-list-licensedetails Learn permission tables for MC1470871 alignment, and update ReadBasicAllScopeChange-A Playbook 3 if they change. After 28 Oct 2026, record the observed PIM Iteration 2 failure status in PIMIteration2Retirement-A/B and check whether AzGovViz shipped its Iteration 3 fix. Gap scans now show no B-without-A pairs; the next gap class is folders without scripts (for example `DFS/Troubleshooting/*` subfolders), so check `DFS/Scripts` first._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 253, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 254, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

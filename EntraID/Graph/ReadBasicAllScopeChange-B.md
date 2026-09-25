@@ -10,13 +10,18 @@
 - [Escalation Evidence](#escalation-evidence)
 
 ---
-## ⚠ A note before you start — this is a security fix, not a bug, and Microsoft says it "is not a breaking change." Treat that claim with healthy suspicion.
+## ⚠ Correction (run 254, 2026-09-25): rollout date, app-only scope and failure mode are now published
 
-Per Microsoft's official **"What's new in Microsoft Entra: September 2026"** post (Tech Community, published 2026-09-01, authored by the CVP of Identity and Network Access): the delegated Graph permission **`User.ReadBasic.All`** is meant to grant an app access to only a small set of basic user properties. Microsoft has confirmed it **"accidentally allows the app to read app role assignments and license details of users"** as well — access that was never supposed to be part of this scope. The fix removes those two extra reads from what `User.ReadBasic.All` returns.
+The first version of this runbook came from the "What's new in Microsoft Entra: September 2026" post alone. It said there was **no rollout date**, treated the change as **delegated-only**, and expected **silent** data loss. Message Center **MC1470871** (published 2026-09-11) supersedes all three points:
 
-Microsoft's own framing: *"This update addresses a vulnerability and is not a breaking change. Customers using User.ReadBasic.All as intended should experience no disruption."* That statement is true only for apps that only ever wanted the basic profile fields. It is **not** true for any app in your tenant that (knowingly or not) has been relying on `User.ReadBasic.All` to read `appRoleAssignments` or license details — those calls will start returning incomplete data (or silently drop those fields/relationships) once the fix rolls out to your tenant, with no error and no warning banner. That silent-failure shape is exactly what this runbook exists to get ahead of.
+- **Rollout:** worldwide from **mid-September 2026**, expected to complete by **late September 2026**. Assume it's live now.
+- **Scope:** applies to **delegated and application (app-only)** `User.ReadBasic.All`. Delegated-grant inventories (including `Get-ReadBasicAllUsageAudit.ps1`) miss daemons. Run `EntraID/Scripts/Get-ReadBasicAllAppOnlyExposure.ps1`, which covers both.
+- **Failure mode:** Microsoft says affected apps "may experience failures or permission-related errors". Expect `403 Authorization_RequestDenied` on `/users/{id}/appRoleAssignments` and `/users/{id}/licenseDetails`. That turns into **empty data only if the calling code swallows the error**.
+- **Affected calls:** `Get-MgUserAppRoleAssignment`, `Get-MgUserLicenseDetail`, `$expand=appRoleAssignments`, and `$batch` sub-requests for these paths.
+- **Replacement permissions:** as below (`User.Read.All`, or `LicenseAssignment.Read.All` for licences only). Community write-ups note that the endpoint reference pages list different least-privileged permissions, and that `licenseDetails` may not accept application permissions. **Test the exact call** before removing anything. See `ReadBasicAllScopeChange-A.md` Playbook 3.
+- **Proof of real usage:** `MicrosoftGraphActivityLogs` in Log Analytics records the request URI plus the token's `Scopes`/`Roles` for every Graph call. That makes the "Graph can't tell you what an app reads" statement below out of date whenever the diagnostic setting is enabled. KQL is in `ReadBasicAllScopeChange-A.md` Validation step 4.
 
-**No specific rollout date for this particular item was published in the primary source** — unlike the same month's `memberOf` retirement (hard deadline, see `EntraID/Troubleshooting/MemberOfRetirement-B.md`) or the Security Administrator role expansion (rollout completing by end of September 2026), this permission-scope fix carries no stated effective date. Check your tenant's **Message Center** (Entra admin center > Message center, search "User.ReadBasic.All" or "permission scope") for a tenant-specific rollout window before assuming this has already landed — do not assume it is live yet, and do not assume it isn't.
+Microsoft's framing is unchanged: this is a security fix and "not a breaking change" for apps using the permission as intended.
 
 ---
 ## Triage
@@ -46,6 +51,13 @@ $grants | ForEach-Object {
         Scopes         = $_.Scope
     }
 } | Format-Table -AutoSize
+
+# 4. App-only (application permission) holders. MC1470871 covers these too.
+$appRole = $graphSp.AppRoles | Where-Object { $_.Value -eq 'User.ReadBasic.All' }
+Get-MgServicePrincipalAppRoleAssignedTo -ServicePrincipalId $graphSp.Id -All |
+    Where-Object { $_.AppRoleId -eq $appRole.Id } |
+    Select-Object PrincipalDisplayName, PrincipalId, CreatedDateTime | Format-Table -AutoSize
+# Or run the full inventory with replacement check: .\Get-ReadBasicAllAppOnlyExposure.ps1
 ```
 
 | Result | Interpretation | Action |
@@ -62,7 +74,7 @@ $grants | ForEach-Object {
 <details><summary>What actually changes, and what depends on it</summary>
 
 ```
-Microsoft Graph delegated permission: User.ReadBasic.All
+Microsoft Graph permission: User.ReadBasic.All (delegated AND application; MC1470871)
     │
     ├── INTENDED scope (unchanged by this fix)
     │     └── Basic profile properties: displayName, given/surname, mail,
@@ -222,4 +234,6 @@ app's requested permissions before the fix rolls out tenant-wide.
 
 - **Always resolve permission scope ids live, never from memory or an old script.** This runbook's own Triage step 2 queries the tenant's Microsoft Graph service principal directly for the current `User.ReadBasic.All` definition rather than hardcoding a GUID — permission ids are generally stable, but the description text (which is what actually tells you whether the fix has landed for your tenant) is not, and recall is not a substitute for a live check. [MS Docs: Microsoft Graph permissions reference](https://learn.microsoft.com/en-us/graph/permissions-reference)
 
-- **Change announcements without a stated rollout date still need tracking.** Unlike this same month's `memberOf` retirement (explicit November 3, 2026 deadline), this fix has no published effective date — that makes it easier to deprioritize and forget. Put a standing reminder to re-check Message Center rather than treating "no date given" as "not urgent." [MS Docs: What's new in Microsoft Entra](https://learn.microsoft.com/entra/fundamentals/whats-new)
+- **The deep dive is in [ReadBasicAllScopeChange-A.md](ReadBasicAllScopeChange-A.md).** It covers the two permission catalogues, Graph activity log detection, per-grant-type playbooks and the MC-vs-endpoint-docs permission conflict. [MC1470871 archive](https://mc.merill.net/message/MC1470871)
+
+- **Change announcements without a stated rollout date still need tracking.** (Historical: when this runbook was first written there was no date. MC1470871 later gave one, which is exactly why the standing Message Center check matters.) Unlike this same month's `memberOf` retirement (explicit November 3, 2026 deadline), this fix has no published effective date — that makes it easier to deprioritize and forget. Put a standing reminder to re-check Message Center rather than treating "no date given" as "not urgent." [MS Docs: What's new in Microsoft Entra](https://learn.microsoft.com/entra/fundamentals/whats-new)
