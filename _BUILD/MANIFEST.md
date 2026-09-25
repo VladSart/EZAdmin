@@ -5708,8 +5708,8 @@ _2026-09-25 (run 272, scheduled task "ezadmin-day-build"): fresh `/tmp` clone of
 | `Windows/Troubleshooting/ComponentStore-A.md` | ✅ | auto-build (closes run 272 queue item) |
 | `Windows/Scripts/Get-ComponentStoreHealth.ps1` | ✅ | auto-build |
 | `Windows/Troubleshooting/TaskScheduler-B.md` | ✅ | auto-build |
-| `Windows/Troubleshooting/TaskScheduler-A.md` | ⬜ | queued for next run |
-| `Windows/Scripts/Get-ScheduledTaskHealth.ps1` | ⬜ | queued for next run |
+| `Windows/Troubleshooting/TaskScheduler-A.md` | ✅ | auto-build (closed run 274) |
+| `Windows/Scripts/Get-ScheduledTaskHealth.ps1` | ✅ | auto-build (closed run 274) |
 
 _2026-09-25 (run 273, scheduled task "ezadmin-day-build"): authored in the Cowork outputs folder, applied and pushed from a Mac-side scratch clone (`/tmp/ezb`, `master`, HEAD `cf75cf7` run 272) via osascript. Took run 272's queued ComponentStore-A + optional script, then its next candidate Task Scheduler (13 passing mentions, no runbook). Updated `Windows/_AGENT.md` (3 rows, 1 entry point, 1 entry-point extension) and `AGENT_INDEX.md` (1 row extended, 1 row added)._
 
@@ -5719,6 +5719,21 @@ _2026-09-25 (run 273, scheduled task "ezadmin-day-build"): authored in the Cowor
 
 **For next run:** build `TaskScheduler-A.md` + `Get-ScheduledTaskHealth.ps1` (queued ⬜ above). After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Other candidates: RemoteApp publishing/file-type associations; Exchange hybrid OAB/GAL split.
 
+## Queue close-out — Task Scheduler deep dive (run 274)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/TaskScheduler-A.md` | ✅ | auto-build (closes run 273 queue item) |
+| `Windows/Scripts/Get-ScheduledTaskHealth.ps1` | ✅ | auto-build (closes run 273 queue item) |
+
+_2026-09-25 (run 274, scheduled task "ezadmin-day-build"): authored in the Cowork outputs folder against a fresh sandbox clone of `master` (HEAD `a6d4046`, run 273); applied and pushed from a Mac-side scratch clone via osascript (connected-folder mount still stale at run 169 git state — not touched). Took run 273's two queued items. Updated `Windows/_AGENT.md` (TaskScheduler row → A/B, new script row, 1 entry point extended, 1 added) and `AGENT_INDEX.md` (TaskScheduler row extended)._
+
+## ⚠️ Skipped Items / Notes (run 274)
+- Not web-verified this run (stated from established docs/field practice): Operational event IDs 107/108/110/111/118/119/140/141/142/203/325/329/332 and Security 4698–4702 (require "Other Object Access Events" auditing); `0x800704DD` / `0xC000013A` meanings; task default Priority 7 = below-normal; hidden-task-via-removed-`SD` technique; MSFT_Task* CIM trigger class names (script treats unknown/blank class names as time-based monthly triggers).
+- No PowerShell parser in sandbox; script bracket-balanced via Python, ASCII-only, hand-reviewed for 5.1/StrictMode. HRESULT keys held as hex strings to avoid PowerShell Int32 literal sign issues.
+- Only two files this run (both queued items); no third topic started, to keep the queue clean.
+
+**For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: RemoteApp publishing/file-type associations; Exchange hybrid OAB/GAL split; Windows Event Forwarding (WEF/WEC) subscriptions (check coverage first).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 273, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 274, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
