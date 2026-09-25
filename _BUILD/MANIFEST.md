@@ -5554,6 +5554,27 @@ _2026-09-25 (run 264, scheduled task "ezadmin-day-build"): fresh uniquely named 
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining gap candidates from this run's grep: Quick Assist (zero coverage; enterprise controls, Remote Help relationship), Microsoft Connected Cache for Enterprise (only mentioned in DeliveryOptimization-A), Tunnel for MAM as a dedicated deep-dive if demand appears.
 
+
+## New Topics — Quick Assist + Microsoft Connected Cache for Enterprise & Education (run 265)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/QuickAssist-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/QuickAssist-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-QuickAssistExposureAudit.ps1` | ✅ | auto-build |
+| `Windows/Troubleshooting/ConnectedCache-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/ConnectedCache-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-ConnectedCacheNodeHealth.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 265, scheduled task "ezadmin-day-build"): fresh `/tmp` clone, `git checkout master`, HEAD `1f8b4e2` (run 264). Connected-folder mount still stale (shows run 169). Queue empty → Expansion Rules, taking both of run 264's gap candidates after re-confirming zero coverage by grep: **Quick Assist** (only manifest mentions) and **Microsoft Connected Cache for Enterprise & Education** (only generic mentions in DeliveryOptimization-A/B, WSUS-to-WfUB, FeatureUpdates-A). Sources read live: Learn "Use Quick Assist to help users" (updated 2025-09-30: endpoint table, session flow, no-local-log statement, network-block-breaks-Remote-Help note, AppX uninstall command); Learn MCC overview (ms.date 2025-07-23), MCC prerequisites (updated 2026-04-09: licensing, host builds, IP Helper requirement, single-NIC, PS 5.1, proxy origin-form), MCC troubleshooting (updated 2026-05-20: install/monitor tasks, gMSA enctype, portproxy 80/443/5000, TLS inspection, DHCP 235/LocalPolicyMerge, Healthy≠reachable, support bundle). Updated `Windows/_AGENT.md` (2 covers bullets, 4 folder rows, 2 entry points), `AGENT_INDEX.md` (2 rows), and added a pointer from `DeliveryOptimization-A.md`'s older MCC description to the new GA-era files._
+
+## ⚠️ Skipped Items / Notes (run 265)
+- AppLocker CSP OMA-URI path (`./Vendor/MSFT/AppLocker/ApplicationLaunchRestrictions/<Grouping>/StoreApps/Policy`) and the Quick Assist PFN publisher suffix (`_8wekyb3d8bbwe`) are stated from standard Microsoft conventions, not re-read from the CSP reference this run.
+- Storm-1811/Black Basta details come from the Microsoft Threat Intelligence blog (May 2024) as summarised in search results; the blog itself wasn't re-fetched.
+- `Get-ConnectedCacheNodeHealth.ps1` parses `netsh interface portproxy show v4tov4` text output (English column layout) and uses a heuristic (`w3wp|inetinfo|smsexec|ccmexec`) for port-80 conflicts; the DO policy value names in client mode (`DODelayCacheServerFallback*`) are the GPO registry names and may differ under PolicyManager. Azure CLI `mcc` commands deliberately not quoted (syntax not verified).
+- No PowerShell parser in the sandbox; both scripts bracket-checked with Python and hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: Tunnel for MAM deep-dive (if demand), Windows Remote Assistance (`msra.exe`) legacy retirement note inside QuickAssist-A if asked, Connected Cache in ConfigMgr (DP-integrated) as a co-management sibling topic.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 264, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 265, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

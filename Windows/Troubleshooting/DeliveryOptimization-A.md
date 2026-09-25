@@ -50,6 +50,8 @@ Delivery Optimization runs as the `DoSvc` service and intercepts eligible downlo
 
 **Microsoft Connected Cache (MCC):** a free, separately-deployed caching layer (available as a Windows Server role, an Azure IoT Edge module, or in Enterprise as "MCCE") that acts as a *always-available* local seed, independent of any single client device's cache lifecycle or availability. Configured via `DOCacheHost`/`DOCacheHostSource` policy pointing clients at the MCC endpoint. This is what actually reduces WAN utilization for the *first* download at a site — peering alone cannot, structurally, help with that case.
 
+> **Current GA-era reference:** Connected Cache for Enterprise & Education (GA July 2025, Azure-managed, Windows/WSL2 or Ubuntu/RHEL host) has its own runbooks — `ConnectedCache-A.md` / `ConnectedCache-B.md` and `../Scripts/Get-ConnectedCacheNodeHealth.ps1`. Treat the one-line description above as historical context.
+
 </details>
 
 ---
