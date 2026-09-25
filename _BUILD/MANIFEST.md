@@ -5648,6 +5648,24 @@ _2026-09-25 (run 269, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: RD Connection Broker HA (SQL, DNS round-robin, `Set-RDClientAccessName`) as the last RDS sibling; Exchange hybrid OAB/GAL split; Tunnel for MAM; Connected Cache in ConfigMgr.
 
+
+## New Topics — RD Connection Broker & Broker HA (run 270)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RDConnectionBroker-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/RDConnectionBroker-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-RDConnectionBrokerDiagnostics.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 270, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169 git state) — worked from a fresh `mktemp -d` clone, `git checkout master`, HEAD `4eb8359` (run 269). Queue empty → Expansion Rules. Took run 269's named last RDS sibling (RD Connection Broker HA) after grep confirmed only passing mentions. Built the topic: Tssdis vs RDMS planes, WID vs shared SQL/Azure SQL, driver-per-broker + connection-string pitfalls, client access name (DNS RR vs LB), broker cert SAN, reconnection failures, active-management failover, dead-broker removal, driver/AG/Azure SQL password-rotation playbooks. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), and see-also pointers at the end of `RDWebAccess-B.md` and `RDSLicensing-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 270)
+- Live-fetched: Learn "Configure the Remote Desktop Connection Broker for high availability" (updated 2025-07-02), Learn troubleshoot "Error after completing configuration of the RD Connection Broker server for high availability" (2026-02-12: string format, `Yes` casing, dbcreator, case-insensitive collation), and the `Set-RDConnectionBrokerHighAvailability` cmdlet reference (parameters incl. `-DatabaseSecondaryConnectionString` for password rotation).
+- Not re-read this run: `Get-RDConnectionBrokerHighAvailability` output property names (script reads them via PSObject and tolerates absence), `Set-RDDatabaseConnectionString`/`Get-RDDatabaseConnectionString`, `Set-RDActiveManagementServer`, `Set-RDClientAccessName`, TScPubRPC service name, WID path `C:\Windows\rdcbDb`, ODBC 18 encrypt-by-default behaviour, and Event 1306 on RDSH (labelled "commonly seen") — stated from established docs/field practice.
+- "No supported path from HA back to WID" is stated from field practice; Microsoft documents no revert cmdlet.
+- No PowerShell parser in the sandbox; script bracket-checked with Python (one `}` surplus is inside a regex string literal), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). RDS role family now complete (Gateway, Web Access, Licensing, Connection Broker). Remaining candidates: Exchange hybrid OAB/GAL split; Tunnel for MAM; Connected Cache in ConfigMgr; RDS session-host load-balancing/drain automation for patching if tickets appear.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 269, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 270, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

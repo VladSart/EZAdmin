@@ -169,3 +169,5 @@ Get-RDSLicensingDiagnostics.ps1 CSV attached: <Y/N>
 - CAL version must be ≥ the RDSH OS version; upgrading the session hosts means buying/installing new CALs *and* the license server OS must be ≥ the CAL version.
 - Per User CALs are not technically enforced (tracking only) but require AD; Per Device CALs are enforced and the only option for workgroup RDSH.
 - `lsdiag.msc` (RD Licensing Diagnoser) is the fastest single view — learn to read it before touching registry. — [License your RDS deployment with CALs](https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/rds-client-access-license)
+
+> See also: broker-side failures (Tssdis/RDMS down, HA SQL database, client access name, lost reconnections) → `RDConnectionBroker-B.md`.

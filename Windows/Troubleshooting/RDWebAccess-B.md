@@ -229,3 +229,5 @@ Fixes already tried: ______
 - The web client consumes a **Per-Device** CAL per browser if the deployment isn't Per User — check `RDSLicensing-B.md` before rolling it out.
 - For MFA in front of RD Web, prefer [Entra application proxy with RDS](https://learn.microsoft.com/en-us/entra/identity/app-proxy/application-proxy-integrate-with-remote-desktop-services) (supported by the web client) or the NPS extension on the gateway (`RDGateway-A.md`); AD FS WAP is not supported for the web client.
 - Always capture **RD Console Logs.txt** (About → Capture support information) before escalating HTML5 issues — it shows the exact gateway/broker step that failed.
+
+> See also: broker-side failures (Tssdis/RDMS down, HA SQL database, client access name, lost reconnections) → `RDConnectionBroker-B.md`.
