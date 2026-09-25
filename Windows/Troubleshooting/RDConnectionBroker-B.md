@@ -1,7 +1,7 @@
 # RD Connection Broker & Broker High Availability — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate in under 10 minutes.
 > Covers: Server Manager "A Remote Desktop Services deployment does not exist in the server pool" / RDS Overview blank, users not reconnecting to their disconnected session (landing on a new host), all connections failing when one broker is down, "Configure High Availability" wizard failing with *"Could not create the database <DatabaseName>"*, broker unable to reach SQL after a SQL/driver change, client access name (DNS round-robin / load balancer) problems, broker certificate SAN mismatch after HA, and "the connection was denied because the user account is not authorized" at the redirection step.
-> Deep dive: `RDConnectionBroker-A.md` · Script: `../Scripts/Get-RDConnectionBrokerDiagnostics.ps1` · Siblings: `RDGateway-B.md` · `RDWebAccess-B.md` · `RDSLicensing-B.md` · `RDSDeadlockSept2026-B.md` (Sept 2026 CU hang)
+> Deep dive: `RDConnectionBroker-A.md` · Script: `../Scripts/Get-RDConnectionBrokerDiagnostics.ps1` · Siblings: `RDGateway-B.md` · `RDWebAccess-B.md` · `RDSLicensing-B.md` · `RDSessionHost-B.md` (drain, LB, UPD) · `RDSDeadlockSept2026-B.md` (Sept 2026 CU hang)
 
 ---
 ## Skim Index
@@ -249,4 +249,4 @@ Steps already taken:        <fix numbers>
 - `Set-RDConnectionBrokerHighAvailability` takes a secondary connection string purely so SQL-auth passwords can be rotated without an outage — use it if you're on Azure SQL with SQL logins. [Set-RDConnectionBrokerHighAvailability](https://learn.microsoft.com/powershell/module/remotedesktop/set-rdconnectionbrokerhighavailability)
 - A driver mismatch is the #1 "everything broke after we patched SQL" cause; the driver named in the string must exist on **every** broker, including ones added later. [Download ODBC Driver for SQL Server](https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server)
 - Once HA is on, every RDS certificate conversation includes the client access name — plan the SAN before you run the wizard.
-- Sibling runbooks cover the other RDS roles: `RDGateway-B.md`, `RDWebAccess-B.md`, `RDSLicensing-B.md`.
+- Sibling runbooks cover the other RDS roles: `RDGateway-B.md`, `RDWebAccess-B.md`, `RDSLicensing-B.md`, and `RDSessionHost-B.md` (session-host drain, load balancing, UPD).

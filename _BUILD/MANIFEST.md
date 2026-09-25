@@ -5666,6 +5666,23 @@ _2026-09-25 (run 270, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). RDS role family now complete (Gateway, Web Access, Licensing, Connection Broker). Remaining candidates: Exchange hybrid OAB/GAL split; Tunnel for MAM; Connected Cache in ConfigMgr; RDS session-host load-balancing/drain automation for patching if tickets appear.
 
+
+## New Topics — RD Session Host & session collections (run 271)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RDSessionHost-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/RDSessionHost-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-RDSessionHostHealth.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 271, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169 git state) and the sandbox has no GitHub credentials — authored in a fresh `mktemp -d` clone of `master` (HEAD `b245de0`, run 270), exported as a patch, applied and pushed from a Mac-side scratch clone via osascript. Queue empty → Expansion Rules. Took run 270's "RDS session-host drain/load-balancing automation" candidate (grep confirmed no RDSH/collection runbook; only passing mentions in RDConnectionBroker/RDSDeadlock). Built: two-drain-switch model (broker `NewConnectionAllowed` vs local `change logon`), LB weight/limit + reconnect precedence, collection settings vs Session Time Limits GPO, UPD single-attach/ACL/resize, stale host record re-add, rolling patch orchestration. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), see-also in `RDConnectionBroker-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 271)
+- Verified via WebSearch (Learn): `Set-RDSessionHost -NewConnectionAllowed` accepts `Yes`/`NotUntilReboot`/`No`; the Q&A "host in collection doesn't accept connections after nightly reboot, toggling drain fixes it" symptom (used for Fix 3 / Playbook 2).
+- Not re-read this run: `Get-RDSessionCollectionConfiguration` switch-parameter set and output property names (script reads them defensively), UPD file naming (`UVHD-<SID>.vhdx`, `UVHD-template.vhdx`), `change logon` output wording (script matches ENABLED/DRAIN/DISABLED substrings, flags anything else as unrecognised), Session Time Limits GPO precedence — stated from established docs/field practice.
+- No PowerShell parser in sandbox; script brace/paren-balanced via Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). RDS family now includes Session Host. Remaining candidates: Exchange hybrid OAB/GAL split; Connected Cache in ConfigMgr; RemoteApp publishing/file-type associations (only if tickets appear).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 270, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 271, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
