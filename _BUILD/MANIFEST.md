@@ -5734,6 +5734,22 @@ _2026-09-25 (run 274, scheduled task "ezadmin-day-build"): authored in the Cowor
 
 **For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: RemoteApp publishing/file-type associations; Exchange hybrid OAB/GAL split; Windows Event Forwarding (WEF/WEC) subscriptions (check coverage first).
 
+## New Topic — Windows Event Forwarding (WEF/WEC) (run 275)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/WindowsEventForwarding-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/WindowsEventForwarding-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-WEFHealth.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 275, scheduled task "ezadmin-day-build"): fresh sandbox clone of `master` (HEAD `177d5d3`, run 274; note the repo's default branch is the stale `main` — always `git checkout master` after cloning). Queue empty → Expansion Rules, took run 274's WEF candidate. Gap check: WEF only appeared as passing mentions, and `EventLog-A.md` scoped WEF out with a dangling "see Exchange folder" pointer — fixed to point at the new runbooks. Built B (7 fixes incl. URL ACL, Kerberos ticket refresh, Security channel access, sizing, delivery mode), A (push/pull models, Kerberos auth + encryption, URL ACL/svchost-split trap, delivery modes, lifetime-source bloat, 5 playbooks incl. collector migration), and read-only `Get-WEFHealth.ps1`. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), `EventLog-A.md` (scope pointer)._
+
+## ⚠️ Skipped Items / Notes (run 275)
+- Web-verified (Microsoft Learn): KB 4494462 symptom (Forwarding/Operational 105, error 2150859027), cause (svchost split >3.5 GB RAM on Server 2019), exact `netsh http add urlacl` SDDL with WinRM + Wecsvc SIDs; delivery modes Normal ~15 min / MinBandwidth 6 h + 6 h heartbeat / MinLatency 30 s; Custom only via wecutil; per-source registry state and >1000 lifetime-source Event Viewer slowdown; Kerberos encryption over HTTP in domains; Event Log Readers + NETWORK SERVICE guidance.
+- Not web-verified (established docs/field practice): `wecutil ss` switch names `/adc`, `/cf`, `/cm`, `/dmi`, `/dmlt`; SubscriptionManager policy registry path; `wecutil gr` output labels (script parses `EventSource[n]`/`RunTimeStatus`/`LastHeartbeatTime` defensively, English-only); ForwardedEvents ~20 MB default; HTTPS `IssuerCA=` syntax (overview only).
+- No PowerShell parser in sandbox; script bracket-balanced via Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: RemoteApp publishing/file-type associations; Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` coverage first); WEF over HTTPS for non-domain sources (only if tickets appear).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 274, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 275, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

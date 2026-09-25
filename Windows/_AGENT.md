@@ -84,6 +84,7 @@ Covers:
 | `Troubleshooting/Firewall-A.md` / `B.md` | Windows Firewall rule/profile diagnosis |
 | `Troubleshooting/WMI-A.md` / `B.md` | WMI repository/service diagnosis |
 | `Troubleshooting/EventLog-A.md` / `B.md` | Event log collection, corruption, sizing |
+| `Troubleshooting/WindowsEventForwarding-A.md` / `B.md` | Windows Event Forwarding (WEF/WEC) — source-initiated vs collector-initiated subscriptions, SubscriptionManager GPO string, Kerberos/computer-group authorisation (ticket refresh after group change), HTTP.sys `/wsman/` URL ACL missing Wecsvc SID on split-svchost collectors (Event 105 / 2150859027, KB 4494462), NETWORK SERVICE Security-channel access, delivery modes (Normal/MinBandwidth/MinLatency/Custom), ForwardedEvents sizing, lifetime-source bloat, collector migration |
 | `Troubleshooting/CredentialManager-A.md` / `B.md` | Stored credential issues |
 | `Troubleshooting/CertificateServices-A.md` / `B.md` | Certificate enrollment/renewal issues |
 | `Troubleshooting/NTLMRelayADCS-A.md` / `B.md` | NTLM relay to AD CS HTTP(S) enrollment endpoints (PetitPotam / ESC8) — coercion-to-certificate-issuance attack chain, EPA/HTTPS-only/NTLM-restriction/template-hardening remediation playbooks |
@@ -115,6 +116,7 @@ Covers:
 | `Scripts/Get-AppLockerDiagnostics.ps1` | Companion script to AppLocker |
 | `Scripts/Get-WMIDiagnostics.ps1` | Companion script to WMI |
 | `Scripts/Get-EventLogDiagnostics.ps1` | Companion script to EventLog |
+| `Scripts/Get-WEFHealth.ps1` | Companion to WindowsEventForwarding — read-only collector/source audit: Wecsvc/WinRM state + svchost split, `/wsman/` URL ACL Wecsvc SID, listener, per-subscription enabled/mode/format and Active/Inactive/stale-heartbeat counts, destination log sizing; source SubscriptionManager policy, Test-WSMan, Forwarding/Operational errors, NETWORK SERVICE Security read; CSV |
 | `Scripts/Get-CredentialManagerDiagnostics.ps1` | Companion script to CredentialManager |
 | `Scripts/Get-CertificateServicesDiagnostics.ps1` | Companion script to CertificateServices |
 | `Scripts/Get-NTLMRelayADCSAudit.ps1` | Companion script to NTLMRelayADCS — AD CS role inventory, HTTP/HTTPS reachability, best-effort EPA read (flags manual verification when unconfirmable), NTLM restriction posture, client-authentication-capable certificate template inventory |
@@ -266,6 +268,7 @@ Get-WinEvent -LogName System |
 - "No Remote Desktop license servers available to provide a license", "licensing mode is not configured", RDS stops working ~120 days after build, "no RD client access licenses available" → `Troubleshooting/RDSLicensing-B.md` + `Scripts/Get-RDSLicensingDiagnostics.ps1`
 - "Can't RDP / RDP connection refused or times out" → `Troubleshooting/RDP-B.md` + `Scripts/Get-RDPDiagnostics.ps1`
 - "Events missing / log full / log corrupted" → `Troubleshooting/EventLog-B.md` + `Scripts/Get-EventLogDiagnostics.ps1`
+- WEF/WEC not receiving events, sources Inactive, Forwarding Event 105 / 2150859027, Security events not forwarded, ForwardedEvents full, set up a new event collector → `Troubleshooting/WindowsEventForwarding-B.md` (deep dive `-A.md`, audit `Scripts/Get-WEFHealth.ps1`)
 - "App blocked, need to know which AppLocker rule / AppIDSvc stopped" → `Troubleshooting/AppLocker-B.md` + `Scripts/Get-AppLockerDiagnostics.ps1`
 - "Name won't resolve / internal names fail but public works / DNS cache stale" → `Troubleshooting/DNS-Client-B.md` (hotfix) / `DNS-Client-A.md` (deep dive — resolver chain, NRPT, DoH) + `Scripts/Get-DNSClientDiagnostics.ps1`
 - "NTLM auth failing / trust relationship broken / 0x80070005 Access Denied" → `Troubleshooting/NTLM-B.md` (hotfix) / `NTLM-A.md` (deep dive — NTLM protocol, secure channel, LM level hardening) + `Scripts/Get-NTLMDiagnostics.ps1`

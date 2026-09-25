@@ -27,7 +27,7 @@
 **Does not cover:**
 - Third-party log aggregation agent troubleshooting (Splunk, NXLog)
 - Azure Monitor Agent (AMA) / Log Analytics Agent (MMA) deployment
-- Windows Event Forwarding (WEF) subscriptions — see Exchange folder
+- Windows Event Forwarding (WEF) subscriptions — see `WindowsEventForwarding-A.md` / `-B.md`
 
 **Assumed role:** L2/L3 MSP engineer with local admin or SYSTEM-level access.
 
