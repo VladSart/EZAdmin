@@ -5801,6 +5801,23 @@ _2026-09-25 (run 278, scheduled task "ezadmin-day-build"): fresh `/tmp` clone, `
 
 **For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); RDS certificate lifecycle across roles (check RDGateway/RDWebAccess first); Kerberos/NTLM for SMB aliases (`netdom computername` alternate names) if not covered in `Kerberos-A.md`.
 
+
+## New Topic — File Server Alias (CNAME / netdom alternate computer names) (run 279)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/FileServerAlias-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/FileServerAlias-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-FileServerAliasHealth.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 279, scheduled task "ezadmin-day-build"): fresh sandbox clone of `master` (HEAD `9af8864`, run 278); connected-folder mount still stale — untouched. Queue empty → Expansion Rules; took run 278's third candidate (Kerberos/NTLM for SMB aliases). Gap check: `netdom computername`/`OptionalNames`/`DisableStrictNameChecking` appeared only as one-liners in SMBHardening-A/B; no alias runbook. RDS certificate lifecycle candidate declined — `Set-RDCertificate` already covered across RDGateway/RDWebAccess/RDConnectionBroker A/B. Built B (6 fixes: netdom alt name replacing CNAME, move/dedupe SPN from old server, CNAME + manual SPN + strict-name, SrvAllowedServerNames, BackConnectionHostNames loopback, user workaround), A (three-check model DNS/KDC/SMB acceptance, no CNAME canonicalization, cifs→HOST sPNMappings, netdom AD/DNS writes, 4 playbooks incl. old-name migration and alias retirement), read-only `Get-FileServerAliasHealth.ps1`. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), see-also in `SMB-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 279)
+- Web-verified (Microsoft Learn, updated 2026-02-12): CNAME failure symptoms ("target account name is incorrect", "account restriction"), causes (missing alias SPN, SMB server hardening), resolution `Netdom computername <name> /add:<alias>`; TechCommunity alias article describes netdom registering A record + SPNs and replacing DisableStrictNameChecking/OptionalNames.
+- Not web-verified (established docs/field practice): `msDS-AdditionalSamAccountName` write by netdom, `/enum:altnames` and `/makeprimary:` syntax, `SmbServerNameHardeningLevel` 0/1/2 semantics and `SrvAllowedServerNames` name, error 52 wording, `0xc000018b` for principal unknown via klist, 4769 failure code `0x7`, reboot-recommended after `/add`.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (164/95/46 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode. ADSI GC searches used to avoid an RSAT dependency.
+
+**For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); failover-cluster client access point / CNO permissions (check for existing cluster coverage first); DFS Namespace migration from server-name paths (check `DFS/` first).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 278, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 279, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

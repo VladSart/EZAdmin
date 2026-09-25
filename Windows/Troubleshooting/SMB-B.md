@@ -1,7 +1,7 @@
 # SMB File Share Access — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate in under 10 minutes.
 
-> See also: SMB over QUIC (internet access over UDP 443, no VPN) → `SMBoverQUIC-B.md` / `SMBoverQUIC-A.md`. Broke after Win 11 24H2 / WS2025 upgrade (signing required, guest blocked, NTLM blocking, dialect floors) → `SMBHardening-B.md` / `SMBHardening-A.md`.
+> See also: SMB over QUIC (internet access over UDP 443, no VPN) → `SMBoverQUIC-B.md` / `SMBoverQUIC-A.md`. Broke after Win 11 24H2 / WS2025 upgrade (signing required, guest blocked, NTLM blocking, dialect floors) → `SMBHardening-B.md` / `SMBHardening-A.md`. Works by real name but not by alias/CNAME (old server name after migration) → `FileServerAlias-B.md` / `FileServerAlias-A.md`.
 
 ---
 
