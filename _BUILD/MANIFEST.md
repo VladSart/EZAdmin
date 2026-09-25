@@ -5393,4 +5393,27 @@ _2026-09-25 (run 256, scheduled task "ezadmin-night-build"): fresh uniquely name
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 256, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+## New Topics — Intune Microsoft Store apps (new)/WinGet + macOS PKG/DMG agent apps (run 257)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/StoreAppsWinGet-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/StoreAppsWinGet-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-StoreAppWinGetDiagnostics.ps1` | ✅ | auto-build |
+| `macOS/Troubleshooting/PKG-DMG-Apps-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/PKG-DMG-Apps-A.md` | ✅ | auto-build |
+| `macOS/Scripts/Get-MacAgentAppStatus.sh` | ✅ | auto-build |
+
+_2026-09-25 (run 257, scheduled task "ezadmin-night-build"): fresh `/tmp` clone, `git checkout master`, HEAD `a998bb0` (run 256). The queue was empty, so this run used Expansion Rules. Run 256 had pointed to three candidates. Windows Server hotpatch is already covered (`Azure/UpdateManager/ServerHotpatch-*`, `Intune/Troubleshooting/Hotpatch-*`). WinGet/Store app-source had only passing mentions in App-Deployment-A and Managed-Apps-A, so it was built as a dedicated topic. A macOS gap-check found no runbook for the agent-delivered **macOS app (PKG)/(DMG)** types (only passing mentions in the GSA/OneDrive/Teams runbooks), so that was built too. Sources fetched live: Learn "Add Microsoft Store apps to Intune" (ms.date 2026-06-25, updated 2026-09-11), "Add an unmanaged macOS PKG app" and "Add a macOS DMG app" (both ms.date 2026-04-14), and the Intune Customer Success macOS agent support tip (July 2025, via search summary). The macOS script follows the folder's `.sh` device-local convention and passes `bash -n`. Updated `Intune/_AGENT.md` (2 rows, 1 entry point), `macOS/_AGENT.md` (2 rows, 1 entry point) and `AGENT_INDEX.md` (2 rows). The mounted connected folder is still stale, with 381 local modifications on an old base, so this run committed and pushed from the `/tmp` clone and did not touch the mount's git state._
+
+## ⚠️ Skipped Items / Notes (run 257)
+- The `0x8A15xxxx` meanings come from the winget-cli `returnCodes.md` naming (the fetch was blocked by provenance rules, so they were recalled from the list and not re-verified this run). 0x8A15001B/1C = msstore blocked by policy is corroborated by a Microsoft Q&A thread title. Re-verify 0x8A150010/11/14 against the repo on the next run.
+- The Store/WinGet endpoint hostnames in the script (`storeedgefd.dsx.mp.microsoft.com`, `displaycatalog.mp.microsoft.com`, `cdn.winget.microsoft.com`) weren't cross-checked against the live Intune endpoints page. Check the Microsoft Store section of that page.
+- RequirePrivateStoreOnly "can interfere with the msstore source" is written cautiously. Microsoft's doc only says it isn't the preferred lockdown, and that winget CLI access still works under it.
+- The macOS agent's check-in cadence (~8 h) and the `killall IntuneMdmDaemon` restart method are community-standard practice, not taken from Learn text fetched this run.
+- The sandbox still has no PowerShell parser. `Get-StoreAppWinGetDiagnostics.ps1` was hand-reviewed for StrictMode and 5.1 compatibility, so treat its first real run as validation.
+
+**For next run:** the run 256 follow-ups still apply (EWS after 1 Oct 2026, Publisher, OSLicense KB, PIM Iteration 2 after 28 Oct). Remaining candidate: the Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline shared vs AVD pooled). New candidates: the macOS LOB (managed PKG) MDM path in more depth, and Intune Win32 app supersedence/dependency chains, if `App-Deployment-A.md` doesn't already cover them in depth (grep first).
+
+---
+
+Last updated: 2026-09-25 (auto-build, run 257, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
