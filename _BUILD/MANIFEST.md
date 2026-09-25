@@ -5691,7 +5691,7 @@ _2026-09-25 (run 271, scheduled task "ezadmin-day-build"): connected-folder moun
 | `Windows/Troubleshooting/WindowsServerBackup-A.md` | ✅ | auto-build |
 | `Windows/Scripts/Get-WindowsServerBackupHealth.ps1` | ✅ | auto-build |
 | `Windows/Troubleshooting/ComponentStore-B.md` | ✅ | auto-build |
-| `Windows/Troubleshooting/ComponentStore-A.md` | ⬜ | queued for next run |
+| `Windows/Troubleshooting/ComponentStore-A.md` | ✅ | auto-build (run 273) |
 
 _2026-09-25 (run 272, scheduled task "ezadmin-day-build"): fresh `/tmp` clone of `master` (HEAD `8392d6e`, run 271). Queue empty → Expansion Rules. Gap check by grep: `wbadmin` only appeared inside AD-BackupRestore (System State for DCs); `WindowsBackup-A/B` + `Get-WindowsBackupAudit.ps1` cover the *client* Windows Backup for Organizations, not the server feature. DISM `/RestoreHealth` appeared only as a one-liner in `Update to Latest A.md`, no component-store runbook. Built WSB trio (VSS-requestor model, critical-volume computation, target version semantics, VSS full vs copy, catalog/restore playbooks) and ComponentStore-B (CheckHealth vs ScanHealth, WSUS repair-source `RepairContentServerSource`, matching-build sources, `0x800f0831`, pending.xml, not-corruption causes). Updated `Windows/_AGENT.md` (3 rows, 2 entry points) and `AGENT_INDEX.md` (2 rows)._
 
@@ -5701,6 +5701,24 @@ _2026-09-25 (run 272, scheduled task "ezadmin-day-build"): fresh `/tmp` clone of
 
 **For next run:** build `ComponentStore-A.md` (queued ⬜ above) + optional `Get-ComponentStoreHealth.ps1`. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Other candidates: Task Scheduler troubleshooting (13 passing mentions, no runbook); RemoteApp publishing/file-type associations.
 
+
+## New Topics — Component Store deep dive + Task Scheduler (run 273)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/ComponentStore-A.md` | ✅ | auto-build (closes run 272 queue item) |
+| `Windows/Scripts/Get-ComponentStoreHealth.ps1` | ✅ | auto-build |
+| `Windows/Troubleshooting/TaskScheduler-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/TaskScheduler-A.md` | ⬜ | queued for next run |
+| `Windows/Scripts/Get-ScheduledTaskHealth.ps1` | ⬜ | queued for next run |
+
+_2026-09-25 (run 273, scheduled task "ezadmin-day-build"): authored in the Cowork outputs folder, applied and pushed from a Mac-side scratch clone (`/tmp/ezb`, `master`, HEAD `cf75cf7` run 272) via osascript. Took run 272's queued ComponentStore-A + optional script, then its next candidate Task Scheduler (13 passing mentions, no runbook). Updated `Windows/_AGENT.md` (3 rows, 1 entry point, 1 entry-point extension) and `AGENT_INDEX.md` (1 row extended, 1 row added)._
+
+## ⚠️ Skipped Items / Notes (run 273)
+- Not web-verified this run (stated from established docs/field practice): Task Scheduler Operational event IDs (100/101/102/103/106/129/200/201/322), `0x41301`/`0x41303`/`0x41306`/`0x8004131F`/`0x800710E0` meanings, default 72h ExecutionTimeLimit; CBS `Corruption` registry marker naming (described generically), DISM progress stall percentages, AnalyzeComponentStore output labels (script parses them with regex and tolerates absence). Minifilter inbox list in the script is best-effort and reported as INFO only.
+- No PowerShell parser in sandbox; script bracket-balanced via Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** build `TaskScheduler-A.md` + `Get-ScheduledTaskHealth.ps1` (queued ⬜ above). After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Other candidates: RemoteApp publishing/file-type associations; Exchange hybrid OAB/GAL split.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 272, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 273, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
