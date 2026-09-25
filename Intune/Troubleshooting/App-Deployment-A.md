@@ -311,6 +311,7 @@ Get-PSDrive C | Select Used, Free, @{N='FreeMB';E={[math]::Round($_.Free/1MB,0)}
    - Supersedence only applies when the older app is detected on the device
    - IME first uninstalls the old app (using old app's uninstall command), then installs the new
    - If uninstall fails, the new app may not install — check old app's uninstall command works silently
+   - **Correction/detail (run 258):** the old-app uninstall only happens for *replace* (Uninstall previous version = Yes). With *update*, Intune never uninstalls the old app. If the old app isn't detected, the new app simply installs. The superseding app must be **assigned** or nothing happens. Full behaviour tables, chain/conflict rules and a tenant audit: `Win32AppRelationships-A.md` / `-B.md` + `Scripts/Get-Win32AppRelationshipAudit.ps1`.
 
 ### Phase 5 — Content Download Issues
 

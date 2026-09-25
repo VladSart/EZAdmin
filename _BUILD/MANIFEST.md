@@ -5414,6 +5414,25 @@ _2026-09-25 (run 257, scheduled task "ezadmin-night-build"): fresh `/tmp` clone,
 
 **For next run:** the run 256 follow-ups still apply (EWS after 1 Oct 2026, Publisher, OSLicense KB, PIM Iteration 2 after 28 Oct). Remaining candidate: the Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline shared vs AVD pooled). New candidates: the macOS LOB (managed PKG) MDM path in more depth, and Intune Win32 app supersedence/dependency chains, if `App-Deployment-A.md` doesn't already cover them in depth (grep first).
 
+
+## New Topics — Intune Win32 app supersedence & dependency chains (run 258)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/Win32AppRelationships-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/Win32AppRelationships-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-Win32AppRelationshipAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 258, scheduled task "ezadmin-night-build"): fresh `/tmp` clone, `git checkout master`, HEAD `64484d9` (run 257). The queue was empty, so Expansion Rules applied, using run 257's candidate list. A grep found that `App-Deployment-A.md` covered supersedence/dependencies in just 9 lines (Phase 4), and one of those lines was inaccurate: it said the old app is always uninstalled, which is only true for *replace*. This run built a dedicated topic from Microsoft Learn *Add Win32 app supersedence* (updated Apr 2026, fetched this run) plus the Graph `mobileAppRelationship` payload shape (Peter van der Woude). It covers update vs replace and the detection gate, no auto-targeting for superseding apps, chains collapsing to the head, the 11-node graph / 10-superseding-app limits, dependencies (detect vs autoInstall, 3×5-min retry, 100-app graph, no targeting needed), the three documented dependency↔supersedence interaction patterns (conflict, no-go, orphan), Available auto-update consent rules, the AVD multi-session system-context limit, and the Mobile apps: Relate RBAC permission. The companion script builds supersedence connected components and dependency trees from Graph, and flags GraphNearLimit/AtLimit, UntargetedSuperseding, DependencyOnSuperseded, ReplaceOrphansDeps, DependencyGraphLarge and DetectOnlyDependency. It also added a correction/pointer line to `App-Deployment-A.md` Phase 4, plus rows in `Intune/_AGENT.md` and `AGENT_INDEX.md`._
+
+## ⚠️ Skipped Items / Notes (run 258)
+- **Process incident, no repo impact:** a stale, non-writable `/tmp/ez` directory (owned by `nobody`, left by an earlier run) survived `rm -rf`. The fresh clone into it silently failed, so this run first researched and drafted **VBScript deprecation** and **osVersion filter migration** against a run-251-era tree. Both topics had already been built by runs 252/253. The duplicate drafts were **discarded and never committed**, and no existing file was touched. **Standing fix for future runs:** clone into a unique directory name (e.g. `/tmp/ez<run#>`), and confirm `git log -1` shows the expected recent HEAD before any gap-check.
+- Also confirmed: the remote default branch (`HEAD`/`main`) still points to the January 2026 pre-restructure commit `0499626`. `git clone` checks out `main` by default, so a `git checkout master` is required. Consider switching the GitHub default branch to `master` (a user decision, not changed here).
+- The claim that supersedence is unsupported during the Enrollment Status Page comes from older Learn text and community reports. The current Learn page doesn't restate it, so the runbooks treat it as a test-first caveat.
+- The `win32LobApp` roll-up counters (`dependentAppCount`, `supersedingAppCount`, `supersededAppCount`) and the `isof('microsoft.graph.win32LobApp')` filter aren't confirmed against a live tenant this run. The script falls back to client-side `@odata.type` filtering, and `-ForceAllRelationships` bypasses the counters.
+- There's still no PowerShell parser in the sandbox. `Get-Win32AppRelationshipAudit.ps1` passed a bracket-balance check and was hand-reviewed for StrictMode (guarded empty-array indexing, no enumerate-while-modify) and 5.1 compatibility. Treat its first real run as validation.
+
+**For next run:** run 256/257 follow-ups still apply (EWS after 1 Oct 2026, Publisher, OSLicense availability on Server, PIM Iteration 2 after 28 Oct, re-verify 0x8A15xxxx codes). Remaining candidates: Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline/Flex shared vs AVD pooled; grep `SharedPC-A.md`, `Flex-A.md` first, since this may fit better as a decision section than a new topic) and a deeper macOS LOB (managed PKG, MDM-channel) path._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 257, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 258, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
