@@ -5593,6 +5593,27 @@ _2026-09-25 (run 266, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: Tunnel for MAM (if demand), Connected Cache in ConfigMgr, Windows Wi-Fi/Wired Intune custom XML profiles as a sub-section if tickets appear, cloud RADIUS options comparison (vendor-neutral) if asked._
 
+
+## New Topics — Exchange Online GAL & Offline Address Book + RDS Licensing (run 267)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/AddressBook-OAB-B.md` | ✅ | auto-build |
+| `M365/Exchange/AddressBook-OAB-A.md` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-AddressBookDiagnostics.ps1` | ✅ | auto-build |
+| `Windows/Troubleshooting/RDSLicensing-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/RDSLicensing-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-RDSLicensingDiagnostics.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 267, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169 git state, `.git/index.lock` present, missing runs 265-266 files) — worked from a fresh `/tmp` clone of `master`, HEAD `9fdc854` (run 266), then synced changed files back to the mount. Queue empty → Expansion Rules. Keyword gap sweep: "Offline Address Book" (2 passing mentions), "Global Address List" (1), IMCEAEX/X500 (only migration context) and RD Licensing / CALs (only passing mentions in RDSDeadlockSept2026) had no dedicated coverage — both are very common MSP tickets. Sources checked live: EXO OAB generation cadence (~8 h) + Outlook ~24 h download; Learn "Troubleshoot RDS licensing" guidance (WMI checks, 120-day grace). Updated `M365/Exchange/_AGENT.md` (3 rows, 3 entry points), `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 267)
+- `Get-OfflineAddressBook` `LastTouchedTime` availability in EXO not re-verified; script reads it StrictMode-safely and reports blank if absent. `DownloadOAB` policy value path (`HKCU\Software\Policies\Microsoft\Office\16.0\Outlook\Cached Mode`) stated from established Office policy docs, not re-read.
+- Per Device CAL expiry window (52-89 days), temp CAL 90 days and `Win32_TSLicenseKeyPack`/`Win32_TSIssuedLicense` property names stated from established docs; not re-read this run. RDS Learn "track CALs" and "rds-client-access-license" URLs not re-fetched.
+- Grace-period registry reset documented only as explicitly unsupported/non-compliant.
+- No PowerShell parser in the sandbox; both scripts bracket-checked with Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: RD Gateway (only 2 passing mentions — CAP/RAP, cert, UDP 3391), Exchange hybrid OAB/GAL split (on-prem OAB vs EXO) if tickets appear, Tunnel for MAM, Connected Cache in ConfigMgr.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 266, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 267, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

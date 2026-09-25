@@ -44,6 +44,9 @@ Covers:
 | `TransportRules-B.md` | Hotfix: rule doesn't fire, wrong rule fires, priority/StopRuleProcessing conflicts, DLP overlap |
 | `TransportRules-A.md` | Deep dive: ETR evaluation order, condition/exception AND/OR logic, multi-rule action stacking, DLP boundary |
 | `Outlook-Client-B.md` | Hotfix: profile/Autodiscover failures, Disconnected/Trying-to-connect/Needs-Password loops, OST corruption, COM add-in conflicts, New Outlook cache issues |
+| `AddressBook-OAB-B.md` | Hotfix: user missing from / wrongly visible in the GAL, classic Outlook OAB lag (Cached Mode), hide-from-GAL SOA (cloud vs dir-synced `msExchHideFromAddressLists`), AddressListMembership re-stamp, ABP scoping, `IMCEAEX` autocomplete NDRs → X500 |
+| `AddressBook-OAB-A.md` | Deep dive: live GAL vs OAB vs autocomplete data sources, EXO OAB generation (~8 h, not admin-triggerable) + Outlook ~24 h download, address list stamping, ABP design, LegacyExchangeDN/X500 mechanics |
+| `Scripts/Get-AddressBookDiagnostics.ps1` | Read-only: per-recipient hidden/SOA/AddressListMembership/X500, viewer ABP scoping, OAB LastTouchedTime, local OAB cache freshness + `DownloadOAB` policy (-ClientOnly on the user's PC) |
 | `Outlook-Client-A.md` | Deep dive: classic Outlook vs. New Outlook architecture split, Autodiscover v2/v1/SCP resolution chain, Cached Exchange Mode/OST model, modern-auth token caching |
 | `DirectSendAbuse-B.md` | Hotfix: unauthenticated Direct Send abuse — confirm RejectDirectSend state, spot a spoofed message via headers, harden SPF, migrate legitimate dependents |
 | `DirectSendAbuse-A.md` | Deep dive: why Direct Send bypasses the intra-org SPF exemption, the 2025–2026 abuse campaign and Microsoft's architectural-limitation stance, RejectDirectSend mechanics, KQL detection query |
@@ -96,6 +99,9 @@ Covers:
 - "Two transport rules conflicting / wrong one firing / priority order" → `TransportRules-B.md` (Fix 3/4)
 - "Transport rule and DLP policy both acting on same message" → `TransportRules-B.md` (Fix 6)
 - "Fleet audit of all transport rules for conflict risks" → `Scripts/Get-TransportRuleConflictAudit.ps1`
+- "New user not showing in Outlook address book / GAL", "hidden user still visible" → `AddressBook-OAB-B.md` (ask which client first — classic Outlook Cached Mode = OAB lag)
+- "Sending to a colleague bounces with IMCEAEX" after mailbox re-create/migration → `AddressBook-OAB-B.md` (Fix 5 — X500)
+- "Some users can't see other company's users in the GAL" → `AddressBook-OAB-B.md` (Fix 4 — ABP) / `Security/Purview/InformationBarriers-B.md`
 - "Outlook shows Disconnected / Trying to connect / Needs Password" → `Outlook-Client-B.md`
 - "Can't create Outlook profile / new profile builds as IMAP" → `Outlook-Client-B.md` (Fix 1)
 - "Outlook folders won't expand, search broken, random crashes" → `Outlook-Client-B.md` (Fix 5 — OST rebuild)
