@@ -176,3 +176,5 @@ Requested next step:                          <fill in>
 - Stopping collection is **category-level only** — there's no supported way to remove a single property from an active category while leaving the rest of that category collecting. Plan profile structure (grouping related keys into their own profile) around this limitation from the start.
 - Deleting a properties catalog profile doesn't immediately erase history — last-collected data remains visible in Device Inventory for up to 28 days afterward.
 - Registry key inventory data is accessible through the same **Managed Devices/Read** permission as all other Device Inventory data — Microsoft's own documentation frames the risk of over-broad read access exposing missed-sensitive configuration data as an "accepted risk" organizations should review before enabling broad collection, not a solved problem.
+
+> **See also (run 261):** Properties catalog is the Windows data source for *device query for multiple devices*; for querying collected inventory (and live single-device query) see `DeviceQuery-B.md` / `-A.md`.

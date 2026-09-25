@@ -96,6 +96,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Troubleshooting/MCPFirewall-B.md` / `-A.md` | Hotfix + deep dive: Global Secure Access MCP Firewall (Preview) — TLS-inspection hard prerequisite, MCP policy/filtering-profile/Conditional-Access linking chain, server/primitive-level rule scoping, priority-ordered first-match-wins evaluation, Generative AI Insights discovery workflow |
 | `Scripts/Get-MCPFirewallPolicyAudit.ps1` | Read-only MCP firewall readiness/chain audit — Internet Access profile state, TLS inspection manual-check flag, MCP filtering policy/rule inventory, filtering-profile link check, Conditional Access enforcement-vs-report-only cross-check |
 | `Troubleshooting/CrossTenant-B.md` / `-A.md` | Hotfix + deep dive: XTAS default/partner policies, B2B Direct Connect, cross-tenant sync |
+| `Troubleshooting/TenantRestrictionsV2-B.md` / `-A.md` | Hotfix + deep dive: tenant restrictions v2 — external-identity→external-app control in cross-tenant access settings; default vs partner policies (MSA tenant app-only granularity), `sec-Restrict-Tenant-Access-Policy` signal via Windows GPO/CSP (auth + data plane), proxy (auth plane only) or GSA universal TR; AADSTS5000211; App Control AppId tagging + firewall for Chrome/Firefox/.NET; v1→v2 migration |
 | `Troubleshooting/EntraDomainServices-B.md` / `-A.md` | Hotfix + deep dive: managed domain (Entra DS) health, one-way sync architecture, password hash projection, flat OU model, LDAPS, VNet peering/DNS |
 | `Troubleshooting/AccessPackages-B.md` / `-A.md` | Hotfix + deep dive: entitlement management access package assignment/delivery failures, approval workflow, connected org sync |
 | `Troubleshooting/AppProxy-B.md` / `-A.md` | Hotfix + deep dive: Microsoft Entra Application Proxy connector health, pre-authentication failures, backend connectivity |
@@ -123,6 +124,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 | `Scripts/Get-EntraDeviceHealth.ps1` | Device join state, PRT, compliance across fleet |
 | `Scripts/Get-EntraConnectSyncErrors.ps1` | Export sync errors, attribute conflicts |
 | `Scripts/Get-CrossTenantAccessAudit.ps1` | XTAS default + partner policy audit, Direct Connect mismatch, MFA/compliance trust gaps |
+| `Scripts/Get-TenantRestrictionsV2Audit.ps1` | TRv2 default/partner policy audit (policy ID to deploy, over-broad partner allows, MSA entry) + optional local Windows payload/ID match, event count, WinHTTP proxy |
 | `Scripts/Get-GlobalSecureAccessHealth.ps1` | Traffic forwarding profile state, Private Access connector/group health, app-to-connector mapping |
 | `Scripts/Get-HybridJoinDiagnostics.ps1` | Device-local HAADJ chain check: domain join, SCP, DRS reachability, scheduled task, device cert |
 | `Scripts/Get-EntraDomainServicesHealth.ps1` | Entra DS managed domain health: replica set status, LDAPS cert expiry, VNet peering reciprocity, DNS config, optional per-user password-hash-sync readiness |
@@ -231,6 +233,7 @@ Get-MgAuditLogSignIn -Filter "userPrincipalName eq 'user@contoso.com'" -Top 10 |
 - "User randomly signed out mid-session" / "session ended after password reset or VPN change" → `Troubleshooting/CAE-B.md`
 - "Traffic not tunneling / Private Access app unreachable / GSA client won't connect" → `Troubleshooting/GlobalSecureAccess-B.md`
 - "Guest from partner org keeps getting MFA prompts / Teams Shared Channel not available to external member" → `Troubleshooting/CrossTenant-B.md`
+- "User gets AADSTS5000211 signing into another company's tenant" / "TRv2 configured but nothing is blocked" / "can't reach Microsoft Learn with personal account after tenant restrictions" → `Troubleshooting/TenantRestrictionsV2-B.md`
 - "Device domain-joined but stuck in Entra as Pending / dsregcmd shows AzureAdJoined: NO" → `Troubleshooting/HybridJoin-B.md` + `Scripts/Get-HybridJoinDiagnostics.ps1`
 - "Can't domain-join a VM to our managed domain / LDAPS broken / new cloud-only user can't log into the domain-joined server" → `Troubleshooting/EntraDomainServices-B.md` + `Troubleshooting/EntraDomainServices-A.md` (architecture: one-way sync, flat OU model, VNet peering) + `Scripts/Get-EntraDomainServicesHealth.ps1`
 - "Access package request stuck / approval not delivering the group membership" → `Troubleshooting/AccessPackages-B.md`

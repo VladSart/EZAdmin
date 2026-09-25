@@ -383,3 +383,5 @@ Steps already tried:
 - **Sign-in log filtering.** Entra sign-in logs let you filter by `Cross-tenant access type` — use this to instantly isolate all external/inbound authentication events without scrolling through millions of internal sign-ins. The `Correlation ID` from the error screen is your fastest path to the exact failed sign-in event.
 
 - **Tenant ID lookup.** You can find any Microsoft tenant's ID from their domain using the OpenID Connect metadata endpoint: `https://login.microsoftonline.com/<domain>/.well-known/openid-configuration` — the `issuer` field contains the tenant ID. This is public and requires no authentication.
+
+> **See also (run 261):** Tenant restrictions v2 — control over *external* accounts reaching *external* apps from your devices/network — is a separate quadrant of cross-tenant access settings: `TenantRestrictionsV2-B.md` / `-A.md`.

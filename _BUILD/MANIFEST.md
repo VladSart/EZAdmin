@@ -5472,6 +5472,29 @@ _2026-09-25 (run 260, scheduled task "ezadmin-night-build"): fresh uniquely-name
 
 **For next run:** run 256–259 follow-ups still apply (EWS after 1 Oct 2026, Publisher post-retirement behaviour, OSLicense availability on Server, PIM Iteration 2 after 28 Oct, re-verify 0x8A15xxxx codes). Watch for a PITR **Settings Catalog** entry and for **Intune remote-initiated restore** ("Intune recovery", announced as planned at GA), and update PointInTimeRestore-A/B when either lands. Re-check PITR defaults when 26H2 ships. Remaining candidate: Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline/Flex shared vs AVD pooled; grep `SharedPC-A.md`, `Flex-A.md` first)._
 
+
+## New Topics — Tenant Restrictions v2 + Intune Device Query (run 261)
+| File | Status | Assigned |
+|------|--------|---------|
+| `EntraID/Troubleshooting/TenantRestrictionsV2-B.md` | ✅ | auto-build |
+| `EntraID/Troubleshooting/TenantRestrictionsV2-A.md` | ✅ | auto-build |
+| `EntraID/Scripts/Get-TenantRestrictionsV2Audit.ps1` | ✅ | auto-build |
+| `Intune/Troubleshooting/DeviceQuery-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/DeviceQuery-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-DeviceQueryReadiness.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 261, scheduled task "ezadmin-night-build"): fresh uniquely-named `/tmp` clone, `git checkout master`, HEAD `5ccee9f` (run 260). Queue empty (only the Status Key legend matches ⬜), so Expansion Rules applied. Gap check by repo-wide grep: **tenant restrictions v2** had no dedicated coverage (only licensing-table mentions in EntraSuiteLicensing and nothing in CrossTenant/Get-CrossTenantAccessAudit.ps1), and **Intune Device query** (single + multiple devices) had no runbook (three passing mentions). Built both from live-fetched sources: Learn "Set up tenant restrictions v2" (ms.date 2026-03-20, updated 2026-06-11), Learn "Policy CSP – TenantRestrictions" (ms.date 2025-03-12), Learn "Device query" and "Device query for multiple devices" (both ms.date 2026-09-01), "Advanced Analytics overview" (updated 2026-05-21), "Intune Data Platform Schema" (ms.date 2026-03-24, used to verify entity property names and the parameterised `WindowsRegistry('<key>')` form). Updated `EntraID/_AGENT.md` (2 rows, 1 entry point), `Intune/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (2 rows), and added see-also pointers at the end of `CrossTenant-B.md` and `PropertiesCatalog-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 261)
+- **Mounted working copy still stale** (HEAD at run 169, large uncommitted diff); not used for git, per the standing recommendation from runs 259–260. Everything was authored in a fresh `/tmp` clone and pushed from there.
+- **WebSearch summary error caught:** the search-engine summary described `Restrict-Access-To-Tenants`/`Restrict-Access-Context` as TRv2 headers; those are **v1**. The runbooks use the Learn page's actual v2 header (`sec-Restrict-Tenant-Access-Policy: <tenantId>:<policyGuid>`).
+- The TRv2 client payload registry **value names** under `HKLM\SOFTWARE\Policies\Microsoft\Windows\TenantRestrictions\Payload` aren't documented; the script matches tenant/policy IDs across all values instead of assuming names.
+- TRv2 Graph calls use **beta** endpoints to match Microsoft's TRv2 article; partner-entry PATCH bodies weren't live-tested.
+- Device query: Microsoft's single-device page lists aggregation functions "with summarize" but omits `summarize` from its operator table (documentation inconsistency, flagged in DeviceQuery-A). The exact Advanced Analytics SKU mapping is left to Microsoft's pricing page rather than asserted. The WNS test host (`client.wns.windows.com`) is a representative endpoint; customers with strict egress should use the full Intune network-endpoints list.
+- No PowerShell parser in the sandbox. Both scripts passed a bracket-balance check and were hand-reviewed for StrictMode/5.1 compatibility (no `$IsWindows`, guarded property reads). Treat the first real run as validation.
+
+**For next run:** run 256–260 follow-ups still apply (EWS after 1 Oct 2026, Publisher post-retirement, OSLicense on Server, PIM Iteration 2 after 28 Oct, 0x8A15xxxx re-verify, PITR Settings Catalog / Intune remote restore, 26H2 PITR defaults). Remaining candidates: Frontline shared-device sign-in comparison (grep `SharedPC-A.md`, `Flex-A.md` first); Intune **Organizational messages** (zero coverage — verify current product state first); Advanced Analytics **Device timeline / Anomalies** reports (only referenced, not covered); Teams federation controls ↔ TRv2 anonymous-join interplay if a Teams external-access runbook needs it._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 260, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 261, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
