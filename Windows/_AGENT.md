@@ -79,6 +79,7 @@ Covers:
 | `Troubleshooting/RDP-A.md` / `B.md` | Remote Desktop connection failures |
 | `Troubleshooting/SMB-A.md` / `B.md` | File share access, SMB protocol issues |
 | `Troubleshooting/SMBoverQUIC-A.md` / `B.md` | SMB over QUIC (WS2025 any edition / WS2022 Azure Edition + Windows 11) — UDP 443 TLS 1.3 transport, TCP-first client fallback, server certificate mapping + renewal-means-remap outage, SAN/no-IP rule, NTLM-in-tunnel vs KDC Proxy Kerberos, client access control (SHA256/ISSUER ACL, Block beats Grant), alternative QUIC ports, auditing events |
+| `Troubleshooting/SMBHardening-A.md` / `B.md` | SMB security-hardening fallout from Windows 11 24H2 / Windows Server 2025 defaults — signing required (24H2 in+out, WS2025 outbound), guest blocked on Pro (error 1272) and guest-cannot-sign interplay, SMB client NTLM blocking + exception list (IP/CNAME force NTLM), dialect min/max floors, client-mandated encryption, auth rate limiter (2 s per failed auth), signing/encryption audit events 31998/31999 + 3021/3022, mailslots, NetBIOS firewall rules; NAS/MFP scan-to-folder playbooks |
 | `Troubleshooting/GPO-A.md` / `B.md` | Group Policy application and conflict diagnosis |
 | `Troubleshooting/Kerberos-A.md` / `B.md` | Kerberos auth failures, NTLM fallback |
 | `Troubleshooting/NTLM-A.md` / `B.md` | NTLM auth failures, secure channel, LM level hardening |
@@ -111,6 +112,7 @@ Covers:
 | `Scripts/Get-RDPDiagnostics.ps1` | Companion script to RDP |
 | `Scripts/Get-SMBDiagnostics.ps1` | Companion script to SMB |
 | `Scripts/Get-SmbOverQuicHealth.ps1` | Companion to SMBoverQUIC — read-only, run on the file server: OS support, EnableSMBQUIC, every server certificate mapping (cert present, private key, Server Auth EKU, expiry window, name-in-SAN), unmapped newer replacement cert (renewal-not-remapped), UDP 443/alt-port listener owner, firewall rule, KDC Proxy (kpssvc/urlacl/sslcert), client access control flags + empty-ACL trap; CSV + exit code |
+| `Scripts/Get-SmbHardeningPosture.ps1` | Companion to SMBHardening — read-only, local or remoting fleet sweep: client + server hardening settings (signing, guest, BlockNTLM/exceptions, dialect min/max, RequireEncryption, auth delay, mailslots, audit switches), unsigned / SMB 2.x live sessions in both directions, optional 31998/31999/3021/3022 audit event export; flags contradictory configs (guest enabled + signing required); CSV output |
 | `Scripts/Get-FirewallDiagnostics.ps1` | Companion script to Firewall |
 | `Scripts/Get-GPOReport.ps1` | Companion script to GPO |
 | `Scripts/Get-KerberosDiagnostics.ps1` | Companion script to Kerberos |
@@ -261,6 +263,7 @@ Get-WinEvent -LogName System |
 - "Kerberos auth failing / NTLM fallback" → `Troubleshooting/Kerberos-B.md` + `Scripts/Get-KerberosDiagnostics.ps1`
 - "Can't access a file share / SMB errors" → `Troubleshooting/SMB-B.md` + `Scripts/Get-SMBDiagnostics.ps1`
 - SMB over QUIC mapping fails off-network, all remote file access broke after a cert renewal, "works in the office, not at home" on a QUIC server, KDC Proxy/NTLM prompts over QUIC, client access control denying devices → `Troubleshooting/SMBoverQUIC-B.md` (deep dive `-A.md`, audit `Scripts/Get-SmbOverQuicHealth.ps1`)
+- NAS / scanner / Samba share broke after Windows 11 24H2 or Server 2025 upgrade, error 1272 guest access blocked, 0xc000a000 invalid signature, share works by FQDN but not IP after SMB NTLM blocking, old devices fail after dialect floor → `Troubleshooting/SMBHardening-B.md` (deep dive `-A.md`, fleet audit `Scripts/Get-SmbHardeningPosture.ps1`)
 - "App or port blocked by firewall" → `Troubleshooting/Firewall-B.md` + `Scripts/Get-FirewallDiagnostics.ps1`
 - "RD Gateway server address is unreachable", "user account is not authorized to access the RD Gateway", gateway certificate expired, Event 201/301/304, MFA via NPS extension times out on RDG, black screen through gateway → `Troubleshooting/RDGateway-B.md` + `Scripts/Get-RDGatewayDiagnostics.ps1`
 - RD Web cert warning, "no resources available" on /RDWeb, desktop icon missing, feed/workspace subscription fails, HTML5 web client "unexpected server authentication certificate was received" or "couldn't connect to the gateway", `Publish-RDWebClientPackage` errors → `Troubleshooting/RDWebAccess-B.md` + `Scripts/Get-RDWebAccessDiagnostics.ps1`

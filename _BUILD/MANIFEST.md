@@ -5784,6 +5784,23 @@ _2026-09-25 (run 277, scheduled task "ezadmin-day-build"): fresh sandbox `mktemp
 
 **For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: SMB NTLM blocking / SMB signing-by-default fallout on Win 11 24H2 + WS2025 (check `SMB-A.md`/`NTLM-A.md` coverage first); Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); RDS certificate lifecycle across roles (check RDGateway/RDWebAccess first).
 
+
+## New Topic — SMB Security Hardening Fallout, Win 11 24H2 / WS2025 (run 278)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SMBHardening-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/SMBHardening-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-SmbHardeningPosture.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 278, scheduled task "ezadmin-day-build"): fresh `/tmp` clone, `git checkout master` (HEAD `34d1e80`, run 277; connected-folder mount stale at run 272 — untouched). Queue empty → Expansion Rules; took run 277's first candidate. Gap check: `SMB-A/B` only covered generic signing mismatch; no coverage of the 24H2/WS2025 default changes. Built B (7 fixes: guest 1272, can't-sign 0xc000a000, NTLM blocking exceptions, dialect floor, client RequireEncryption, rate limiter via 4625 grouping, mailslots/NetBIOS rules), A (client/server split, negotiate→session-setup→signing sequence, per-edition signing defaults, guest-cannot-sign, 5 playbooks incl. audit-first rollout and scan-to-folder), read-only fleet `Get-SmbHardeningPosture.ps1`. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), see-also in `SMB-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 278)
+- Web-verified (Microsoft Learn): 24H2 Pro/Ent/Edu require outbound+inbound signing, WS2025 outbound only; guest packets rejected under signing; Pro 24H2 guest blocked; `EnableSecuritySignature` ignored for SMB2+; audit cmdlet switches and events 31998/31999 (SMBClient/Audit), 3021/3022 (SMBServer/Audit); rate limiter default 2 s on failed NTLM/local-KDC auth; client NTLM blocking GPO names, exception list (IP/NetBIOS/FQDN), `NET USE /BLOCKNTLM`, `New-SmbMapping -BlockNTLM`; dialect min/max; client RequireEncryption; mailslots deprecated; NetBIOS ports dropped from built-in rules.
+- Not web-verified (established docs/field practice): error 1272 wording, `0xc000a000` for signature failures, `EnableMailslots` and `InvalidAuthenticationDelayTimeInMs` property names (script reads all properties defensively), dialect enum strings `SMB202..SMB311`, `AllowInsecureGuestAuth` registry name, upgrade-inherits-explicit-policy behaviour. The Tech Community NAS article returned an empty body.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (111/63/31 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); RDS certificate lifecycle across roles (check RDGateway/RDWebAccess first); Kerberos/NTLM for SMB aliases (`netdom computername` alternate names) if not covered in `Kerberos-A.md`.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 277, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 278, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
