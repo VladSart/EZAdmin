@@ -5683,6 +5683,24 @@ _2026-09-25 (run 271, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). RDS family now includes Session Host. Remaining candidates: Exchange hybrid OAB/GAL split; Connected Cache in ConfigMgr; RemoteApp publishing/file-type associations (only if tickets appear).
 
+
+## New Topics — Windows Server Backup + Component Store corruption (run 272)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/WindowsServerBackup-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/WindowsServerBackup-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-WindowsServerBackupHealth.ps1` | ✅ | auto-build |
+| `Windows/Troubleshooting/ComponentStore-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/ComponentStore-A.md` | ⬜ | queued for next run |
+
+_2026-09-25 (run 272, scheduled task "ezadmin-day-build"): fresh `/tmp` clone of `master` (HEAD `8392d6e`, run 271). Queue empty → Expansion Rules. Gap check by grep: `wbadmin` only appeared inside AD-BackupRestore (System State for DCs); `WindowsBackup-A/B` + `Get-WindowsBackupAudit.ps1` cover the *client* Windows Backup for Organizations, not the server feature. DISM `/RestoreHealth` appeared only as a one-liner in `Update to Latest A.md`, no component-store runbook. Built WSB trio (VSS-requestor model, critical-volume computation, target version semantics, VSS full vs copy, catalog/restore playbooks) and ComponentStore-B (CheckHealth vs ScanHealth, WSUS repair-source `RepairContentServerSource`, matching-build sources, `0x800f0831`, pending.xml, not-corruption causes). Updated `Windows/_AGENT.md` (3 rows, 2 entry points) and `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 272)
+- Not web-verified this run (stated from established docs/field practice): WSB event IDs beyond 1/4/5/14/517/521 were deliberately omitted rather than guessed; HRESULT meanings used are `0x80780119` (insufficient shadow storage) and `0x807800C5` (failure preparing backup image). `WBPolicy`/`WBBackupTarget` property names read defensively in the script.
+- No PowerShell parser in sandbox; script bracket-balanced via Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** build `ComponentStore-A.md` (queued ⬜ above) + optional `Get-ComponentStoreHealth.ps1`. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Other candidates: Task Scheduler troubleshooting (13 passing mentions, no runbook); RemoteApp publishing/file-type associations.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 271, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 272, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
