@@ -5614,6 +5614,23 @@ _2026-09-25 (run 267, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: RD Gateway (only 2 passing mentions — CAP/RAP, cert, UDP 3391), Exchange hybrid OAB/GAL split (on-prem OAB vs EXO) if tickets appear, Tunnel for MAM, Connected Cache in ConfigMgr.
 
+
+## New Topics — RD Gateway (run 268)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RDGateway-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/RDGateway-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-RDGatewayDiagnostics.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 268, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169 git state, ~459 dirty paths) — worked from a fresh `mktemp -d` clone of `master`, HEAD `01ccf14` (run 267). Queue empty → Expansion Rules. Took run 267's top candidate after grep confirmed RD Gateway had only passing mentions (RDP-A, RDSLicensing-A, RDSDeadlockSept2026-A, AVD-Connectivity-B). Built the RD Gateway topic: CAP/RAP/resource event chain (200/201/301/302/303/304), cert vs HTTP.sys binding, local vs central NPS CAP store, NPS Extension for Entra MFA timeout, WAF/LB affinity, UDP 3391, hardening, export/rebuild. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), and a pointer in `RDP-A.md`._
+
+## ⚠️ Skipped Items / Notes (run 268)
+- One live search (RD Gateway event IDs 200/201/301/302/304 semantics — Learn previous-versions pages + RDPSoft). `RDS:\GatewayServer` provider paths (`SSLCertificate\Thumbprint`, `CentralCAPEnabled`, CAP `Status`/`UserGroups`/`AuthMethod`, RAP `ComputerGroupType`/`ComputerGroup`/`PortNumbers`), CAP AuthMethod and RAP group-type enumerations, `Win32_TSGatewayConnection`, and the UDP transport provider path are stated from established docs, not re-read; the script reads the UDP setting defensively and reports `unknown` if the path differs.
+- Error code 23003 for CAP failures is a common field value, not an exhaustive mapping. MFA extension log name (`AuthNOptCh`) stated from Entra NPS-extension docs, not re-read.
+- No PowerShell parser in the sandbox; script bracket-checked with Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: RD Web Access / RD Web Client (HTML5) feed + publishing, RD Connection Broker HA (SQL) as siblings of RDGateway/RDSLicensing; Exchange hybrid OAB/GAL split; Tunnel for MAM; Connected Cache in ConfigMgr.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 267, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 268, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

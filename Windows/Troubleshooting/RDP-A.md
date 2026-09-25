@@ -152,7 +152,7 @@ User RDP Client (mstsc.exe / RDP app)
 | Slow / laggy graphics | RemoteFX disabled, low bandwidth, wrong color depth | Check RDP-Tcp color depth, GFX policy |
 | "The terminal server has exceeded the maximum number of allowed connections" | Max 2 concurrent sessions on non-RDS Windows | Shadow session or log off idle sessions |
 | "Remote Desktop Services is not enabled" | fDenyTSConnections=1 | Registry or SystemPropertiesRemote |
-| RD Gateway 401 error | Gateway NPS policy rejecting user | NPS event log on gateway |
+| RD Gateway 401 error | Gateway NPS policy rejecting user | NPS event log on gateway — full gateway coverage in `RDGateway-A.md` |
 | Loopback connection refused | loopback check (DisableLoopbackCheck) | Registry fix or use FQDN |
 
 ---
