@@ -4691,7 +4691,7 @@ _2026-09-02 (run 210, scheduled task "ezadmin-day-build"): started this run from
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 251, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 255, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ---
 
@@ -4988,7 +4988,7 @@ _2026-09-03 (run 229, scheduled task "ezadmin-night-build"): started with the st
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 251, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 255, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ## New Topic — AD FS DKM Container ACL Hardening / CVE-2026-56155 (run 230)
 | File | Status | Assigned |
@@ -5353,6 +5353,23 @@ _2026-09-25 (run 254, scheduled task "ezadmin-night-build"): fresh uniquely name
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). Re-check the user-list-approleassignments / user-list-licensedetails Learn permission tables for MC1470871 alignment, and update ReadBasicAllScopeChange-A Playbook 3 if they change. After 28 Oct 2026, record the observed PIM Iteration 2 failure status in PIMIteration2Retirement-A/B and check whether AzGovViz shipped its Iteration 3 fix. Gap scans now show no B-without-A pairs; the next gap class is folders without scripts (for example `DFS/Troubleshooting/*` subfolders), so check `DFS/Scripts` first._
 
+
+## New Topic — Smart App Control (run 255)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SmartAppControl-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/SmartAppControl-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-SmartAppControlStatus.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 255, scheduled task "ezadmin-night-build"): This run overlapped with runs 252–254. It first used a stale shared `/tmp/ez` clone (run 251) and drafted a VBScript-deprecation set plus a PIMIteration2Retirement-A gap fill. A fresh uniquely named clone (`master` HEAD `d5d68f2`, run 254) showed both already existed, so those drafts were discarded without overwriting anything. Note: the remote's default branch is `main`, which is an old unrelated history. Always `git checkout master` after cloning. Expansion Rules then applied. A repo-wide filename/content check found **Smart App Control** uncovered: 6 incidental mentions, no runbook. Sources: Topedia (26 Apr 2026, links KB5083769 and quotes the updated Microsoft SAC FAQ on MST transforms), CIAOPS (16 Apr 2026), HTMD/Anoop search summary (managed devices expected Off, pointed at App Control for Business). Updated `Windows/_AGENT.md` (2 rows, 1 entry point) and `AGENT_INDEX.md` (1 row)._
+
+## ⚠️ Skipped Items / Notes (run 255)
+- The Microsoft Support SAC FAQ and KB5083769 pages weren't fetched directly (provenance restriction). Their content is quoted via Topedia. The `Get-MpComputerStatus` `SmartAppControlState`/`SmartAppControlExpiration` properties and the CI event message regex for the blocked-file path aren't verified on a live device. The script treats both as optional.
+- There's still no PowerShell parser in the sandbox. `Get-SmartAppControlStatus.ps1` was hand-reviewed for StrictMode and 5.1 compatibility. Treat the first real run as validation.
+- Candidate not built this run: **Windows Admin Center** (gateway cert/WinRM/CredSSP/extension troubleshooting, plus WAC-in-Azure via Arc). The repo has only 3 incidental mentions, so it's a strong next topic. Grep first.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). After 28 Oct 2026, record the observed PIM Iteration 2 failure status. Candidates: Windows Admin Center, Shared PC / shared multi-user device mode (zero coverage), Exchange admin center "Other features" page retirement (small, probably a note in an existing file)._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 254, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 255, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
