@@ -5451,6 +5451,27 @@ _2026-09-25 (run 259, scheduled task "ezadmin-night-build"): cloned fresh into a
 
 **For next run:** run 256–258 follow-ups still apply (EWS after 1 Oct 2026, Publisher, OSLicense availability on Server, PIM Iteration 2 after 28 Oct, re-verify 0x8A15xxxx codes). Remaining candidate: Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline/Flex shared vs AVD pooled; grep `SharedPC-A.md`, `Flex-A.md` first, since it may fit better as a decision section). New candidate: an admin-side Graph audit script for macOS LOB objects (childApps hygiene, missing logos, `installAsManaged`) if `Get-VPPAppLicenseAudit.ps1`/`Get-AppSettingsAudit.ps1` don't already cover it._
 
+
+## New Topics — Windows 11 point-in-time restore + macOS LOB app inventory audit script (run 260)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/PointInTimeRestore-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/PointInTimeRestore-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-PointInTimeRestoreReadiness.ps1` | ✅ | auto-build |
+| `macOS/Scripts/Get-MacLOBAppInventoryAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 260, scheduled task "ezadmin-night-build"): fresh uniquely-named `/tmp` clone, `master` HEAD `0a9f92f` (run 259). The mount is still stale (its `.git/index.lock` from 18 Aug can't be deleted from the sandbox, and the delete-permission request was auto-declined in this unattended run), so it wasn't used for git. A shared `/tmp/ez251` directory owned by another process was found and left alone. The queue was empty, so Expansion Rules applied. (1) **Point-in-time restore (PITR)**: a repo-wide grep found zero coverage. It's GA since June 2026 and complements the existing QMR topic (same `Recovery` CSP). Sources read in full: Learn "Point-in-time restore for Windows" (ms.date 23 Jun 2026), Learn "Recovery CSP" (updated 24 Jun 2026), Microsoft Support end-user page (ms.date 2 Jul 2026), Interian (Driek Desmet, 23 Sep 2026) for Intune custom-profile practice. The Windows IT Pro Blog GA post returned metadata only (title and date confirmed, 22 Jun 2026). The Settings Catalog absence comes from community sources (Wolkenman Aug 2026, Interian Sept 2026) and is labelled as such. (2) **macOS LOB inventory audit script**: run 259's flagged candidate. MacLOBApps-A had only an inline Graph snippet, and neither `Get-VPPAppLicenseAudit.ps1` nor `Get-AppSettingsAudit.ps1` covers LOB/PKG/DMG app objects. Updated `Windows/_AGENT.md` (1 domain bullet, 2 rows, 3 entry points), `macOS/_AGENT.md` (1 row, 1 entry point), `AGENT_INDEX.md` (1 new row, 1 row extended).
+
+## ⚠️ Skipped Items / Notes (run 260)
+- **Edition-scope conflict (flagged, not resolved):** the Recovery CSP lists every PointInTimeRestore node for Pro/Enterprise/Education/IoT, while the Learn configuration page says frequency and retention are Enterprise-only. B/A tell engineers to treat them as Enterprise-only and pilot-verify on Education.
+- **Post-restore secure-channel / Windows LAPS / BitLocker re-escrow guidance is engineering inference** from Microsoft's documented "passwords, certificates, and keys" revert statement. It's not a Microsoft-documented PITR known issue, and both runbooks label it that way. Confirm in a pilot restore.
+- The PITR WMI bridge class name isn't documented, so `Get-PointInTimeRestoreReadiness.ps1` discovers it dynamically (`root\cimv2\mdm\dmmap`, `*Recovery*PointInTimeRestore*`) and reports "class not found" otherwise. VSS doesn't record which client made a shadow copy, so the script's restore point count includes System Restore and third-party shadows. The Settings UI stays authoritative.
+- `Get-MacLOBAppInventoryAudit.ps1` parses `minimumSupportedOperatingSystem` defensively (boolean `vXX_Y` keys). Beta property shapes for `macOSPkgApp`/`macOSDmgApp` weren't live-tested.
+- There's still no PowerShell parser in the sandbox. Both new `.ps1` files passed a bracket-balance check (the one `(`/`)` difference in the macOS script is an apostrophe inside a double-quoted string, a checker false positive) and were hand-reviewed for StrictMode and 5.1 compatibility. Treat the first real run as validation.
+- **Mounted working tree needs a local fix by the user:** delete `.git/index.lock` in the local EzAdmin-GitHub folder (it dates from 18 Aug), then run `git fetch && git reset --hard origin/master` (after saving anything local you want to keep). It's about 90 commits behind and shows ~387 stale local changes.
+
+**For next run:** run 256–259 follow-ups still apply (EWS after 1 Oct 2026, Publisher post-retirement behaviour, OSLicense availability on Server, PIM Iteration 2 after 28 Oct, re-verify 0x8A15xxxx codes). Watch for a PITR **Settings Catalog** entry and for **Intune remote-initiated restore** ("Intune recovery", announced as planned at GA), and update PointInTimeRestore-A/B when either lands. Re-check PITR defaults when 26H2 ships. Remaining candidate: Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline/Flex shared vs AVD pooled; grep `SharedPC-A.md`, `Flex-A.md` first)._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 259, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 260, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
