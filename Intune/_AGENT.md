@@ -66,6 +66,7 @@ Covers:
 | `Scripts/Get-OSVersionFilterMigrationAudit.ps1` | Read-only (beta Graph) inventory of filters using deprecated `osVersion`, per-clause draft `operatingSystemVersion` translations (Translated/Review/Manual), mobile Available-app known-issue flag, optional assignment usage via `payloads`, `-TenantId` for MSP/GDAP |
 | `Troubleshooting/GP-to-CSP-B.md` / `-A.md` | Hotfix / deep dive: Group Policy Analytics migration to CSP, coverage gaps |
 | `Troubleshooting/Kiosk-B.md` / `-A.md` | Hotfix / deep dive: Kiosk/Assigned Access configuration and lockdown issues |
+| `Troubleshooting/SharedPC-B.md` / `-A.md` | Hotfix / deep dive: Shared PC mode (SharedPC CSP) on shared/multi-user Windows devices. Covers the parameters-then-action model (values changed after `EnableSharedPCMode` don't apply), Account Manager deletion policy 0/1/2 with the DiskLevelDeletion 25% / DiskLevelCaching 50% band, the emergency delete at half the threshold, the maintenance-window/power dependency, SID exemptions, the `AccountModel` guest-only CSP default, the plain mode disabling OneDrive vs `EnableSharedPCModeWithOneDriveSync` (Win11 22621+), and NodeValues/AccountManagement/SharedPCSetup.log diagnostics |
 | `Troubleshooting/LAPS-B.md` / `-A.md` | Hotfix / deep dive: Windows LAPS rotation/retrieval failures, legacy LAPS conflicts |
 | `Troubleshooting/LAPS-Migration-B.md` / `-A.md` | Hotfix / deep dive: migrating FROM legacy Microsoft LAPS TO Windows LAPS — immediate vs. side-by-side coexistence paths, the silent legacy-emulation-mode precedence behavior, dual-account requirement, legacy software removal — distinct from `LAPS-A/B.md`'s steady-state operation scope |
 | `Troubleshooting/Managed-Apps-B.md` / `-A.md` | Hotfix / deep dive: managed app (Win32/LOB/VPP) deployment health |
@@ -112,6 +113,7 @@ Covers:
 | `Scripts/Get-FeatureUpdateDeploymentStatus.ps1` | Local TargetReleaseVersion/safeguard-hold/GPO-conflict check + fleet-wide Feature Update Profile status |
 | `Scripts/Get-GPtoCSPCoverageReport.ps1` | Fleet-wide Group Policy Analytics coverage report via Graph |
 | `Scripts/Get-KioskDeviceHealthReport.ps1` | Device-local health snapshot for Kiosk/Assigned Access devices |
+| `Scripts/Get-SharedPCModeStatus.ps1` | Read-only per-device Shared PC audit: edition/build, SharedModeSettings.IsEnabled, effective NodeValues, desired MDM_SharedPC values compared with effective ones (SYSTEM context), risk flags (guest-only AccountModel, OneDrive-off mode, Account Manager off, inverted thresholds), disk band, exemption SID resolution, per-profile deletion eligibility, and SharedPCSetup.log errors. CSV plus optional zip |
 | `Scripts/Get-LAPSPasswordStatus.ps1` | Audit LAPS rotation/retrieval status + legacy LAPS conflict check |
 | `Scripts/Get-LAPSMigrationStatus.ps1` | Classifies a device's legacy-vs-Windows-LAPS migration state (WindowsLapsActive / LegacyLapsActive / EmulationMode / EmulationSuppressed); optional `-ADSweep` for fleet-wide legacy/modern AD attribute progress reporting |
 | `Scripts/Get-PlatformScriptRunStatus.ps1` | IME health locally and/or fleet-wide Platform Script run status via Graph |
@@ -178,6 +180,7 @@ Covers:
 - "Can't use osVersion in a new filter" / "migrate filters to operatingSystemVersion" / new version filter matches 0 or too many devices → `Troubleshooting/FilterOSVersionMigration-B.md` + `Scripts/Get-OSVersionFilterMigrationAudit.ps1`
 - "Migrating GPOs to CSP / need coverage gap report" → `Troubleshooting/GP-to-CSP-B.md` + `Scripts/Get-GPtoCSPCoverageReport.ps1`
 - "Kiosk device not locking down / Assigned Access broken" → `Troubleshooting/Kiosk-B.md` + `Scripts/Get-KioskDeviceHealthReport.ps1`
+- "Shared/hot-desk/lab PC profiles aren't being deleted" / "a user's profile vanished on the shared PC" / "OneDrive doesn't work in shared PC mode" / "changed Shared PC thresholds in Intune but nothing happened" → `Troubleshooting/SharedPC-B.md` + `Scripts/Get-SharedPCModeStatus.ps1` (run as SYSTEM for the desired-vs-effective comparison); deep dive `SharedPC-A.md`
 - "Platform script (PowerShell) not running on device" → `Troubleshooting/Platform-Scripts-B.md` + `Scripts/Get-PlatformScriptRunStatus.ps1`
 - "Proactive Remediation not detecting/fixing issue" → `Troubleshooting/Remediations-B.md` + `Scripts/Get-RemediationRunHistory.ps1`
 - "Admin can't see/manage a device they should (or can see one they shouldn't)" → `Troubleshooting/ScopeTags-B.md` + `Scripts/Get-ScopeTagRBACAudit.ps1`

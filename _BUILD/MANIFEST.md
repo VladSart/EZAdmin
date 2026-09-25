@@ -5370,6 +5370,27 @@ _2026-09-25 (run 255, scheduled task "ezadmin-night-build"): This run overlapped
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). After 28 Oct 2026, record the observed PIM Iteration 2 failure status. Candidates: Windows Admin Center, Shared PC / shared multi-user device mode (zero coverage), Exchange admin center "Other features" page retirement (small, probably a note in an existing file)._
 
+
+## New Topics — Windows Admin Center + Shared PC mode (run 256)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/WindowsAdminCenter-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/WindowsAdminCenter-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-WindowsAdminCenterHealth.ps1` | ✅ | auto-build |
+| `Intune/Troubleshooting/SharedPC-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/SharedPC-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-SharedPCModeStatus.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 256, scheduled task "ezadmin-night-build"): fresh uniquely named `/tmp` clone, `git checkout master` (the remote default branch `main` is still the old unrelated history), HEAD `7506fc8` (run 255). The queue was empty, so both candidates from run 255's "For next run" note were built after a filename/content grep confirmed zero coverage. **Windows Admin Center** sources: Microsoft Learn troubleshooting, known issues, update-certificate, and What-is pages (fetched directly), the 2511 GA Tech Community post (installer builds 2.6.4.11 Feb 2026 / 2.6.7 May 2026, via search summary), and Joze Markic's WACv2 installer deep dive (the cmdlet sequence, ports 443/6600 + 6601–6610, TrustedHosts `*` Express default, the DC install failure mode). **Shared PC** sources: the SharedPC CSP reference and "Configure a shared or guest Windows device" (both fetched directly), plus the van der Woude and Skotheimsvik community guides. Cross-links were added to the existing WinRM, Kerberos, KerberosDelegation, CertificateServices, AzureArc, Kiosk, and UserProfile runbooks. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `Intune/_AGENT.md` (2 rows, 1 entry point), and `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 256)
+- The modernized-gateway overview URL `.../understand/modernized-gateway` redirects to `.../understand/what-is`, so the runbooks link the latter.
+- These points are **unverified on a live gateway**: the `Export-WACConnection` parameter names (they were assumed from v1 `Export-Connection`, and the runbooks tell readers to run `Get-Help` first), the output shape of `Get-WACLoginMode`, and the `-Target` parameter of `Set-WACCertificateSubjectName` (it comes from the Markic source, not Learn).
+- For Shared PC, the MDM_SharedPC property types (bool vs int) and the NodeValues registry value types weren't verified on a live device. The script normalises true/false/int. The WinRT `SharedModeSettings` type load is wrapped in try/catch and falls back to the registry.
+- The sandbox still has no PowerShell parser. Both scripts were hand-reviewed for StrictMode and 5.1 compatibility, so treat the first real run as validation.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). After 28 Oct 2026, record the observed PIM Iteration 2 failure status. Remaining small candidate: the Exchange admin center "Other features" page retirement (probably a note in an existing EXO file). New candidates to grep: Windows Server 2025 hotpatch via Arc for non-Azure servers (check `Intune/Scripts/Get-HotpatchReadinessAudit.ps1` scope first), WinGet/Microsoft Store for Business app-source policy, and a Frontline Worker shared-device sign-in comparison (Shared PC vs W365 Frontline shared vs AVD pooled).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 255, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 256, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
