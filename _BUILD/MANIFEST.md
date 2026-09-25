@@ -5575,6 +5575,24 @@ _2026-09-25 (run 265, scheduled task "ezadmin-day-build"): fresh `/tmp` clone, `
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: Tunnel for MAM deep-dive (if demand), Windows Remote Assistance (`msra.exe`) legacy retirement note inside QuickAssist-A if asked, Connected Cache in ConfigMgr (DP-integrated) as a co-management sibling topic.
 
+
+## New Topics — Windows 802.1X supplicant (enterprise Wi-Fi & wired) (run 266)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/WiFi-8021x-Windows-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/WiFi-8021x-Windows-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-Windows8021xDiagnostics.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 266, scheduled task "ezadmin-day-build"): connected-folder mount still stale (shows run 169 git state; working tree lacked runs 265 content) — worked from a fresh `mktemp -d` clone of `master`, HEAD `6399e82` (run 265). Queue empty → Expansion Rules. Run 265's remaining candidates (Tunnel for MAM, msra.exe note, ConfigMgr Connected Cache) are "if demand"/thin, so ran a repo-wide keyword gap sweep instead: Windows client-side 802.1X had no dedicated coverage (only macOS WiFi-8021x-A/B and server-side NPS-RADIUS-A/B). Built the Windows supplicant topic: services, profile sources, EAP-TLS vs PEAP + Credential Guard, server validation, strong mapping of Intune SCEP/PKCS certs, cloud-only Entra-joined device gap, NPS reason-code map, NPS cert rollover + PEAP→EAP-TLS migration playbooks. Updated `Windows/_AGENT.md` (covers bullet, 2 folder rows, entry point), `AGENT_INDEX.md` (1 row), and added a Windows-supplicant pointer to `NPS-RADIUS-A.md` scope._
+
+## ⚠️ Skipped Items / Notes (run 266)
+- Only one live search this run (NPS + Entra-joined + strong mapping). WLAN event IDs (8001/8002/8003/11006/12011/12012/12013), profile XML element names (`ServerNames`, `TrustedRootCA`, `authMode`, EAP `<Type>`), and the Credential Guard/MS-CHAPv2 behaviour are stated from established Microsoft documentation, not re-read this run. Wired AutoConfig event IDs were deliberately not quoted.
+- NPS reason-code → cause mapping for strong-mapping failures (16, sometimes 8) reflects community reports; Microsoft doesn't document a dedicated code.
+- Shadow-AD-object playbook is explicitly labelled unsupported. Intune doc URLs use the new `learn.microsoft.com/intune/intune-service/...` path form; verify they resolve.
+- No PowerShell parser in the sandbox; script bracket-checked with Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: Tunnel for MAM (if demand), Connected Cache in ConfigMgr, Windows Wi-Fi/Wired Intune custom XML profiles as a sub-section if tickets appear, cloud RADIUS options comparison (vendor-neutral) if asked._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 265, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 266, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
