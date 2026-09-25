@@ -5433,6 +5433,24 @@ _2026-09-25 (run 258, scheduled task "ezadmin-night-build"): fresh `/tmp` clone,
 
 **For next run:** run 256/257 follow-ups still apply (EWS after 1 Oct 2026, Publisher, OSLicense availability on Server, PIM Iteration 2 after 28 Oct, re-verify 0x8A15xxxx codes). Remaining candidates: Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline/Flex shared vs AVD pooled; grep `SharedPC-A.md`, `Flex-A.md` first, since this may fit better as a decision section than a new topic) and a deeper macOS LOB (managed PKG, MDM-channel) path._
 
+
+## New Topics — macOS LOB apps (managed PKG via MDM) (run 259)
+| File | Status | Assigned |
+|------|--------|---------|
+| `macOS/Troubleshooting/MacLOBApps-B.md` | ✅ | auto-build |
+| `macOS/Troubleshooting/MacLOBApps-A.md` | ✅ | auto-build |
+| `macOS/Scripts/Get-MacLOBAppStatus.sh` | ✅ | auto-build |
+
+_2026-09-25 (run 259, scheduled task "ezadmin-night-build"): cloned fresh into a unique directory (`/tmp/ez20058`), ran `git checkout master`, and confirmed HEAD `724e33b` (run 258). The queue was empty, so Expansion Rules applied, using run 258's candidate "deeper macOS LOB (managed PKG, MDM-channel) path". A grep showed that `PKG-DMG-Apps-A/B.md` covered LOB only as a one-row type-selection entry. `Get-MacAgentAppStatus.sh` and the `AGENT_INDEX.md` PKG/DMG row both pointed LOB questions at `VPP-App-Deployment-A.md`, which is the wrong topic. Built MacLOBApps-A/B plus the device/package validator `Get-MacLOBAppStatus.sh`. Repointed those two stale cross-references to the new files, added a pointer from each PKG-DMG runbook, and added rows to `macOS/_AGENT.md` and `AGENT_INDEX.md`. Sources fetched this run: Learn "Add macOS LOB apps" (ms.date 2026-04-14), "macOS LOB apps aren't deployed" (2026-03-30), and "Error 0x87D13BA2" (2026-03-30)._
+
+## ⚠️ Skipped Items / Notes (run 259)
+- **Mounted working copy is badly stale, and no repo impact came from it.** The connected folder's `.git` HEAD is at run 169 (`f374c6e`), but its working tree holds later content and a 39-file uncommitted diff (including `MANIFEST.md` "run 250"). This run didn't touch the mount's git state and authored everything against the fresh clone. **Recommendation for the user:** after reviewing any local-only edits, run `git fetch && git checkout master && git reset --hard origin/master` in the local folder, or re-clone it.
+- The remote default branch is still `main` (January 2026 pre-restructure). This is a user decision, flagged again from run 258.
+- Two claims are left hedged because Microsoft doesn't document them: whether an already-installed unmanaged copy is adopted as managed when a new "Install as managed" object is assigned (Playbook 3 says to test on a pilot Mac), and the exact wording of `mdmclient` unified-log lines. The script greps broadly for `InstallEnterpriseApplication` and the bundle IDs.
+- There's no macOS host or shellcheck in the sandbox. `Get-MacLOBAppStatus.sh` passed `bash -n` and was hand-reviewed for bash 3.2 compatibility (guarded empty-array expansion under `set -u`, no associative arrays), and its payload `.app` filter was unit-tested against sample `pkgutil --payload-files` output. Treat its first real run as validation.
+
+**For next run:** run 256–258 follow-ups still apply (EWS after 1 Oct 2026, Publisher, OSLicense availability on Server, PIM Iteration 2 after 28 Oct, re-verify 0x8A15xxxx codes). Remaining candidate: Frontline shared-device sign-in comparison (Shared PC vs W365 Frontline/Flex shared vs AVD pooled; grep `SharedPC-A.md`, `Flex-A.md` first, since it may fit better as a decision section). New candidate: an admin-side Graph audit script for macOS LOB objects (childApps hygiene, missing logos, `installAsManaged`) if `Get-VPPAppLicenseAudit.ps1`/`Get-AppSettingsAudit.ps1` don't already cover it._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 258, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 259, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

@@ -222,7 +222,7 @@ tar -czf "$OUT.tgz" -C /tmp "$(basename "$OUT")" && echo "$OUT.tgz"
 ## 🎓 Learning Pointers
 - [Add an unmanaged macOS PKG app](https://learn.microsoft.com/en-us/intune/app-management/deployment/add-unmanaged-pkg-macos) covers exactly which package shapes need the PKG type rather than LOB, plus the pre/post-install script semantics (only pre-install can fail the install).
 - [Add a macOS DMG app](https://learn.microsoft.com/en-us/intune/app-management/deployment/add-dmg-macos) has the complete 0x87D301xx troubleshooting table and the FDA and update-agent version requirements.
-- [macOS LOB apps aren't deployed (Learn troubleshooting)](https://learn.microsoft.com/en-us/troubleshoot/mem/intune/app-management/macos-lob-apps-not-deployed) is the counterpart for the MDM-delivered path.
+- [macOS LOB apps aren't deployed (Learn troubleshooting)](https://learn.microsoft.com/en-us/troubleshoot/mem/intune/app-management/macos-lob-apps-not-deployed) is the counterpart for the MDM-delivered path. The full LOB deep dive is [`MacLOBApps-A.md`](MacLOBApps-A.md).
 - [Support tip: Troubleshooting the Intune management agent on macOS](https://techcommunity.microsoft.com/blog/intunecustomersuccess/support-tip-troubleshooting-microsoft-intune-management-agent-on-macos/4431810) explains the 6-column pipe-delimited log format and how to watch it live.
 - Community: [IntuneBrew docs: Troubleshooting common macOS app deployment issues](https://docs.intunebrew.com/docs/Troubleshooting-Common-macOS-App-Deployment-Issues-in-Intune). It's useful for real-world detection patterns.
 - Related: `Shell-Script-Failures-A.md` (same agent), `PPPC-A.md` (FDA), `Gatekeeper-Notarization-A.md` (first-launch prompts).

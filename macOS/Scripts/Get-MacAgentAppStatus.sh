@@ -19,7 +19,7 @@
 #   Does NOT cover:
 #   - Installing, reinstalling or removing any app (read-only)
 #   - Intune-side assignment or detection-rule configuration (portal/Graph tasks)
-#   - MDM-delivered LOB PKGs (InstallEnterpriseApplication) - see VPP-App-Deployment-A.md
+#   - MDM-delivered LOB PKGs (InstallEnterpriseApplication) - see MacLOBApps-A.md / Get-MacLOBAppStatus.sh
 #
 # .PARAMETER --bundle-id <id>
 #   Bundle identifier to locate on disk and in logs (repeatable).
