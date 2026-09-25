@@ -5497,4 +5497,26 @@ _2026-09-25 (run 261, scheduled task "ezadmin-night-build"): fresh uniquely-name
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 261, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+## New Topics — Intune Deployments (ring-based rollouts) + M365 Organizational messages (run 262)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/DeploymentPlans-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/DeploymentPlans-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-IntuneDeploymentReadiness.ps1` | ✅ | auto-build |
+| `M365/OrganizationalMessages/_AGENT.md` | ✅ | auto-build |
+| `M365/OrganizationalMessages/OrganizationalMessages-B.md` | ✅ | auto-build |
+| `M365/OrganizationalMessages/OrganizationalMessages-A.md` | ✅ | auto-build |
+| `M365/OrganizationalMessages/Scripts/Get-OrgMessagesDeviceReadiness.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 262, scheduled task "ezadmin-night-build"): fresh `/tmp` clone (HEAD `dea9ec6`, run 261). The queue was empty, so Expansion Rules applied. (1) **Intune Deployments / deployment plans** came from a September 2026 Intune news sweep (Andrew Taylor newsletter, HTMD, windowsforum). A repo-wide grep found no coverage. Sources: five Microsoft Learn pages fetched live (overview, create-deployment-plan, create-deployment, rbac-scope-tags, known-issues; `updated_at` 2026-09-21). There's no documented Graph surface for the deployment objects, so the script works on the payload and on groups. The EAC Graph type name `win32CatalogApp` is beta and assumed. (2) **Organizational messages** was run 261's "zero coverage, verify product state" candidate. It was verified: the Intune authoring UI was removed in 2024 and it's now in the M365 admin center, where it's active and expanding (email channel, Usage segments). Sources: Learn product page (`ms.date` 2026-07-22), FAQ, and Policy CSP – Experience, all fetched live, which gave the CSP scopes, defaults, `DependsOn` tree, and GPO mappings. A doc discrepancy is flagged in both files (the CSP page's older OS applicability vs the product page's Win11 24H2/25H2 Enterprise baseline). Updated `Intune/_AGENT.md` (2 rows, 2 entry points), `M365/_AGENT.md` (1 sub-module row, 1 entry point), and `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 262)
+- A `PIMIteration2Retirement-A.md` was drafted as a gap-fill against a stale earlier `/tmp` clone, then **discarded**: the fresh clone showed an A variant already exists. `/tmp/ez` from an earlier session is owned by `nobody` and can't be removed or reused, so use a uniquely named clone directory.
+- No PowerShell parser in the sandbox. Both `.ps1` files were bracket-balance checked via Python and hand-reviewed for StrictMode/5.1 compatibility (an automatic-variable clash with `$PID` in a loop variable was caught and fixed). Treat the first real run as validation.
+- The mounted working tree is still stale (`.git` at run 169) and was left out of git operations.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Watch the Intune Deployments Learn pages for GA, new payload types/platforms, and any Graph API (update `Get-IntuneDeploymentReadiness.ps1` if one ships). Remaining candidates: Advanced Analytics Device timeline/Anomalies (only referenced), Exchange admin center "Other features" page retirement (Sept 2026 – Feb 2027; thin, so check whether it's worth a topic), Power Automate legacy chatbot retirement (2 Sept 2026)._
+
+---
+
+Last updated: 2026-09-25 (auto-build, run 262, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
