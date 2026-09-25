@@ -78,6 +78,7 @@ Covers:
 | `Troubleshooting/Windows Update/WSUS-Server-A.md` / `B.md` | WSUS server role — SUSDB engine (WID vs. SQL Server) and maintenance (reindex, decline-superseded, cleanup), content/metadata consistency (wsusutil checkhealth/reset), IIS WsusPool memory-exhaustion crashes, hierarchy maintenance ordering |
 | `Troubleshooting/RDP-A.md` / `B.md` | Remote Desktop connection failures |
 | `Troubleshooting/SMB-A.md` / `B.md` | File share access, SMB protocol issues |
+| `Troubleshooting/SMBoverQUIC-A.md` / `B.md` | SMB over QUIC (WS2025 any edition / WS2022 Azure Edition + Windows 11) — UDP 443 TLS 1.3 transport, TCP-first client fallback, server certificate mapping + renewal-means-remap outage, SAN/no-IP rule, NTLM-in-tunnel vs KDC Proxy Kerberos, client access control (SHA256/ISSUER ACL, Block beats Grant), alternative QUIC ports, auditing events |
 | `Troubleshooting/GPO-A.md` / `B.md` | Group Policy application and conflict diagnosis |
 | `Troubleshooting/Kerberos-A.md` / `B.md` | Kerberos auth failures, NTLM fallback |
 | `Troubleshooting/NTLM-A.md` / `B.md` | NTLM auth failures, secure channel, LM level hardening |
@@ -109,6 +110,7 @@ Covers:
 | `Scripts/Get-DHCPServerHealth.ps1` | Companion script to DHCP-Server — authorization/service state, scope utilization exhaustion flagging, Failover relationship state, DHCP Policy inventory, DNS dynamic update credential password-expiry check, JET/database event log scan, audit log freshness check |
 | `Scripts/Get-RDPDiagnostics.ps1` | Companion script to RDP |
 | `Scripts/Get-SMBDiagnostics.ps1` | Companion script to SMB |
+| `Scripts/Get-SmbOverQuicHealth.ps1` | Companion to SMBoverQUIC — read-only, run on the file server: OS support, EnableSMBQUIC, every server certificate mapping (cert present, private key, Server Auth EKU, expiry window, name-in-SAN), unmapped newer replacement cert (renewal-not-remapped), UDP 443/alt-port listener owner, firewall rule, KDC Proxy (kpssvc/urlacl/sslcert), client access control flags + empty-ACL trap; CSV + exit code |
 | `Scripts/Get-FirewallDiagnostics.ps1` | Companion script to Firewall |
 | `Scripts/Get-GPOReport.ps1` | Companion script to GPO |
 | `Scripts/Get-KerberosDiagnostics.ps1` | Companion script to Kerberos |
@@ -258,6 +260,7 @@ Get-WinEvent -LogName System |
 - "Smart card login / VPN client auth / password filter broken after a Windows 11 upgrade, registry shows RunAsPPL off but engineer suspects it's actually on, LSASS crash loop" → `Troubleshooting/LSA-Protection-B.md` (hotfix — start here, this is VBS-independent) / `LSA-Protection-A.md` (deep dive — PPL mechanism, auto-enablement, signing requirements) + `Scripts/Get-LSAProtectionStatus.ps1`
 - "Kerberos auth failing / NTLM fallback" → `Troubleshooting/Kerberos-B.md` + `Scripts/Get-KerberosDiagnostics.ps1`
 - "Can't access a file share / SMB errors" → `Troubleshooting/SMB-B.md` + `Scripts/Get-SMBDiagnostics.ps1`
+- SMB over QUIC mapping fails off-network, all remote file access broke after a cert renewal, "works in the office, not at home" on a QUIC server, KDC Proxy/NTLM prompts over QUIC, client access control denying devices → `Troubleshooting/SMBoverQUIC-B.md` (deep dive `-A.md`, audit `Scripts/Get-SmbOverQuicHealth.ps1`)
 - "App or port blocked by firewall" → `Troubleshooting/Firewall-B.md` + `Scripts/Get-FirewallDiagnostics.ps1`
 - "RD Gateway server address is unreachable", "user account is not authorized to access the RD Gateway", gateway certificate expired, Event 201/301/304, MFA via NPS extension times out on RDG, black screen through gateway → `Troubleshooting/RDGateway-B.md` + `Scripts/Get-RDGatewayDiagnostics.ps1`
 - RD Web cert warning, "no resources available" on /RDWeb, desktop icon missing, feed/workspace subscription fails, HTML5 web client "unexpected server authentication certificate was received" or "couldn't connect to the gateway", `Publish-RDWebClientPackage` errors → `Troubleshooting/RDWebAccess-B.md` + `Scripts/Get-RDWebAccessDiagnostics.ps1`

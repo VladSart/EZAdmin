@@ -1,6 +1,8 @@
 # SMB File Share Access — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate in under 10 minutes.
 
+> See also: SMB over QUIC (internet access over UDP 443, no VPN) → `SMBoverQUIC-B.md` / `SMBoverQUIC-A.md`.
+
 ---
 
 ## Skim Index

@@ -5767,6 +5767,23 @@ _2026-09-25 (run 276, scheduled task "ezadmin-day-build"): fresh sandbox `mktemp
 
 **For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` coverage first); WEF over HTTPS for non-domain sources (only if tickets appear); RDS certificate lifecycle across roles (check RDGateway/RDWebAccess coverage first).
 
+
+## New Topic — SMB over QUIC (run 277)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SMBoverQUIC-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/SMBoverQUIC-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-SmbOverQuicHealth.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 277, scheduled task "ezadmin-day-build"): fresh sandbox `mktemp -d` clone, `git checkout master` (HEAD `649ada4`, run 276). Queue empty → Expansion Rules. Gap check by grep: "SMB over QUIC"/"QUIC" had zero hits in any runbook; SMB-A/B cover TCP 445 only. Built B (7 fixes: not enabled/no mapping, renewal-not-remapped, SAN/name mismatch, client disabled, UDP 443 blocked/alt port, NTLM blocked vs KDC Proxy, client access control), A (transport model, TCP-first fallback, mapping + cert requirements, NTLM vs KDC Proxy, client access control chain logic, auditing, 5 playbooks, evidence pack), read-only `Get-SmbOverQuicHealth.ps1`. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), see-also in `SMB-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 277)
+- Web-verified (Microsoft Learn): WS2025 all editions / WS2022 AzE; Windows 11 client; TCP-first then QUIC fallback; `/TRANSPORT:QUIC` + `-TransportType QUIC`; cert requirements (Server Auth EKU, SAN per FQDN, no IP SANs, private key); WS2025 = PowerShell only (WAC wizard unsupported); `EnableSMBQUIC`, `DisabledSMBQUICServerExceptionList`; client audit event 30832 (24H2); renewal = new thumbprint = remap via `Set-SmbServerCertificateMapping`; WAC-on-443 vs KDC Proxy conflict; alternative ports (`New-SmbServerAlternativePort -TransportType QUIC -Port -EnableInstances Default`, client `-QuicPort`, only QUIC listening port changeable); client access control cmdlets, SHA256 vs SHA1 usage, Block-beats-Grant, `RequireClientAuthentication`/`SkipClientCertificateAccessCheck`, `AuditClientCertificateAccess`, events SMBServer/Audit 3007-3009 and SMBClient/Connectivity 30831.
+- Not web-verified this run (established docs/field practice): exact KDC Proxy netsh/KPSSVC registry steps and client policy value syntax `<https fqdn:443:kdcproxy />`; `Set-SmbServerCertificateMapping -Thumbprint` accepting in-place thumbprint change (runbook gives remove/recreate fallback); `BlockNTLMServerExceptionList` property name; `Get-SmbServerAlternativePort` output property names (script reads defensively).
+- No PowerShell parser in sandbox; script bracket-balanced via Python (155/92/25 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: SMB NTLM blocking / SMB signing-by-default fallout on Win 11 24H2 + WS2025 (check `SMB-A.md`/`NTLM-A.md` coverage first); Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); RDS certificate lifecycle across roles (check RDGateway/RDWebAccess first).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 276, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 277, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
