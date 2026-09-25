@@ -5300,6 +5300,23 @@ _2026-09-25 (run 251, scheduled task "ezadmin-night-build"): fresh `/tmp` clone,
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and confirm Publisher post-retirement behaviour (does the binary get removed, or just blocked?) to firm up PublisherRetirement-B triage. Candidates: VBScript deprecation / slmgr.vbs + OSPP.VBS PowerShell replacements (Windows), the Intune assignment-filter `osVersion` property replacement (burgerhout.org, Sept 2026; check `Intune/Troubleshooting/Filters-A.md` first), and Exchange admin center "Other features" page retirement (Sept 2026 – Feb 2027, small; probably a note in an existing EAC file rather than its own topic)._
 
+## New Topic — VBScript Deprecation (run 252)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/VBScriptDeprecation-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/VBScriptDeprecation-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-VBScriptDependencyAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 252, scheduled task "ezadmin-night-build"): fresh `/tmp` clone, `master` HEAD `1e7c044` (run 251). The mount is still stale, so it wasn't used for git. The queue was empty, so Expansion Rules applied. This takes run 251's top candidate, **VBScript deprecation**. A repo-wide grep found no coverage (only incidental mentions in an ASR script and WUfB-B). Sources: Microsoft 365 Developer Blog "Prepare your VBA projects for VBScript deprecation" (Sept 2025) read in full; LazyAdmin "Microsoft is Retiring slmgr.vbs" (16 Sept 2026) read in full for the OSLicense cmdlet mapping; the MVP Tech Community "State of VBScript deprecation" post (updated Sept 2026) read in full for inbox/third-party consumers; ControlUp (Apr 2026) for event 4096 fields. The Microsoft "Keep Windows activation automation working with PowerShell" post and the May 2024 timelines post were only seen through search summaries. Updated `Windows/_AGENT.md` (1 topic bullet, 2 table rows, 1 entry point), `AGENT_INDEX.md` (1 row) and `M365/Apps/_AGENT.md` (OSPP.VBS cross-reference note)._
+
+## ⚠️ Skipped Items / Notes (run 252)
+- **Conflicting KB for OSLicense:** the search summary of Microsoft's post says Aug 2026 preview **KB5120998** or later; LazyAdmin says Sept 2026 security update **KB5124008**. Both are probably right (preview, then Patch Tuesday). The runbooks say "Aug/Sept 2026 update" and flag this in the A source table. Confirm against the primary post.
+- **Event 4096 log location conflict:** ControlUp says the Application log; other community posts say Applications and Services Logs → Windows Script Host. The B/A runbooks and the script query both.
+- OSLicense cmdlet names and parameters come from one community source (LazyAdmin). Check them with `Get-Help` on a patched device before bulk use. The SPP CIM fallback (`Activate`, `InstallProductKey`, `SetKeyManagementServiceMachine`) uses long-documented WMI methods but wasn't executed.
+- There's still no PowerShell parser in the sandbox. `Get-VBScriptDependencyAudit.ps1` passed a bracket-balance check and was hand-reviewed for StrictMode and 5.1 compatibility. Treat the first real run as validation.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour (PublisherRetirement-B). Fetch the primary Microsoft OSLicense post to settle the KB number and cmdlet list in VBScriptDeprecation-A/B. Remaining candidates: the Intune assignment-filter `osVersion` property replacement (check `Intune/Troubleshooting/Filters-A.md` first), and Exchange admin center "Other features" page retirement (probably a note in an existing EAC file)._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 251, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 252, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

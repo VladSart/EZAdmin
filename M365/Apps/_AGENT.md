@@ -95,3 +95,5 @@ Update-channel health and activation health are independent failure domains that
 1. **Triage first** — confirm install type (Click-to-Run vs. MSI/LTSC vs. New Outlook), then split into update-channel vs. activation/licensing before touching anything
 2. **Fix the specific failure** — use the matching fix path from `Deployment-UpdateChannels-B.md`; escalate to the Mode A reference for GPO precedence chains or the SAC/MEC cadence change
 3. **Confirm resolution** — verify via `File > Account` (version/build) and `OSPP.VBS /dstatus` (license status) after any change, not just absence of an error message
+
+> **Cross-reference (run 252):** `OSPP.VBS` is a VBScript file. Once the VBScript Feature on Demand is disabled by default (Phase 2, ~2027), `OSPP.VBS /dstatus` and volume/LTSC Office activation through OSPP stop working unless the FOD is re-enabled. See `Windows/Troubleshooting/VBScriptDeprecation-B.md` Fix 3 and Fix 4 (VBA `VBScript.RegExp`, built in from Version 2508).
