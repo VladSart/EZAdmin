@@ -491,3 +491,5 @@ $filters | Format-Table DisplayName, Platform, Rule -AutoSize
 - **Use the portal "Device preview" first.** Before digging into PowerShell, test the filter directly in the Intune portal against the affected device. It shows exactly which rule clause is failing. This cuts diagnostic time from 30 minutes to 2 minutes.
 
 - **Filter rules are case-insensitive but whitespace-sensitive.** The string `"CORP-"` matches `"corp-"` — but `"CORP- "` (trailing space) does NOT match `"CORP-"`. Always trim string values when building filter rules.
+
+- **`osVersion` is deprecated (Intune 2608, Aug 2026).** The `osVersion` examples in this runbook still work on existing filters, but new filters should use `operatingSystemVersion`, which takes version operators (`-ge`/`-lt` ranges, not `-startsWith`). See `FilterOSVersionMigration-B.md` / `-A.md` and [the Learn properties reference](https://learn.microsoft.com/en-us/intune/fundamentals/filters/ref-device-properties).

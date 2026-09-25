@@ -312,3 +312,5 @@ Required role evidence: [attach screenshot of admin role assignment]
 - **Filters work on managed device properties, not Entra ID attributes.** Device category, enrollment profile name, and ownership come from Intune — not from Entra ID device attributes. You cannot filter on Entra ID extension attributes. [Filter properties list](https://learn.microsoft.com/en-us/mem/intune/fundamentals/filters-device-properties)
 
 - **Use filters over multiple groups where possible.** Maintaining one large group with Include filters per scenario is cleaner than dozens of device groups. Reduces AAD group sprawl and makes targeting intent explicit and auditable.
+
+- **`osVersion` is deprecated (Intune 2608, Aug 2026).** The `osVersion` examples in this runbook still work on existing filters, but new filters should use `operatingSystemVersion`, which takes version operators (`-ge`/`-lt` ranges, not `-startsWith`). See `FilterOSVersionMigration-B.md` / `-A.md` and [the Learn properties reference](https://learn.microsoft.com/en-us/intune/fundamentals/filters/ref-device-properties).

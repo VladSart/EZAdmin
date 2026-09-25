@@ -62,6 +62,8 @@ Covers:
 | `Troubleshooting/EPM-B.md` / `-A.md` | Hotfix / deep dive: Endpoint Privilege Management agent/elevation rule issues |
 | `Troubleshooting/FeatureUpdates-B.md` / `-A.md` | Hotfix / deep dive: device stuck on old Windows version, feature update deployment |
 | `Troubleshooting/Filters-B.md` / `-A.md` | Hotfix / deep dive: Assignment Filters not matching, stale device properties |
+| `Troubleshooting/FilterOSVersionMigration-B.md` / `-A.md` | Hotfix / deep dive: `osVersion` filter property deprecated (service release 2608) → `operatingSystemVersion` (version operators -gt/-ge/-lt/-le, no -in/-startsWith/-contains); rule translation table, 4-part Windows `-eq` trap, Apple SPV/build-suffix literals, mobile Available-app inconclusive known issue, clone→preview→swap→retire migration |
+| `Scripts/Get-OSVersionFilterMigrationAudit.ps1` | Read-only (beta Graph) inventory of filters using deprecated `osVersion`, per-clause draft `operatingSystemVersion` translations (Translated/Review/Manual), mobile Available-app known-issue flag, optional assignment usage via `payloads`, `-TenantId` for MSP/GDAP |
 | `Troubleshooting/GP-to-CSP-B.md` / `-A.md` | Hotfix / deep dive: Group Policy Analytics migration to CSP, coverage gaps |
 | `Troubleshooting/Kiosk-B.md` / `-A.md` | Hotfix / deep dive: Kiosk/Assigned Access configuration and lockdown issues |
 | `Troubleshooting/LAPS-B.md` / `-A.md` | Hotfix / deep dive: Windows LAPS rotation/retrieval failures, legacy LAPS conflicts |
@@ -173,6 +175,7 @@ Covers:
 - "Driver update not installing / WDfB conflict" → `Troubleshooting/DriverManagement-B.md` + `Scripts/Get-DriverManagementStatus.ps1`
 - "EPM elevation request not working / agent missing" → `Troubleshooting/EPM-B.md` + `Scripts/Get-EPMElevationReport.ps1`
 - "Assignment Filter not matching expected devices" → `Troubleshooting/Filters-B.md` + `Scripts/Get-AssignmentFilterAudit.ps1`
+- "Can't use osVersion in a new filter" / "migrate filters to operatingSystemVersion" / new version filter matches 0 or too many devices → `Troubleshooting/FilterOSVersionMigration-B.md` + `Scripts/Get-OSVersionFilterMigrationAudit.ps1`
 - "Migrating GPOs to CSP / need coverage gap report" → `Troubleshooting/GP-to-CSP-B.md` + `Scripts/Get-GPtoCSPCoverageReport.ps1`
 - "Kiosk device not locking down / Assigned Access broken" → `Troubleshooting/Kiosk-B.md` + `Scripts/Get-KioskDeviceHealthReport.ps1`
 - "Platform script (PowerShell) not running on device" → `Troubleshooting/Platform-Scripts-B.md` + `Scripts/Get-PlatformScriptRunStatus.ps1`

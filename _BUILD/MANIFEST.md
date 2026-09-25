@@ -5317,6 +5317,24 @@ _2026-09-25 (run 252, scheduled task "ezadmin-night-build"): fresh `/tmp` clone,
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour (PublisherRetirement-B). Fetch the primary Microsoft OSLicense post to settle the KB number and cmdlet list in VBScriptDeprecation-A/B. Remaining candidates: the Intune assignment-filter `osVersion` property replacement (check `Intune/Troubleshooting/Filters-A.md` first), and Exchange admin center "Other features" page retirement (probably a note in an existing EAC file)._
 
+## New Topics — Intune assignment filter osVersion → operatingSystemVersion + MSI VBScript custom-action scanner (run 253)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/FilterOSVersionMigration-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/FilterOSVersionMigration-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-OSVersionFilterMigrationAudit.ps1` | ✅ | auto-build |
+| `Windows/Scripts/Find-MsiVBScriptCustomAction.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 253, scheduled task "ezadmin-night-build"): This run overlapped with run 252. It started from a stale `/tmp` clone at run 251 (`1e7c044`) and drafted a VBScript-deprecation set, but a fresh clone before commit showed run 252 (`a7536d4`) had already pushed `VBScriptDeprecation-A/B` and `Get-VBScriptDependencyAudit.ps1`. The duplicate drafts were **discarded, not committed**, and no run-252 file was overwritten. The one gap run 252's script documents ("does not detect MSI VBScript custom actions unless they have run") was filled with a new standalone `Find-MsiVBScriptCustomAction.ps1`. It does a static CustomAction scan using the `(Type -band 7) -eq 6` bitmask, which catches deferred/no-impersonate variants such as 1030/3078 that the exact 6/38/54 list in VBScriptDeprecation-A misses, and adds a Windows `_AGENT.md` row and entry point. **Main topic, from run 251/252's candidate list: Intune filter `osVersion` deprecation.** A grep confirmed `Filters-A/B` only covered `osVersion` syntax. Sources: Learn "Assignment filter properties and operators reference" (updated 2026-09-23) read in full, covering the deprecation note, `operatingSystemVersion` operators (-eq/-ne/-gt/-ge/-lt/-le only) and examples. Learn "Assignment filter reports & troubleshooting" read in full for the known issue: `operatingSystemVersion` on Available apps for Android/AOSP/iOS evaluates inconclusive, no ETA. Jeroen Burgerhout (MVP, 10 Sep 2026) read in full for the 2608 release-note wording (GA for managed devices and managed apps). One-line cross-reference pointers were added to the Learning Pointers of the existing `Filters-A.md` and `Filters-B.md`. Also updated `Intune/_AGENT.md` (2 table rows, 1 entry point) and `AGENT_INDEX.md` (1 row)._
+
+## ⚠️ Skipped Items / Notes (run 253)
+- **Concurrent-run collision:** runs 252 and 253 ran at the same time from different clone points. Future runs should `git fetch` and re-read the manifest tail **immediately before choosing topics**, not only at start-up. Stale clones owned by a different sandbox user (`/tmp/ez`, owner `nobody`) were also found and aren't writable, so use a fresh uniquely named clone dir each run.
+- **Unverified in the filter runbooks:** "new filters can't use osVersion" is from community write-ups; behaviour when *editing* an existing osVersion filter; the managed-app property name (`app.operatingSystemVersion` expected; the Learn app tab wasn't retrieved); whether Intune pads partial versions for `-eq`. All are labelled in the A file's source-confidence section. `assignmentFilters/{id}/payloads` (beta) is used best-effort with a graceful fallback.
+- The primary Microsoft post "Keep Windows activation automation working with PowerShell" was fetched but returned an empty JS-rendered body, so run 252's KB conflict (KB5120998 vs KB5124008) is still open.
+- There's still no PowerShell parser in the sandbox. Both new `.ps1` files passed a bracket-balance check and a hand review for StrictMode/5.1 compatibility. The clause regex in `Get-OSVersionFilterMigrationAudit.ps1` was tested in Python against `-startsWith`, `-in` with Apple build strings, mixed `-eq`/`-notContains`, and already-migrated rules. Treat the first real run as validation.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B) and Publisher post-retirement behaviour. Settle the OSLicense KB number (VBScriptDeprecation-A/B). Re-check the Learn filter troubleshooting page each quarter for removal of the mobile Available-app known issue (FilterOSVersionMigration-A/B Playbook 4). Remaining small candidate: the Exchange admin center "Other features" page retirement (probably a note in an existing EAC file). Otherwise run a fresh news sweep, and grep first._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 252, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 253, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
