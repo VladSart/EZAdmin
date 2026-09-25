@@ -1,7 +1,7 @@
 # RD Session Host & Session Collections — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate in under 10 minutes.
 > Covers: one session host in a collection never receiving new users (not in drain, "looks healthy"), host stuck in drain after patching, `change logon` vs Server Manager "Allow new connections" disagreeing, uneven load balancing, users getting a **temporary profile** or *"User Profile Disk could not be attached"* / UPD already-in-use, disconnected sessions not being cleaned up (or being logged off too early), and safe drain-and-reboot patching of a collection.
-> Deep dive: `RDSessionHost-A.md` · Script: `../Scripts/Get-RDSessionHostHealth.ps1` · Siblings: `RDConnectionBroker-B.md` · `RDGateway-B.md` · `RDWebAccess-B.md` · `RDSLicensing-B.md` · `RDSDeadlockSept2026-B.md` · FSLogix on RDSH: `../../Azure/AVD/FSLogix-B.md`
+> RemoteApp publishing faults: `RemoteApp-B.md` · Deep dive: `RDSessionHost-A.md` · Script: `../Scripts/Get-RDSessionHostHealth.ps1` · Siblings: `RDConnectionBroker-B.md` · `RDGateway-B.md` · `RDWebAccess-B.md` · `RDSLicensing-B.md` · `RDSDeadlockSept2026-B.md` · FSLogix on RDSH: `../../Azure/AVD/FSLogix-B.md`
 
 ---
 ## Skim Index

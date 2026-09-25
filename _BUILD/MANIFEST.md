@@ -5750,6 +5750,23 @@ _2026-09-25 (run 275, scheduled task "ezadmin-day-build"): fresh sandbox clone o
 
 **For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: RemoteApp publishing/file-type associations; Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` coverage first); WEF over HTTPS for non-domain sources (only if tickets appear).
 
+
+## New Topic — RemoteApp publishing (RDS session collections) (run 276)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RemoteApp-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/RemoteApp-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-RemoteAppPublishingAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 276, scheduled task "ezadmin-day-build"): fresh sandbox `mktemp -d` clone, `git checkout master` (HEAD `0139d5c`, run 275). Queue empty → Expansion Rules; took run 275's RemoteApp candidate. Gap check: RemoteApp only appeared as visibility filtering in `RDWebAccess-A/B` and passing mentions in the RDSH/Broker runbooks — no publishing/launch runbook. Built B (7 fixes: host FilePath drift, stale alias, flash-and-logoff, CommandLineSetting, FTAs, icons, RemoteApp logoff time limit), A (metadata-only publishing model, `||Alias` launch path through broker to rdpinit/rdpshell, session reuse across collections, FTA feed-only delivery, 5 playbooks), read-only audit script. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), see-also line in `RDSessionHost-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 276)
+- Web-verified (Microsoft Learn search): `New-RDRemoteApp`/`Set-RDRemoteApp` expose `FileVirtualPath`, `CommandLineSetting` (Require uses `RequiredCommandLine`), `Set-RDFileTypeAssociation` exists in the RemoteDesktop module.
+- Not web-verified (established docs/field practice): `Get-RDFileTypeAssociation` output property names (`FileExtension`, `IsPublished` — script reads defensively), `ClientDeviceRedirectionOptions` containing `Drive`, GPO name "Set time limit for logoff of RemoteApp sessions", RADC Start-menu folder name "Work Resources (RADC)", rdpinit/rdpshell behaviour with launcher stubs and hidden-window processes keeping sessions alive, Windows App on macOS not registering FTAs.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (95/109/39 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` coverage first); WEF over HTTPS for non-domain sources (only if tickets appear); RDS certificate lifecycle across roles (check RDGateway/RDWebAccess coverage first).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 275, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 276, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
