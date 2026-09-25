@@ -1,7 +1,7 @@
 # RD Gateway (Remote Desktop Gateway / TSGateway) — Hotfix Runbook (Mode B: Ops)
 > Fix or escalate in under 10 minutes.
 > Covers: "Remote Desktop can't connect to the remote computer because the Remote Desktop Gateway server address is unreachable or incorrect", "...because the Remote Desktop Gateway server's certificate has expired or has been revoked", "...your user account is not authorized to access the RD Gateway" (RD CAP), "...your user account is not listed in the RD Gateway's permission list / can't connect to the remote computer" (RD RAP), Event 201/301/304 failures, NPS/MFA-extension timeouts, UDP 3391 black screens and freezes.
-> Deep dive: `RDGateway-A.md` · Script: `../Scripts/Get-RDGatewayDiagnostics.ps1` · Not a gateway problem? → `RDP-B.md` / `RDSLicensing-B.md` / `NPS-RADIUS-B.md`
+> Deep dive: `RDGateway-A.md` · Script: `../Scripts/Get-RDGatewayDiagnostics.ps1` · Not a gateway problem? → `RDP-B.md` / `RDSLicensing-B.md` / `NPS-RADIUS-B.md` / `RDWebAccess-B.md` (portal, feed, HTML5 client)
 
 ---
 ## Skim Index

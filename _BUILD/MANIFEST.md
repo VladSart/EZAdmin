@@ -5631,6 +5631,23 @@ _2026-09-25 (run 268, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: RD Web Access / RD Web Client (HTML5) feed + publishing, RD Connection Broker HA (SQL) as siblings of RDGateway/RDSLicensing; Exchange hybrid OAB/GAL split; Tunnel for MAM; Connected Cache in ConfigMgr.
 
+
+## New Topics — RD Web Access & HTML5 Web Client (run 269)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/RDWebAccess-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/RDWebAccess-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-RDWebAccessDiagnostics.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 269, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169 git state, ~463 dirty paths) — worked from a fresh `mktemp -d` clone, checked out `master` (note: `origin/HEAD` points at an old `main` branch from Jan 2026 — always `git checkout master` after cloning), HEAD `97c3ca3` (run 268). Queue empty → Expansion Rules. Took run 268's first candidate (RD Web Access / HTML5 web client) after grep confirmed only passing mentions. Built the topic: portal/feed/web-client architecture, resource-visibility model, four deployment certs, broker .cer pinning, Per-User CAL requirement, Entra app proxy vs WAP, install/upgrade/test channel, MFA options. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), and a pointer in `RDGateway-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 269)
+- Live-fetched MS Learn "Set up the Remote Desktop web client" (install/publish/test/offline/broker-cert/deployment-settings/troubleshooting content verified). Not re-read: `Get-RDWebClientPackage` output property names (script reads `packageType`/`version` and tolerates absence), `Publish-RDWebClientPackage -Version` rollback parameter, `RDWebAccess` app pool name, `PasswordChangeEnabled` appSetting path, `Set-RDRemoteDesktop -ShowInWebAccess`, and `_msradc` TXT format — stated from established docs/field practice.
+- Which deployment cert the web client pins is documented as "the certificate used for Remote Desktop connections" on the broker; runbooks map this to `RDRedirector` (and export from the shared PFX in HA brokers).
+- No PowerShell parser in the sandbox; script bracket-checked with Python, ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining candidates: RD Connection Broker HA (SQL, DNS round-robin, `Set-RDClientAccessName`) as the last RDS sibling; Exchange hybrid OAB/GAL split; Tunnel for MAM; Connected Cache in ConfigMgr.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 268, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 269, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
