@@ -5534,6 +5534,26 @@ _2026-09-25 (run 263, scheduled task "ezadmin-day-build"): fresh uniquely named 
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Verify the Graph beta property names used by `Get-AdvancedAnalyticsReportAudit.ps1` against the Graph beta reference. Remaining candidates: Exchange admin center "Other features" page retirement (thin; possibly a note in an existing EAC file), Power Automate legacy chatbot retirement (2 Sept 2026)._
 
+
+## New Topics — Microsoft Tunnel Gateway + Microsoft Edge for Business policy management (run 264)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/MicrosoftTunnel-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/MicrosoftTunnel-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-MicrosoftTunnelHealthAudit.ps1` | ✅ | auto-build |
+| `Intune/Troubleshooting/EdgeManagement-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/EdgeManagement-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-EdgePolicySourceAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 264, scheduled task "ezadmin-day-build"): fresh uniquely named `/tmp` clone, `git checkout master` (the default `main` branch is a stale pre-automation branch — always check out `master`), HEAD `09c5c39` (run 263). Queue empty → Expansion Rules. Repo-wide grep for common MSP gaps found zero dedicated coverage of **Microsoft Tunnel** (one passing mention in IntuneSuiteBaseLicensing-A) and **Microsoft Edge policy management / Edge management service** (zero hits for "Edge management"). Sources read live: Learn Tunnel Prerequisites (`ms.date` 2026-09-03 — current supported distro table RHEL 8.10/9.5-9.8/10.0-10.2 + Ubuntu 24.04/26.04, Android 10 support ended 31 Mar 2026), Tunnel Monitor (updated 2026-08-24 — health-check thresholds, known issues, 8-hour Send logs), Tunnel File & command reference (mst-cli, env.sh, data paths); Edge "Get started with configuration policies" (`updated_at` 2026-06-15 — Cloud vs Intune policy types, precedence switches, refresh cadence, GDAP/GCC caveats). Updated `Intune/_AGENT.md` (4 folder rows, 9 entry points) and `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 264)
+- Graph beta names used by `Get-MicrosoftTunnelHealthAudit.ps1` (`microsoftTunnelSites`, `microsoftTunnelServers`, `microsoftTunnelConfigurations`; `tunnelServerHealthStatus`, `lastCheckinDateTime`, `internalNetworkProbeUrl`, `upgradeAutomatically`, `upgradeAvailable`, `routesInclude`, `dnsServers`, `network`, `listenPort`) were not re-verified against the Graph beta reference this run; all reads are StrictMode-safe (missing = empty).
+- The exact wording of the `edge://policy` Source column is version-dependent; the runbooks describe it as Platform vs Cloud families rather than quoting literal labels. The MDM detection in `Get-EdgePolicySourceAudit.ps1` is an explicitly labelled heuristic.
+- No PowerShell parser in the sandbox; scripts hand-reviewed for 5.1/StrictMode (CIDR maths deliberately avoids `0xFFFFFFFF` literals, which PowerShell parses as Int32 -1).
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Remaining gap candidates from this run's grep: Quick Assist (zero coverage; enterprise controls, Remote Help relationship), Microsoft Connected Cache for Enterprise (only mentioned in DeliveryOptimization-A), Tunnel for MAM as a dedicated deep-dive if demand appears.
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 263, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 264, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
