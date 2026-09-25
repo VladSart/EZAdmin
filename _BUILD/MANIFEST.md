@@ -5517,6 +5517,23 @@ _2026-09-25 (run 262, scheduled task "ezadmin-night-build"): fresh `/tmp` clone 
 
 **For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Watch the Intune Deployments Learn pages for GA, new payload types/platforms, and any Graph API (update `Get-IntuneDeploymentReadiness.ps1` if one ships). Remaining candidates: Advanced Analytics Device timeline/Anomalies (only referenced), Exchange admin center "Other features" page retirement (Sept 2026 – Feb 2027; thin, so check whether it's worth a topic), Power Automate legacy chatbot retirement (2 Sept 2026)._
 
+
+## New Topics — Intune Advanced Analytics reports (run 263)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Intune/Troubleshooting/AdvancedAnalytics-B.md` | ✅ | auto-build |
+| `Intune/Troubleshooting/AdvancedAnalytics-A.md` | ✅ | auto-build |
+| `Intune/Scripts/Get-AdvancedAnalyticsReportAudit.ps1` | ✅ | auto-build |
+
+_2026-09-25 (run 263, scheduled task "ezadmin-day-build"): fresh uniquely named `/tmp` clone (HEAD `df432ef`, run 262). Queue empty → Expansion Rules, taking run 262's first remaining candidate, **Advanced Analytics Device timeline/Anomalies** (repo grep: only referenced in EndpointAnalytics-A, DeviceQuery-A, IntuneSuiteBaseLicensing-A). Scope broadened to the whole AA report layer (Anomalies, Device timeline, Battery health, Resource performance, Device scopes), with Device query left to DeviceQuery-A/B. Sources read in full: Learn Advanced Analytics overview (updated 2026-05-21), Anomalies, Device timeline, Battery health, Resource performance, Device scopes, and the AA FAQ. Intune/_AGENT.md and AGENT_INDEX were updated._
+
+## ⚠️ Skipped Items / Notes (run 263)
+- This run first worked against stale `/tmp` clones (`/tmp/ez` at run 251, `/tmp/ez252` at run 258, both owned by `nobody` and read-only). A VBScript-deprecation topic and a PIMIteration2Retirement-A gap-fill were drafted, then **discarded** because origin already had both (runs 252+). Always clone into `mktemp -d` and check `git log -1` before choosing topics.
+- The Graph beta resource/property names in `Get-AdvancedAnalyticsReportAudit.ps1` (`userExperienceAnalyticsAnomaly`, `...BatteryHealthDevicePerformance`, `...ResourcePerformance`; `maxCapacityPercentage`, `estimatedRuntimeInMinutes`, `deviceResourcePerformanceScore`, etc.) weren't re-verified against the Graph beta reference this run. The script reads properties StrictMode-safely (missing = empty) and catches per-dataset failures. The licence check uses a loose service-plan regex (`AdvancedEA|Advanced_?Analytics|INTUNE_SUITE`), so bundles with other plan names will report "no match". Treat the first real run as validation.
+- No PowerShell parser in the sandbox. Bracket balance was checked with Python and the script hand-reviewed for 5.1/StrictMode.
+
+**For next run:** after 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Verify the Graph beta property names used by `Get-AdvancedAnalyticsReportAudit.ps1` against the Graph beta reference. Remaining candidates: Exchange admin center "Other features" page retirement (thin; possibly a note in an existing EAC file), Power Automate legacy chatbot retirement (2 Sept 2026)._
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 262, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-09-25 (auto-build, run 263, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
