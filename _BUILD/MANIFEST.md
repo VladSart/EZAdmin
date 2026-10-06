@@ -5835,6 +5835,25 @@ _2026-10-06 (run 280, scheduled task "ezadmin-day-build"): fresh sandbox clone o
 
 **For next run:** Expansion Rules. Candidates: failover-cluster client access point / CNO permissions (FailoverClustering-B only covers CNO for file share witness — a dedicated CNO/VCO prestaging + `Event 1194/1069` runbook may fit); DFS Namespace migration from server-name paths (check `DFS/Troubleshooting/Namespace` first); Exchange Management Tools-only "last server removal" runbook (check `Hybrid-Coexistence-A.md` coverage first).
 
+## New Topics — Exchange hybrid dedicated app & Graph rich coexistence + EWS enforcement refresh (run 281)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/HybridDedicatedApp-B.md` | ✅ | auto-build |
+| `M365/Exchange/HybridDedicatedApp-A.md` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-ExchangeHybridAppReadiness.ps1` | ✅ | auto-build |
+| `M365/Exchange/EWSRetirement-A.md` / `-B.md` (MC1485116 update) | ✅ | auto-build |
+| `macOS/Troubleshooting/OutlookMac-A.md` / `-B.md` (MC1485116 note) | ✅ | auto-build |
+
+_2026-10-06 (run 281, scheduled task "ezadmin-night-build"): connected-folder mount still stale — untouched; worked in a fresh `mktemp -d` clone of `master` (HEAD `273cb69`, run 279; rebased onto `69acb76`, concurrent day-build run 280 HybridGALSplit), pushed from the sandbox using the mount's configured remote. Queue empty → Expansion Rules. Took the standing "after 1 Oct 2026, re-check EWS enforcement" pointer: found **MC1485116** (published 1 Oct 2026) — Worldwide enforcement of `EwsAllowedAppIDs` on **10 Oct 2026**, Microsoft auto-population on 8–9 Oct from 60 days of activity for tenants with True + no list on 3 Oct, replacement-list semantics, ~1 h / 24 h propagation, first-party EWS callers (Outlook for Windows build 16.0.20430.20092, classic Outlook for Mac, Power Query, Power BI, Exchange hybrid), cross-tenant org relationships unaffected. Added dated update callouts/timeline rows/triage rows to EWSRetirement-A/B and OutlookMac-A/B. Gap check: `Hybrid-Coexistence-A/B` had no coverage of the dedicated hybrid app, its Setting Overrides or the May 2026 SE HU Graph flow → built HybridDedicatedApp trio (7 fixes, 6 playbooks, read-only EMS audit script). Updated `M365/Exchange/_AGENT.md` (3 rows, 1 entry point), `AGENT_INDEX.md` (1 new row + EWS row date refresh), see-also in `Hybrid-Coexistence-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 281)
+- Web-verified: MC1485116 full text (mc.merill.net archive, 1 Oct 2026); Microsoft Learn *Deploy dedicated Exchange hybrid app* (updated 2026-05-07): build table, override names/sections, script switches, Graph permission names, scenario + cloud support tables, rollback steps, FAQ (DAuth, HMA, 1:N, N:1, rename). May 2026 SE HU context via WindowsForum summary of the Exchange Team post (TechCommunity pages returned empty shells to web_fetch; the "Impact of Exchange Online EWS Deprecation on Hybrid Rich Coexistence and Cross-org Sharing" post could not be fetched — not used).
+- Inferred, labelled as such in text: that the dedicated appId needs to be on `EwsAllowedAppIDs` while any hybrid scenario still uses EWS (MC1485116 lists "Exchange Server hybrid scenarios" as an EWS traffic source; Microsoft hasn't published an explicit "add the hybrid appId" instruction). `GraphBaseUrl` read defensively in the script in case the property is absent on pre-May-2026 builds.
+- Not web-verified: AADSTS700027 as the typical key-mismatch sign-in error (given as an example only); Test-OrganizationRelationship being DAuth-oriented.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (168/121/42 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Watch for Microsoft expanding Graph hybrid coverage (MailTips beyond OOF, cloud archive) and Graph-flow cloud support beyond Global — update HybridDedicatedApp-A/B tables. Re-check EWS after 10 Oct 2026 for any further MC posts. Other candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); DFS Namespace migration from server-name paths (check `DFS/Troubleshooting/Namespace` first); Exchange SE CU1 upgrade issues once released.
+
 ---
 
-Last updated: 2026-10-06 (auto-build, run 280, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-06 (auto-build, run 281, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

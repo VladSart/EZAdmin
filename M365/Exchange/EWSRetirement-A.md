@@ -37,7 +37,20 @@
 | **31 Aug 2026** | Recommended deadline for admins to set `EwsEnabled=True` + their own list to stay out of the automatic October block |
 | Sept 2026 | Microsoft **pre-populates** the allow list from observed usage for tenants whose admins had **not** modified `EwsAllowedAppIDs` |
 | **1 Oct 2026** | Phased disablement begins. Unset tenants get `EwsEnabled=False` as the rollout reaches them. The `True`+empty list combination becomes block-all |
+| 1 Oct 2026 | **MC1485116** published: enforcement update for `EwsAllowedAppIDs` |
+| 2 Oct 2026 | Microsoft identifies affected Worldwide tenants (`EwsEnabled=True`, no list). Tenants enabling EWS after this must write their own list |
+| **8–9 Oct 2026** | Microsoft creates/populates `EwsAllowedAppIDs` for qualifying tenants (True + no list on 3 Oct) from the **previous 60 days** of EWS activity |
+| **10 Oct 2026** | `EwsAllowedAppIDs` becomes **required** when `EwsEnabled=True` (Worldwide). Unlisted apps lose access immediately |
+| Early Oct 2026 → early Jul 2027 | Enforcement rollout across Worldwide, GCC, GCC High, DoD |
 | **1 Apr 2027** | Permanent shutdown. Admin control removed, "no exceptions" |
+
+> **Update 2026-10-06 (MC1485116).** The September pre-population described above was superseded for Worldwide tenants by an **8–9 Oct** population pass using a **60-day** activity window, with hard enforcement on **10 Oct 2026**. Further points from the MC post that change design decisions:
+> - **Infrequent apps are the main risk** of the auto-populated list — anything that didn't call EWS between roughly early August and early October is missing. Compare the auto list against your own inventory, not against the usage report alone.
+> - **Microsoft first-party callers** that can appear in usage data and must be listed if still needed: classic Outlook for Windows (minimum build 16.0.20430.20092, Aug 2026 — if EWS issues persist after the build is current, suspect customer-forced configuration such as legacy registry/policy that forces EWS paths), classic Outlook for Mac (Microsoft Office App ID), Excel Power Query, Power BI, and Exchange Server hybrid (dedicated hybrid app — `HybridDedicatedApp-A.md`).
+> - **Organization relationships across tenants** are explicitly not affected by the AppID requirement.
+> - **Propagation:** `EwsEnabled` ~1 h; `EwsAllowedAppIDs` up to 24 h.
+> - **Stability guarantee:** tenants with `EwsEnabled=True` **and** a configured list will not have `EwsEnabled` changed by Microsoft before April 2027. Tenants left `$null` stay in the phased-disablement population.
+> - `EwsAllowList` (user-agent) "is unrelated to EWS retirement and does not replace EWSAllowedAppIDs" — keep treating it as the separate, second gate described below.
 
 "Scream tests" (temporary blocks to surface dependencies) were announced as possible before October 2026. If a tenant saw unexplained, self-healing EWS outages over the summer, that's the likely cause.
 

@@ -1,6 +1,9 @@
 # Outlook for Mac (New vs Legacy, EWS Retirement, Profiles, Managed Preferences) — Reference Runbook (Mode A: Deep Dive)
 > Engineering-grade reference. Explains why, not just what.
 
+
+> **Update 2026-10-06 (MC1485116):** legacy/classic Outlook for Mac does not stop on a single date — it keeps working only while the tenant has `EwsEnabled=True` **and** the **Microsoft Office App ID** is in `EwsAllowedAppIDs` (required from **10 Oct 2026** for Worldwide tenants; Microsoft auto-populated lists 8–9 Oct from 60 days of activity). New Outlook for Mac is not affected. Hard stop remains **1 April 2027**. Allow-list mechanics: `M365/Exchange/EWSRetirement-B.md`.
+
 ---
 ## Skim Index
 - [Scope & Assumptions](#scope--assumptions)

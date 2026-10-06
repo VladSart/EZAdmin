@@ -3,6 +3,9 @@
 
 > ⚠️ **Time-critical (October 2026):** Exchange Web Services (EWS) in Exchange Online retires **1 October 2026**. **Legacy** Outlook for Mac talks to Exchange Online over EWS, so it **stops working against Exchange Online mailboxes from October 2026**. It keeps working against Exchange on-premises (SE) mailboxes (security updates only, through 9 Oct 2029). Any Mac pinned to legacy — most often by an admin `EnableNewOutlook` = `0` or `1` profile — is a ticket waiting to happen. Source: [End of support for legacy Outlook for Mac](https://support.microsoft.com/en-us/outlook/end-of-support-for-legacy-outlook-for-mac).
 
+
+> **Update 2026-10-06 (MC1485116):** legacy/classic Outlook for Mac does not stop on a single date — it keeps working only while the tenant has `EwsEnabled=True` **and** the **Microsoft Office App ID** is in `EwsAllowedAppIDs` (required from **10 Oct 2026** for Worldwide tenants; Microsoft auto-populated lists 8–9 Oct from 60 days of activity). New Outlook for Mac is not affected. Hard stop remains **1 April 2027**. Allow-list mechanics: `M365/Exchange/EWSRetirement-B.md`.
+
 ---
 ## Skim Index
 - [Triage](#triage)

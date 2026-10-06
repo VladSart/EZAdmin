@@ -3,6 +3,17 @@
 
 **Scope:** Exchange Web Services (SOAP) in **Exchange Online only**. Phased disablement begins **1 October 2026**; permanent shutdown **1 April 2027** with no re-enablement (Message Center MC1227454). Exchange Server (on-premises, incl. SE) is **not** affected. For the legacy Outlook for Mac angle see `macOS/Troubleshooting/OutlookMac-B.md`; for EWS-based cross-tenant free/busy see `CrossTenantCalendarSharing-B.md`.
 
+
+> **⚠️ Update 2026-10-06 — MC1485116 (published 1 Oct 2026) changes the dates below. Read this first.**
+> - **10 Oct 2026** is the enforcement date for Worldwide tenants that have `EwsEnabled=True`: from then `True` alone is **not** enough — an `EwsAllowedAppIDs` list is required. Apps not on the list lose EWS immediately.
+> - **8–9 Oct 2026:** Microsoft creates and populates `EwsAllowedAppIDs` for tenants that had `EwsEnabled=True` and **no list on 3 Oct 2026**, from the **previous 60 days** of EWS activity. Infrequent apps (quarterly jobs, year-end exports, DR tooling) will likely be missed. Tenants that enabled EWS **after 2 Oct** must build the list themselves.
+> - The list is a **replacement** value — every `Set-` must include all IDs (Fix 2 read-merge-write is mandatory, not optional).
+> - Propagation: **~1 h** for `EwsEnabled`, **up to 24 h** for `EwsAllowedAppIDs`.
+> - `EwsEnabled` unset (`$null`) → still subject to Microsoft's phased disablement (→ `False`). `True` + configured list → Microsoft won't modify `EwsEnabled` before April 2027.
+> - Microsoft first-party EWS callers that may need to be on the list if they show in usage reporting: classic Outlook for Windows (needs build **16.0.20430.20092** / Aug 2026 or later), **classic Outlook for Mac** (add the Microsoft Office App ID), Excel Power Query, Power BI, and **Exchange Server hybrid** (the dedicated `ExchangeServerApp-<orgGuid>` app — see `HybridDedicatedApp-B.md`). New Outlook for Mac is not affected.
+> - Cross-tenant **organization relationships** are not affected by the AppID requirement. `EwsAllowList` (user-agent list) is unrelated and does **not** replace `EwsAllowedAppIDs`.
+> - Rollout across Worldwide/GCC/GCC High/DoD runs from early Oct 2026 to early July 2027; 1 April 2027 remains the permanent shutdown.
+
 ---
 ## Skim Index
 - [Triage](#triage)
@@ -40,9 +51,11 @@ Get-MgServicePrincipal -Filter "appId eq '<AppId-GUID>'" | Select-Object Display
 | Result | Meaning | Action |
 |---|---|---|
 | `EwsEnabled : False` | EWS blocked tenant-wide (either you set it, or the 1 Oct 2026 rollout flipped an unset tenant) | → Fix 1 (re-enable with a correct allow list) |
-| `EwsEnabled : True` and `EwsAllowedAppIDs` empty/blank | From enforcement this is **block-all** (was allow-all before Oct 2026) | → Fix 1 |
+| `EwsEnabled : True` and `EwsAllowedAppIDs` empty/blank | From enforcement (**10 Oct 2026** for Worldwide per MC1485116) this is **block-all** (was allow-all before) | → Fix 1 |
 | `EwsEnabled : True`, list populated, affected app's App ID **missing** | App not allowed | → Fix 2 (read-merge-write) |
 | App ID **is** on the list, change made < 24 h ago | Server cache not refreshed yet | Wait up to 24 h, then retest |
+| List exists but you never wrote it, and a rarely-run app broke after 10 Oct 2026 | Microsoft auto-populated the list on 8–9 Oct from 60 days of activity and the app didn't run in that window | → Fix 2 (add its App ID) |
+| Hybrid free/busy/MailTips/photos for on-prem users broke after 10 Oct 2026 | Dedicated hybrid app's App ID not on the list (hybrid still on the EWS flow) | → `HybridDedicatedApp-B.md` Fix 3 |
 | App ID on list, > 24 h, still failing; `EwsApplicationAccessPolicy : EnforceAllowList` and app's user agent not in `EwsAllowList` (or matched in `EwsBlockList`) | Failing the **older** user-agent check — both checks must pass | → Fix 3 |
 | Org OK, but `Get-CASMailbox` shows `EwsEnabled : False` for the target/service mailbox | Per-mailbox block | → Fix 4 |
 | Affected client is legacy Outlook for Mac | EWS-only client — no durable fix | → Fix 5 |
@@ -206,4 +219,5 @@ Business owner sign-off for continued EWS use until 1 Apr 2027: <name>
 - **The usage report is your inventory, with blind spots.** It keeps 90 days at most, lags up to 10 days and is aggregated weekly, so quarterly or annual jobs can be missing. See the [EWS usage report](https://learn.microsoft.com/microsoft-365/admin/activity-reports/ews-usage).
 - **Two allow lists, two different keys.** The old `EwsAllowList` matches user-agent strings. The new one matches Entra App IDs, and both must pass. Plenty of "we added the App ID and it still fails" tickets are really this.
 - **April 2027 has no escape hatch.** Every App ID you allow today needs a named owner and a Graph migration date. Background: [Exchange Online EWS, Your Time is Almost Up](https://techcommunity.microsoft.com/blog/exchange/exchange-online-ews-your-time-is-almost-up/4492361) and MC1227454.
+- **The auto-populated list is a 60-day snapshot, not an inventory.** MC1485116 (1 Oct 2026) moved Worldwide enforcement to 10 Oct and populated lists on 8–9 Oct from 60 days of activity. Diff the list Microsoft wrote against your own app register before closing any ticket. Archive copy: [MC1485116 on mc.merill.net](https://mc.merill.net/message/MC1485116).
 - Deep dive, including the Graph-side permission audit for `full_access_as_app`/`EWS.AccessAsUser.All`: `EWSRetirement-A.md` + `Scripts/Get-EWSRetirementReadiness.ps1`.

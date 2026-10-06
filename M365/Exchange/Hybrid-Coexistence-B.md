@@ -287,3 +287,4 @@ Recent changes:       <any DNS, cert, or connector changes in last 30 days>
 - **Centralized mail transport** routes all EXO outbound through on-prem — useful for compliance but breaks if on-prem goes offline. Check `Get-OutboundConnector | Select RouteAllMessagesViaOnPremises`.
 - **MRS Proxy** must be enabled on on-prem CAS for mailbox moves: `Get-WebServicesVirtualDirectory | Select Server, MRSProxyEnabled`.
 - MS Docs — Exchange hybrid deployment overview: https://learn.microsoft.com/en-us/exchange/exchange-hybrid
+- **See also:** cross-premises Free/Busy, MailTips and photos now depend on the dedicated `ExchangeServerApp-*` app, its Setting Overrides and (from 10 Oct 2026) the EXO `EwsAllowedAppIDs` list — `HybridDedicatedApp-B.md`.
