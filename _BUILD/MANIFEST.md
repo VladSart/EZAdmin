@@ -5818,6 +5818,23 @@ _2026-09-25 (run 279, scheduled task "ezadmin-day-build"): fresh sandbox clone o
 
 **For next run:** Expansion Rules. After 1 Oct 2026, re-check EWS enforcement (EWSRetirement-A/B, OutlookMac-A/B). Candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); failover-cluster client access point / CNO permissions (check for existing cluster coverage first); DFS Namespace migration from server-name paths (check `DFS/` first).
 
+
+## New Topic — Exchange Hybrid GAL Split (cloud ↔ on-prem recipient visibility) (run 280)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Exchange/HybridGALSplit-B.md` | ✅ | auto-build |
+| `M365/Exchange/HybridGALSplit-A.md` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-HybridRecipientVisibilityAudit.ps1` | ✅ | auto-build |
+
+_2026-10-06 (run 280, scheduled task "ezadmin-day-build"): fresh sandbox clone of `master` (HEAD `273cb69`, run 279); connected-folder mount still stale (shows run 272 state) — untouched. Queue empty → Expansion Rules; took run 279's first candidate. Gap check: `AddressBook-OAB-A.md` explicitly scopes out hybrid; `Hybrid-Coexistence-A/B` covers connectors/routing, not recipient representation. Built B (5 fixes: Enable-RemoteMailbox + GUID stamp for licensed-before-enabled users, GUID zero/mismatch, cloud-only objects via non-synced mail contact or soft-match, hidden-flag SOA, on-prem mbx missing from cloud), A (two-address-book/one-SOA model, ExchangeGuid not written back, tools-only snap-in, type-conversion nuances, 5 bulk playbooks with rollback), read-only audit script (9 finding codes, requires `Connect-ExchangeOnline -Prefix Cloud` to avoid cmdlet collisions). Updated `M365/Exchange/_AGENT.md` (3 rows, 2 entry points), `AGENT_INDEX.md` (1 row), see-also line in `AddressBook-OAB-B.md`. EWS 1-Oct-2026 enforcement re-check: `EWSRetirement-A/B` already document EwsEnabled null→false flip and `EWSAllowedAppIDs` (27/17 mentions) — no update needed._
+
+## ⚠️ Skipped Items / Notes (run 280)
+- Web-verified (Ali Tajran / MS Q&A, Oct 2026 search): cloud mailbox created by licensing without `Enable-RemoteMailbox` doesn't appear on-prem; fix is `Enable-RemoteMailbox` + `Set-RemoteMailbox -ExchangeGuid`; on-prem GUID stays zero because EXO's GUID isn't synced back. EWS: phased disablement from 1 Oct 2026, EwsEnabled null→false, permanent off 1 Apr 2027.
+- Not web-verified (established docs/field practice): `-Shared/-Room/-Equipment` CU minimums, `RecipientManagement` snap-in name, `Features.BlockSoftMatchEnabled` property path, `Disable-RemoteMailbox` cloud-side consequences (stated cautiously). MS Learn URLs in Learning Pointers are the stable doc paths but were not fetched this run.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (87/60/33 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Candidates: failover-cluster client access point / CNO permissions (FailoverClustering-B only covers CNO for file share witness — a dedicated CNO/VCO prestaging + `Event 1194/1069` runbook may fit); DFS Namespace migration from server-name paths (check `DFS/Troubleshooting/Namespace` first); Exchange Management Tools-only "last server removal" runbook (check `Hybrid-Coexistence-A.md` coverage first).
+
 ---
 
-Last updated: 2026-09-25 (auto-build, run 279, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-06 (auto-build, run 280, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

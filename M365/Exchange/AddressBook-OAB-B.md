@@ -2,6 +2,7 @@
 > Fix or escalate in under 10 minutes.
 > Covers: new/renamed user not showing in Outlook's address book, hidden user still visible (or visible user hidden), stale autocomplete entries bouncing with `IMCEAEX` NDRs, Address Book Policy (ABP) scoping surprises.
 > Deep dive: `AddressBook-OAB-A.md` · Script: `Scripts/Get-AddressBookDiagnostics.ps1`
+> Hybrid org and the recipient is missing on the *other* side (cloud mailbox not in on-prem GAL, or vice versa)? → `HybridGALSplit-B.md`
 
 ---
 ## Skim Index
