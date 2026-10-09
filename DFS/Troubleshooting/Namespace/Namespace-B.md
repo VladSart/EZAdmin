@@ -216,3 +216,5 @@ AD namespace object:   [Present / Missing]
 - **DFS referral process** — The client never talks directly to the namespace share. It gets a *referral* (list of UNC targets ranked by site cost) and then connects independently. Understanding this changes how you diagnose access failures.
 - **`dfsutil`** — The most powerful DFS command-line tool. Worth spending 30 minutes reading `dfsutil /?` — most engineers only know the basic flags.
 - **r/sysadmin DFS thread** — Search "DFS replication not working site" on Reddit — recurring patterns around site link costs and target priority ordering come up constantly.
+
+> **See also (run 283):** migrating clients onto a namespace, DomainV1→V2, or stand-alone→domain — `DFS/Troubleshooting/NamespaceMigration/NamespaceMigration-B.md`.

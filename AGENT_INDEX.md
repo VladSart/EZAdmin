@@ -47,6 +47,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Topic | Primary Folder | Also Check |
 |-------|---------------|------------|
 | DFS Namespace failures, referrals, access | `DFS/` | `EntraID/`, `Windows/` |
+| DFS Namespace migration — `\\server\share` → domain namespace, Windows 2000 mode → 2008 mode (DomainV1→V2), stand-alone → domain-based, dfsutil export/import | `DFS/Troubleshooting/NamespaceMigration/NamespaceMigration-B.md` | `Windows/` (FileServerAlias) |
 | DFS Replication backlog, SYSVOL, conflicts | `DFS/` | `Windows/` |
 | Intune enrollment failures | `Intune/` | `Autopilot/`, `EntraID/` |
 | Intune policy conflicts, compliance not applying | `Intune/` | `EntraID/`, `Windows/` |
@@ -79,6 +80,7 @@ Format: 3–6 bullet points. Each one is a concept, topic, or resource tied dire
 | Outlook desktop client (classic vs. New Outlook, Autodiscover, profile/OST, connection status, credential loops) | `M365/Exchange/` | `EntraID/` (auth/token layer), `Security/ConditionalAccess/` (legacy-auth blocks surfacing as client sign-in loops) |
 | Exchange Online GAL / Offline Address Book — user missing from Outlook address book, classic Outlook OAB lag, hide-from-GAL SOA, AddressListMembership, Address Book Policies, IMCEAEX autocomplete NDRs / X500 | `M365/Exchange/AddressBook-OAB-B.md` / `-A.md` | `M365/Exchange/CloudManagedMailboxes-A.md`, `Security/Purview/InformationBarriers-B.md` |
 | Exchange hybrid GAL split — cloud mailbox missing from on-prem GAL/EAC (licensed before Enable-RemoteMailbox), RemoteMailbox ExchangeGuid zero/mismatch, cloud-only mailboxes in hybrid, hidden-flag SOA, on-prem mailbox missing from cloud GAL | `M365/Exchange/HybridGALSplit-B.md` / `-A.md` | `M365/Exchange/AddressBook-OAB-A.md`, `M365/Exchange/Hybrid-Coexistence-B.md` |
+| Removing the last on-prem Exchange server — Management Tools-only recipient management (Add-PSSnapin *RecipientManagement, Recipient Management EMT, CleanupActiveDirectoryEMT), relay/SCP blockers, shut down never uninstall | `M365/Exchange/LastExchangeServer-B.md` / `-A.md` | `M365/Exchange/CloudManagedMailboxes-B.md`, `M365/Exchange/HybridGALSplit-B.md` |
 | Exchange Online mailbox migration batches — Cutover (single-batch, ≤2,000/practical ≤150), Staged (legacy Exchange 2003/2007 source only), IMAP (incl. Google Workspace), Remote Move (hybrid onboarding/offboarding via `New-MoveRequest`), and Cross-tenant (tenant-to-tenant, org-relationship + `MailUser` pre-staging) migration batch mechanics, WLM/MRS/MRSProxy throttling, and Data Consistency Score skipped-item handling | `M365/Exchange/` (`MigrationBatches-A/B.md`, `Scripts/Get-MigrationBatchHealth.ps1`) | `M365/Exchange/Hybrid-Coexistence-A.md` (hybrid topology/HCW/routing — the prerequisite this topic assumes is already in place), `EntraID/Troubleshooting/CrossTenant-A.md` (Entra B2B/external-identity layer — a different configuration surface from the Exchange organization-relationship mailbox-move mechanics here) |
 | SharePoint/OneDrive sync, permissions, migration | `M365/SharePoint-OneDrive/` | `PowerAutomate/` |
 | Teams calling, policies, devices | `M365/Teams/` | `EntraID/` |

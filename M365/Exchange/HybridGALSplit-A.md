@@ -249,3 +249,5 @@ Compress-Archive "$out\*" "$out.zip" -Force; "Evidence: $out.zip"
 - Understand which attributes Entra Connect writes back — [Exchange hybrid writeback](https://learn.microsoft.com/entra/identity/hybrid/connect/reference-connect-sync-attributes-synchronized#exchange-hybrid-writeback) — and notice `msExchMailboxGuid` isn't in the list; that's why Playbook 2 exists.
 - Soft vs hard match (Playbook 3): [Entra Connect: soft matching](https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-install-existing-tenant) — know it before you create an AD object that's meant to adopt a cloud mailbox.
 - Samuraj-cz's [Exchange Hybrid — mailboxes and their locations, recipients, attributes](https://www.samuraj-cz.com/en/article/exchange-hybrid-mailboxes-and-their-locations-recipients-attributes-and-bug-fixes/) is a good attribute-level map of `msExchRecipientTypeDetails` / `msExchRemoteRecipientType` values.
+
+> **See also (run 283):** full tools-only / last-Exchange-server shutdown procedure — `LastExchangeServer-B.md` / `-A.md`.

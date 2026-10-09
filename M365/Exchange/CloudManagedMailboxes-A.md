@@ -441,3 +441,5 @@ Write-Host "On-prem evidence collected -> $reportPath" -ForegroundColor Green
 - **This feature is Microsoft's stated on-ramp for retiring the Last Exchange Server**, not a general-purpose hybrid attribute-editing convenience. Frame rollout conversations around that end goal — see [Decommission the last Exchange Server](https://learn.microsoft.com/en-us/exchange/hybrid-deployment/decommission-last-exchange-server) for the full sequencing (Exchange-attribute SOA → object-level SOA → LES decommission).
 - Full attribute-by-attribute editable/writeback map (105 rows: identity vs. Exchange, cmdlet, and parameter for each): [Cloud-based management of Exchange attributes for Remote Mailboxes](https://learn.microsoft.com/en-us/exchange/hybrid-deployment/enable-exchange-attributes-cloud-management)
 
+
+> **See also (run 283):** the alternative exit — keep AD as SOA and remove the server via Management Tools only — `LastExchangeServer-A.md`.

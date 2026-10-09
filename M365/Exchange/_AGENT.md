@@ -49,7 +49,10 @@ Covers:
 | `Scripts/Get-AddressBookDiagnostics.ps1` | Read-only: per-recipient hidden/SOA/AddressListMembership/X500, viewer ABP scoping, OAB LastTouchedTime, local OAB cache freshness + `DownloadOAB` policy (-ClientOnly on the user's PC) |
 | `HybridGALSplit-B.md` | Hotfix: hybrid GAL split — cloud mailbox invisible to on-prem users (licensed before `Enable-RemoteMailbox`), zero/mismatched `RemoteMailbox` `ExchangeGuid`, cloud-only mailboxes in a hybrid org, hidden-flag SOA, on-prem mailbox missing from cloud GAL |
 | `HybridGALSplit-A.md` | Deep dive: two address books / one SOA model, RemoteMailbox representation, why `ExchangeGuid` isn't written back, soft-match conversion of cloud-only objects, tools-only (no Exchange server) recipient management, 5 bulk playbooks |
+| `LastExchangeServer-B.md` | Hotfix: shutting down the last on-prem Exchange server and managing recipients with the Management Tools snap-in — eligibility triage, relay/SCP/target-delivery-domain blockers, EMT permissions, ~40 s delay, tools CU upgrade, irreversible AD cleanup |
+| `LastExchangeServer-A.md` | Deep dive: why the LES existed, snap-in architecture (direct AD writes, no RBAC/audit), shut-down-never-uninstall rationale, CleanupActiveDirectoryEMT scope, tools-only vs cloud-SOA decision tree, 5 playbooks |
 | `Scripts/Get-HybridRecipientVisibilityAudit.ps1` | Read-only: compares on-prem RemoteMailbox vs EXO mailboxes — unlinked cloud mailboxes, cloud-only objects, GUID zero/mismatch, routing address, hidden/type mismatches, on-prem mailboxes missing in EXO (needs `Connect-ExchangeOnline -Prefix Cloud`) |
+| `Scripts/Get-LastExchangeServerReadiness.ps1` | Read-only (EMS on last server): on-prem mailboxes/PFs, multiple servers, SMTP relay clients from tracking logs, custom receive connectors, TargetDeliveryDomain, MX, Autodiscover SCP, Scripting Agent, schema rangeUpper, EMT group → CSV |
 | `Outlook-Client-A.md` | Deep dive: classic Outlook vs. New Outlook architecture split, Autodiscover v2/v1/SCP resolution chain, Cached Exchange Mode/OST model, modern-auth token caching |
 | `DirectSendAbuse-B.md` | Hotfix: unauthenticated Direct Send abuse — confirm RejectDirectSend state, spot a spoofed message via headers, harden SPF, migrate legitimate dependents |
 | `DirectSendAbuse-A.md` | Deep dive: why Direct Send bypasses the intra-org SPF exemption, the 2025–2026 abuse campaign and Microsoft's architectural-limitation stance, RejectDirectSend mechanics, KQL detection query |
@@ -100,6 +103,7 @@ Covers:
 - "On-prem users can't email cloud users or vice versa" → `Hybrid-Coexistence-B.md`
 - "Hybrid connector certificate expired" → `Hybrid-Coexistence-B.md`
 - "Cloud user not in the on-prem GAL / not in on-prem EAC", "on-prem users get 5.1.1 sending to a new cloud user", "shared mailbox created in EXO can't be found by on-prem users" → `HybridGALSplit-B.md`
+- "Can we get rid of our last Exchange server?", "Recipient Management EMT", "Add-PSSnapin *RecipientManagement access denied", "Set-RemoteMailbox takes 40 seconds" → `LastExchangeServer-B.md`
 - "Offboarding move back on-prem fails with GUID error", "ExchangeGuid is all zeros" → `HybridGALSplit-B.md` (Fix 2)
 - "SPF / DKIM / DMARC failing, email rejected by recipient" → `Mail-Flow-B.md`
 - "Transport rule blocking legitimate email" → `Mail-Flow-B.md` (transport rules section)

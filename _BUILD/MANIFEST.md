@@ -5871,6 +5871,26 @@ _2026-10-09 (run 282, scheduled task "ezadmin-night-build"): connected-folder mo
 
 **For next run:** Expansion Rules. Candidates: DFS Namespace migration from server-name UNC paths to domain-based namespace (no migration content in `DFS/Troubleshooting/Namespace`); Exchange Management Tools-only "last Exchange server" runbook (check `Hybrid-Coexistence-A.md` first); re-check EWS after 10 Oct 2026 enforcement for new MC posts; SQL AG listener multi-subnet client timeouts (`RegisterAllProvidersIP`/`MultiSubnetFailover`) if tickets appear.
 
+
+## New Topics — DFS Namespace migration + Last Exchange Server (Management Tools only) (run 283)
+| File | Status | Assigned |
+|------|--------|---------|
+| `DFS/Troubleshooting/NamespaceMigration/NamespaceMigration-B.md` | ✅ | auto-build |
+| `DFS/Troubleshooting/NamespaceMigration/NamespaceMigration-A.md` | ✅ | auto-build |
+| `DFS/Scripts/Get-DFSNamespaceMigrationReadiness.ps1` | ✅ | auto-build |
+| `M365/Exchange/LastExchangeServer-B.md` | ✅ | auto-build |
+| `M365/Exchange/LastExchangeServer-A.md` | ✅ | auto-build |
+| `M365/Exchange/Scripts/Get-LastExchangeServerReadiness.ps1` | ✅ | auto-build |
+
+_2026-10-09 (run 283, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169-era git state) — untouched; worked in a fresh `/tmp` clone of `master` (HEAD `d23af83`, run 282). Queue empty → Expansion Rules, took both of run 282's top candidates. Gap checks: `DFS/` had no export/import, DomainV1→V2 or stand-alone→domain content (grep for `adddom`, `root export`, `2000 mode` = 0 hits); Exchange LES tools-only path was one paragraph in `HybridGALSplit-A.md` and SOA-only coverage in `CloudManagedMailboxes-A/B`. Updated `DFS/_AGENT.md` (3 rows), `M365/Exchange/_AGENT.md` (3 rows, 1 entry point), `AGENT_INDEX.md` (2 rows), see-also lines in `Namespace-B.md`, `HybridGALSplit-A.md`, `CloudManagedMailboxes-A.md`._
+
+## ⚠️ Skipped Items / Notes (run 283)
+- Web-verified (Microsoft Learn, fetched): *Manage recipients in Exchange Hybrid environments using Management tools* (updated 2025-10-16) — eligibility list, snap-in cmdlet list, `Add-PermissionForEMT.ps1` / *Recipient Management EMT*, built-in admin mailbox disable, TargetDeliveryDomain, Scripting Agent copy, ~40 s audit-log-initializer delay, shut-down-never-uninstall, permanent-shutdown sequence (federation trust/cert, `-ResetFirstPartyServicePrincipalKeyCredentials`, Hybrid Agent removal), `CleanupActiveDirectoryEMT.ps1` scope, CU-upgrade `/PrepareAD` + re-cleanup. DFS V1→V2 export/remove/adddom v2/import merge + "dfsutil does not import namespace servers" from the MS Learn migration article (via search summary).
+- Not web-verified (established docs/field practice): `dfsutil root import compare/set` semantics; stand-alone→domain import into a differently-typed root; 5,000-folder V1 guidance; Autodiscover SCP keyword GUID and `ExcludeScpLookup`; schema `rangeUpper` 17003 for 2019 CU12+; EXO IP prefixes used by the relay heuristic in `Get-LastExchangeServerReadiness.ps1` (deliberately conservative — unknown IPs are reported, not hidden).
+- No PowerShell parser in sandbox; both scripts bracket-balanced via Python (0/0/0), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Candidates: re-check EWS after 10 Oct 2026 enforcement for new MC posts (EWSRetirement-A/B, OutlookMac-A/B); SQL AG listener multi-subnet client timeouts (`RegisterAllProvidersIP`/`MultiSubnetFailover`); Task Scheduler troubleshooting runbook (still no dedicated file — verify by grep first); DFS Namespace delegation/`Grant-DfsnAccess` if tickets appear.
+
 ---
 
-Last updated: 2026-10-09 (auto-build, run 282, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 283, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).

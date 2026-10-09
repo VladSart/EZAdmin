@@ -32,12 +32,15 @@ This module covers setup, health validation, access failures, replication backlo
 | `Troubleshooting/ABE/DFS-ABE-A.md` | Deep dive: namespace-root vs. per-share ABE flags, DFSR non-replication of share settings |
 | `Troubleshooting/SiteCosting/DFS-SiteCosting-B.md` | Hotfix: users routed to wrong/slow folder target — referral ordering & AD site-costing misconfiguration |
 | `Troubleshooting/SiteCosting/DFS-SiteCosting-A.md` | Deep dive: referral ordering algorithm, AD site/subnet/site-link cost dependency chain, priority overrides |
+| `Troubleshooting/NamespaceMigration/NamespaceMigration-B.md` | Hotfix: migrating clients from `\\server\share` to a domain namespace, Windows 2000 mode (DomainV1) → 2008 mode (DomainV2), stand-alone → domain-based; post-cutover stale paths/referrals |
+| `Troubleshooting/NamespaceMigration/NamespaceMigration-A.md` | Deep dive: root types & config stores, dfsutil export/import set/merge/compare semantics (root targets never imported), where legacy server paths hide, phased cutover, back-end server swap |
 | `Scripts/Test-DFSHealth.ps1` | Full health check: namespace targets, replication backlog, event errors |
 | `Scripts/Get-DFSRBacklog.ps1` | Backlog size per replication group/connection |
 | `Scripts/Get-DFSRMigrationState.ps1` | Cross-references dfsrmig state against live DC inventory, flags orphaned DCs and unshared SYSVOL |
 | `Scripts/Get-DFSNamespaceConfigAudit.ps1` | Namespace-wide config audit: covers both ABE state and AD site-costing/referral settings in one report |
 | `Scripts/Get-DFSABEAudit.ps1` | Per-folder-target Access-Based Enumeration audit — walks every namespace folder/target, queries `Get-SmbShare` remotely via `Invoke-Command`, flags namespace-vs-share `FolderEnumerationMode` drift and standalone-namespace HA risk (read-only) |
 | `Scripts/Get-DFSSiteCostingAudit.ps1` | Referral-ordering audit — `Get-ADReplicationSubnet` coverage gaps, `Get-ADReplicationSiteLink` costs, optional `Get-DfsnFolderTarget` priority-class overrides; notes the namespace-level Referral Ordering Method has no exposing cmdlet (read-only) |
+| `Scripts/Get-DFSNamespaceMigrationReadiness.ps1` | Read-only migration readiness: root types/targets/folder counts, DFL, V1/stand-alone/single-target flags, optional folder-target reachability, legacy `\\server` references in GPOs, AD home/profile paths and NETLOGON scripts |
 | `Troubleshooting/FSRM/FSRM-B.md` | Hotfix: service/config-store failures, quota template drift, nested-quota confusion, notification issues, screen/report failures |
 | `Troubleshooting/FSRM/FSRM-A.md` | Deep dive: quota/screen/classification architecture, config store internals, USN journal real-time classification trade-off, migration and recovery playbooks |
 | `Scripts/Get-FSRMAudit.ps1` | One-shot FSRM audit: service/config-store ACL health, ReFS-volume violations, stale derived quotas, nested-quota risk, .tmp-blocking screens, SMTP/report health, classification mode |
