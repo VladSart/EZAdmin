@@ -4691,7 +4691,7 @@ _2026-09-02 (run 210, scheduled task "ezadmin-day-build"): started this run from
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 255, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
 
 ---
 
@@ -4988,7 +4988,7 @@ _2026-09-03 (run 229, scheduled task "ezadmin-night-build"): started with the st
 
 ---
 
-Last updated: 2026-09-25 (auto-build, run 255, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
 
 ## New Topic — AD FS DKM Container ACL Hardening / CVE-2026-56155 (run 230)
 | File | Status | Assigned |
@@ -5891,6 +5891,23 @@ _2026-10-09 (run 283, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** Expansion Rules. Candidates: re-check EWS after 10 Oct 2026 enforcement for new MC posts (EWSRetirement-A/B, OutlookMac-A/B); SQL AG listener multi-subnet client timeouts (`RegisterAllProvidersIP`/`MultiSubnetFailover`); Task Scheduler troubleshooting runbook (still no dedicated file — verify by grep first); DFS Namespace delegation/`Grant-DfsnAccess` if tickets appear.
 
+
+## New Topics — Windows volume activation (KMS / ADBA / Subscription Activation) (run 284)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/VolumeActivation-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/VolumeActivation-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-VolumeActivationHealth.ps1` | ✅ | auto-build |
+
+_2026-10-09 (run 284, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169-era git state) — untouched; worked in a fresh `/tmp` clone of `master` (HEAD `1654993`, run 283), pushed from the sandbox using the mount's configured remote. Queue empty → Expansion Rules. Run 283 candidates checked: Task Scheduler already has `TaskScheduler-A/B` + `Get-ScheduledTaskHealth.ps1` (pointer stale — dropped); EWS re-check deferred (enforcement is 10 Oct 2026, tomorrow). Gap check found no OS volume-activation runbook (`_vlmcs` / ADBA / Subscription Activation had 0 runbook hits; `slmgr` only inside ESU/VBScript content). Built: channel-first triage, KMS SRV/1688/count/CSVLK-generation/CMID model, ADBA activation objects, Subscription Activation identity chain, 7 fixes + 5 playbooks, CIM-based (no VBScript) fleet audit. Updated `Windows/_AGENT.md` (2 rows, 1 entry point) and `AGENT_INDEX.md` (1 row)._
+
+## ⚠️ Skipped Items / Notes (run 284)
+- Web-verified via search (Microsoft Learn/Support): Server 2025 Standard/Datacenter GVLKs, 0xC004F074 causes (version mismatch, clock skew/0xC004F06C, event 12288 guidance), 0xC004F038 meaning, Subscription Activation requirements (Entra/hybrid join only, per-user licensing, firmware key for automatic non-KMS activation). Direct web_fetch of Learn pages was blocked (provenance), so content came from search summaries.
+- Not web-verified (established docs/field practice): Win 10/11 Enterprise/Pro GVLKs, 7-day renewal / 2-hour retry / 30-day CMID retention, event 12289/12290 roles, `slmgr /ad-activation-online` and `/ao-list`, Universal Store Service APIs AppId `45a330b1-…`, `ClipRenew.exe` (flagged "not present on all builds"), schema objectVersion 56 for Server 2012, service-plan names `WIN10_PRO_ENT_SUB`/`WIN10_VDA_E5`. Script reads CIM properties defensively.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (0/0/0), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Candidates: re-check EWS after 10 Oct 2026 enforcement for new MC posts (EWSRetirement-A/B, OutlookMac-A/B); SQL AG listener multi-subnet client timeouts (`RegisterAllProvidersIP`/`MultiSubnetFailover`) — still no dedicated file; Office/M365 Apps volume + shared computer activation (deliberately out of scope of VolumeActivation); DFS Namespace delegation/`Grant-DfsnAccess` if tickets appear.
+
 ---
 
-Last updated: 2026-10-09 (auto-build, run 283, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
