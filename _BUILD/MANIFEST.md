@@ -5854,6 +5854,23 @@ _2026-10-06 (run 281, scheduled task "ezadmin-night-build"): connected-folder mo
 
 **For next run:** Expansion Rules. Watch for Microsoft expanding Graph hybrid coverage (MailTips beyond OOF, cloud archive) and Graph-flow cloud support beyond Global — update HybridDedicatedApp-A/B tables. Re-check EWS after 10 Oct 2026 for any further MC posts. Other candidates: Exchange hybrid OAB/GAL split (check `AddressBook-OAB-A.md` first); DFS Namespace migration from server-name paths (check `DFS/Troubleshooting/Namespace` first); Exchange SE CU1 upgrade issues once released.
 
+
+## New Topics — Failover cluster AD objects (CNO/VCO) (run 282)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/ClusterADObjects-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/ClusterADObjects-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-ClusterADObjectAudit.ps1` | ✅ | auto-build |
+
+_2026-10-09 (run 282, scheduled task "ezadmin-night-build"): connected-folder mount still stale (shows run 169-era git state with uncommitted diffs) — untouched; worked in a fresh `mktemp -d` clone of `master` (HEAD `c65e317`, run 281), pushed from the sandbox using the mount's configured remote. Queue empty → Expansion Rules. Took run 281's "failover-cluster CNO/VCO prestaging + Event 1194/1069" candidate: grep confirmed `FailoverClustering-A/B` only mention the CNO for file-share-witness permissions. Built: installer→CNO / CNO→VCO creation model, OU delegation via `dsacls` (CC;computer + RP), disabled-prestage flow, ObjectGUID binding (restore not recreate), Repair AD Object semantics, DNS record ownership, AD-detached clusters, MSP failure patterns (stale-computer cleanup, OU moves, MachineAccountQuota=0). Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `AGENT_INDEX.md` (1 row), see-also in `FailoverClustering-B.md`._
+
+## ⚠️ Skipped Items / Notes (run 282)
+- Web-verified (Microsoft Learn): *Configure cluster accounts in Active Directory* (updated 2025-07-17) — installer rights, disabled CNO prestage, VCO prestage with CNO Full Control; *Can't bring a network name online* (updated 2026-02-12) — 1069/1207 pair, permissions→Repair→validation→DNS checklist, 1050–1052/1211/1212/1218/1219 meanings, `Get-ClusterLog -TimeSpan 5 -UseLocalTime`. Event 1194 wording and 1206 / `80072030` / GUID-mismatch variants from MS Q&A + archived MS blogs via search.
+- Not web-verified (established docs/field practice): 1196/1257 as DNS-registration events; `Update-ClusterNetworkNameResource` re-registering DNS; Repair AD Object being GUI-only (no PowerShell equivalent documented); network-name private property names (script reads them defensively); `AdministrativeAccessPoint` values. Recycle Bin learning-pointer URL is the ADAC enhancements page, not fetched.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (0/0/0 surplus), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Candidates: DFS Namespace migration from server-name UNC paths to domain-based namespace (no migration content in `DFS/Troubleshooting/Namespace`); Exchange Management Tools-only "last Exchange server" runbook (check `Hybrid-Coexistence-A.md` first); re-check EWS after 10 Oct 2026 enforcement for new MC posts; SQL AG listener multi-subnet client timeouts (`RegisterAllProvidersIP`/`MultiSubnetFailover`) if tickets appear.
+
 ---
 
-Last updated: 2026-10-06 (auto-build, run 281, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 282, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

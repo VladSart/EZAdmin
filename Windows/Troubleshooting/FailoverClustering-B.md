@@ -13,7 +13,7 @@
 ---
 ## Triage
 
-**This runbook covers the Windows Server Failover Clustering (WSFC) layer itself** — quorum/witness health, cluster networking, node quarantine, and cluster service state. It is the foundation layer underneath role-specific clusters; for the workload-specific health sitting on top of a healthy cluster, see `StorageSpacesDirect-B.md` (pool-level health) or `HyperV-B.md` (CSV/VM/Live Migration).
+**This runbook covers the Windows Server Failover Clustering (WSFC) layer itself** — quorum/witness health, cluster networking, node quarantine, and cluster service state. It is the foundation layer underneath role-specific clusters; for the workload-specific health sitting on top of a healthy cluster, see `StorageSpacesDirect-B.md` (pool-level health) or `HyperV-B.md` (CSV/VM/Live Migration). For CNO/VCO computer-object, OU-permission and network-name failures (Events 1194/1207), see `ClusterADObjects-B.md`.
 
 ```powershell
 # 1. Cluster and node state — the fastest single "is the cluster healthy" check
