@@ -17,7 +17,7 @@
 ---
 ## Scope & Assumptions
 - **In scope:** Windows client (10/11) and Windows Server (2016–2025) OS activation through the three organisational mechanisms MSPs actually meet: **Key Management Service (KMS)**, **Active Directory-Based Activation (ADBA)**, and **Windows Enterprise Subscription Activation** (Pro → Enterprise step-up via E3/E5). MAK is covered where it intersects (conversion, fallback).
-- **Out of scope:** Office/M365 Apps activation (`ospp.vbs`, shared computer activation, Office KMS host packs), Windows 10 ESU MAK add-on activation (`ESU-A.md`), RDS CAL activation (`RDSLicensing-A.md`), Azure VM activation against Azure's KMS (`azkms.core.windows.net`) beyond a pointer.
+- **Out of scope:** Office/M365 Apps activation (`ospp.vbs`, shared computer activation, Office KMS host packs — volume Office is `M365/Apps/OfficeVolumeActivation-A.md`, subscription is `M365/Apps/Activation-A.md`), Windows 10 ESU MAK add-on activation (`ESU-A.md`), RDS CAL activation (`RDSLicensing-A.md`), Azure VM activation against Azure's KMS (`azkms.core.windows.net`) beyond a pointer.
 - Commands assume elevated PowerShell. `slmgr.vbs` is still the authoritative tool; there is no first-party PowerShell module for client licensing — the WMI classes `SoftwareLicensingProduct` and `SoftwareLicensingService` back it and are used in the script.
 - **VBScript note:** `slmgr.vbs` is a VBScript. On builds where the VBScript Feature-on-Demand has been removed (see `VBScriptDeprecation-A.md`), `slmgr.vbs` won't run — query the CIM classes directly instead (cheat sheet shows equivalents).
 

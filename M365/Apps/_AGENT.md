@@ -32,6 +32,9 @@ Does not cover Outlook-specific profile/Autodiscover/OST/COM add-in issues (`M36
 | `Activation-B.md` | Hotfix — Microsoft 365 Apps activation/licensing: Unlicensed Product / Product Deactivated / Subscription expired, WAM wrong-account and sign-in loops, SCA on/off on existing installs, 5-device limit, Business↔Enterprise SKU mismatch, scripted activation reset |
 | `Activation-A.md` | Deep dive — vNext licensing (per-user licence files, why OSPP.VBS shows nothing, vNextDiag.ps1), WAM/PRT identity dependency, user-based vs SCA vs device-based modes, SCA token roaming on FSLogix/non-persistent VDI, tenant-migration and product-switch playbooks |
 | `Scripts/Get-M365AppsActivationDiagnostics.ps1` | Read-only per-user/device activation audit: product IDs, SCA (C2R/policy/token override) vs host type, licence/token file age, cached Office identities vs expected UPN, legacy ADAL overrides, dsregcmd PRT, BrokerPlugin, endpoint 443, AAD events, optional Graph Apps-plan check |
+| `OfficeVolumeActivation-B.md` | Hotfix — volume-licensed Office LTSC 2024/2021 & Office 2019 (incl. volume Visio/Project) activation via KMS/ADBA/MAK: Volume-vs-Retail product check, Office licence rows in Windows SPP via CIM (no VBScript), `_vlmcs` SRV/TCP 1688, Office-specific count of 5, 0xC004F074/F038/F042/C008/F050 routing, GVLK/host/MAK/ODT fixes |
+| `OfficeVolumeActivation-A.md` | Deep dive — Office-in-SPP architecture (app ID `0ff1ce15-…`), product licence files vs keys, KMS per-generation host OS + Volume License Pack rules (2024 → Server 2019+), ADBA for Office, MAK/VAMT, OSPP.VBS→CIM method mapping, coexistence with M365 Apps, 5 playbooks |
+| `Scripts/Get-OfficeVolumeActivationHealth.ps1` | Read-only client/KMS-host check: install classification (Volume/Retail/Subscription), Office licence rows + status/grace/reason decode, manual vs discovered KMS host, SRV + 1688 test, SPP events; `-HostMode` adds Office CSVLK rows, client count, firewall + 12290 activity; CSV |
 | `Scripts/Get-M365AppsHealth.ps1` | Read-only fleet/device health check: install type, resolved update channel + authority (GPO/ODT/admin center), update task state, CDN reachability, activation status |
 
 ---
@@ -40,6 +43,8 @@ Does not cover Outlook-specific profile/Autodiscover/OST/COM add-in issues (`M36
 
 - "Unlicensed Product" / "Product Deactivated" / "Subscription expired" / wrong account in File > Account → `Activation-B.md` (identity first, then reset)
 - "Enable Shared Computer Activation on an existing RDS/AVD host" or "users hit the 5-device limit on the session host" → `Activation-B.md` Fix 4 / `Activation-A.md` Playbook 1
+- "Office LTSC 2024 / 2021 says Unlicensed" / "KMS isn't activating Office" / 0xC004F074, 0xC004F038, 0xC004F042 on Office → `OfficeVolumeActivation-B.md` (confirm *Volume* product first)
+- "Our KMS host activates Windows but not Office 2024" → `OfficeVolumeActivation-B.md` Fix 3 / `OfficeVolumeActivation-A.md` Playbook A (VLP + CSVLK per generation)
 - "I changed the update channel and nothing happened" → `Deployment-UpdateChannels-B.md` § Fix 1 — check for a GPO silently overriding ODT/admin center
 - "Office repair dialog does nothing when I click Repair" → `Deployment-UpdateChannels-B.md` § Fix 3 — Quick Repair → Online Repair fallback sequence
 - "Unlicensed Product / can't sign in" on a shared or kiosk device → `Deployment-UpdateChannels-B.md` § Fix 4 — Shared Computer Activation quota/token issue

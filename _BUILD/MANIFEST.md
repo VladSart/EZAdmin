@@ -5943,6 +5943,30 @@ _2026-10-17 (run 286, scheduled task "ezadmin-night-build"): connected-folder mo
 
 **For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); Office LTSC 2024 volume activation (KMS/MAK via OSPP — out of scope of Activation-A); DFS Namespace delegation/`Grant-DfsnAccess`; SQL Server FCI on S2D / DNN for FCI if tickets appear.
 
+
+## New Topics — Office LTSC / volume activation (run 287)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Apps/OfficeVolumeActivation-B.md` | ✅ | auto-build |
+| `M365/Apps/OfficeVolumeActivation-A.md` | ✅ | auto-build |
+| `M365/Apps/Scripts/Get-OfficeVolumeActivationHealth.ps1` | ✅ | auto-build |
+
+## New Topics — DFS Namespace delegation & management permissions (run 287)
+| File | Status | Assigned |
+|------|--------|---------|
+| `DFS/Troubleshooting/Delegation/DFSN-Delegation-B.md` | ✅ | auto-build |
+| `DFS/Troubleshooting/Delegation/DFSN-Delegation-A.md` | ✅ | auto-build |
+| `DFS/Scripts/Get-DFSNamespaceDelegationAudit.ps1` | ✅ | auto-build |
+
+_2026-10-17 (run 287, scheduled task "ezadmin-night-build"): connected-folder mount still stale (run 169-era git state, ~480 uncommitted changes, and its `origin` HEAD points at an unrelated `main` branch — always `git checkout master` in the scratch clone) — left untouched; worked in a fresh `/tmp` clone of `master` (HEAD `1d8bb4d`, run 286) and pushed from the sandbox. Queue empty → Expansion Rules. Took two run 286 candidates: (1) Office LTSC 2024/2021 + 2019 volume activation (KMS/ADBA/MAK), deliberately built VBScript-free on the SPP CIM classes/methods (`SoftwareLicensingProduct` app ID `0ff1ce15-…`; `InstallProductKey`, `Activate`, `Set/ClearKeyManagementServiceMachine`, `UninstallProductKey`) with OSPP.VBS shown only as an equivalent; (2) DFS Namespace delegation — gap check found no runbook for management-plane permissions (`Grant-DfsnAccess` had only one passing mention). Out-of-scope pointers in `Activation-A.md` and `Windows/Troubleshooting/VolumeActivation-A.md` updated to reference the new Office volume file. Updated `M365/Apps/_AGENT.md` (3 rows, 2 entry points), `DFS/_AGENT.md` (3 rows, 2 entry points), `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 287)
+- Web-verified via search/fetch: Office LTSC 2024 KMS host minimum (Server 2019+/Win10+ VL; 2021 → Server 2016; 2019 → Server 2012), one VLP + host key per Office version, Office LTSC 2024 VLP Download Center ID 106246, Office LTSC Pro Plus 2024 GVLK `XJ2XN-…`, LTSC 2024 mainstream end 9 Oct 2029; DFSN delegation default-holder table, local-admin requirement for creating namespaces/adding servers, standalone Delegation-tab limitation, `Set-DfsnRoot -GrantAdminAccounts/-RevokeAdminAccounts` (Learn page fetched directly).
+- Not web-verified (established docs/field practice): Office 2021/2019 GVLKs (runbook tells reader to verify against Learn GVLK page; Visio/Project GVLKs intentionally omitted), Office KMS threshold 5, `VOLUME_KMS channel` host Description string, SoftwareLicensingProduct per-product `SetKeyManagementServicePort` method, `Revoke-DfsnAccess` deny semantics (only referenced by name), PDC-emulator default binding and ~hourly namespace polling, standalone registry path `HKLM\SOFTWARE\Microsoft\Dfs\Standalone\<ns>`.
+- No PowerShell parser in sandbox; both scripts bracket-balanced via Python (153/106/43 and 123/94/43 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode (fixed a `"$h:1688"` scope-qualifier bug → `"${h}:1688"`).
+
+**For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); SQL Server FCI on S2D / DNN for FCI; DFS Replication delegation (Replication node, `Grant-DfsrDelegation`) as a short addendum to DFSN-Delegation if tickets appear; Office LTSC 2024 → Microsoft 365 Apps migration (Retail/Volume → subscription ODT path) if requested.
+
 ---
 
-Last updated: 2026-10-17 (auto-build, run 286, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 287, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

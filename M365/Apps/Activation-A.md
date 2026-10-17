@@ -17,7 +17,7 @@
 ---
 ## Scope & Assumptions
 - **In scope:** Click-to-Run Microsoft 365 Apps for enterprise / business (and Visio/Project subscription) on Windows 10/11 and Windows Server RDS/AVD hosts; the three subscription licensing modes — **user-based**, **Shared Computer Activation (SCA)**, **device-based**; identity (WAM) dependencies; reset and re-activation.
-- **Out of scope:** Volume-licensed Office LTSC 2021/2024 and Office 2019 (KMS/MAK via `OSPP.VBS` — conceptually like `Windows/Troubleshooting/VolumeActivation-A.md`), Office for Mac (licence file in `~/Library/Group Containers/UBF8T346G9.Office/` — see `macOS/`), Entra licence assignment mechanics (`M365/Licensing/`), channel/servicing (`Deployment-UpdateChannels-A.md`).
+- **Out of scope:** Volume-licensed Office LTSC 2021/2024 and Office 2019 (KMS/MAK/ADBA — now covered in `OfficeVolumeActivation-A.md`, added run 287), Office for Mac (licence file in `~/Library/Group Containers/UBF8T346G9.Office/` — see `macOS/`), Entra licence assignment mechanics (`M365/Licensing/`), channel/servicing (`Deployment-UpdateChannels-A.md`).
 - **Assumes:** the engineer can run PowerShell as the affected user and elevated, and has Graph `User.Read.All` for the server-side check.
 
 ---

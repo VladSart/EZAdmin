@@ -41,6 +41,9 @@ This module covers setup, health validation, access failures, replication backlo
 | `Scripts/Get-DFSABEAudit.ps1` | Per-folder-target Access-Based Enumeration audit — walks every namespace folder/target, queries `Get-SmbShare` remotely via `Invoke-Command`, flags namespace-vs-share `FolderEnumerationMode` drift and standalone-namespace HA risk (read-only) |
 | `Scripts/Get-DFSSiteCostingAudit.ps1` | Referral-ordering audit — `Get-ADReplicationSubnet` coverage gaps, `Get-ADReplicationSiteLink` costs, optional `Get-DfsnFolderTarget` priority-class overrides; notes the namespace-level Referral Ordering Method has no exposing cmdlet (read-only) |
 | `Scripts/Get-DFSNamespaceMigrationReadiness.ps1` | Read-only migration readiness: root types/targets/folder counts, DFL, V1/stand-alone/single-target flags, optional folder-target reachability, legacy `\\server` references in GPOs, AD home/profile paths and NETLOGON scripts |
+| `Troubleshooting/Delegation/DFSN-Delegation-B.md` | Hotfix: delegated admins denied managing a namespace — namespace type → config store (AD object vs standalone registry), `Set-DfsnRoot -GrantAdminAccounts/-RevokeAdminAccounts`, local-admin requirement for adding namespace servers/creating namespaces, token refresh, orphaned/over-broad ACE clean-up |
+| `Troubleshooting/Delegation/DFSN-Delegation-A.md` | Deep dive: three permission planes (management vs ABE enumeration vs data), msDFS-Namespacev2/fTDfs/registry stores, default holders, `CN=Dfs-Configuration` inheritance risk, MSP tiered delegation model, 5 playbooks |
+| `Scripts/Get-DFSNamespaceDelegationAudit.ps1` | Read-only audit of write ACEs on `CN=Dfs-Configuration` and every namespace object (OrphanedSid/BroadGroup/IndividualUser/InheritedWriter/DenyAce), optional standalone registry ACLs and root-target local admins; CSV |
 | `Troubleshooting/FSRM/FSRM-B.md` | Hotfix: service/config-store failures, quota template drift, nested-quota confusion, notification issues, screen/report failures |
 | `Troubleshooting/FSRM/FSRM-A.md` | Deep dive: quota/screen/classification architecture, config store internals, USN journal real-time classification trade-off, migration and recovery playbooks |
 | `Scripts/Get-FSRMAudit.ps1` | One-shot FSRM audit: service/config-store ACL health, ReFS-volume violations, stale derived quotas, nested-quota risk, .tmp-blocking screens, SMTP/report health, classification mode |
@@ -64,6 +67,8 @@ This module covers setup, health validation, access failures, replication backlo
 - "One-shot audit of ABE + site-costing config across the whole namespace" → `Scripts/Get-DFSNamespaceConfigAudit.ps1`
 - "Deep per-target ABE audit across all namespace shares" → `Scripts/Get-DFSABEAudit.ps1`
 - "Audit AD subnet/site-link coverage feeding DFS referral ordering" → `Scripts/Get-DFSSiteCostingAudit.ps1`
+- "Helpdesk/site IT gets Access is denied adding a DFS folder or target" / "how do I delegate a namespace" → `Troubleshooting/Delegation/DFSN-Delegation-B.md`
+- "Who can change our DFS namespaces?" / namespace permission review → `Scripts/Get-DFSNamespaceDelegationAudit.ps1` + `Troubleshooting/Delegation/DFSN-Delegation-A.md`
 - "Quota won't apply / template edit didn't take effect" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 2)
 - "Quota numbers don't match the limit I set" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 3, nested quota)
 - "FSRM console won't open / Access Denied / SrmSvc won't start" → `Troubleshooting/FSRM/FSRM-B.md` (Fix 1)
