@@ -5908,6 +5908,23 @@ _2026-10-09 (run 284, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** Expansion Rules. Candidates: re-check EWS after 10 Oct 2026 enforcement for new MC posts (EWSRetirement-A/B, OutlookMac-A/B); SQL AG listener multi-subnet client timeouts (`RegisterAllProvidersIP`/`MultiSubnetFailover`) — still no dedicated file; Office/M365 Apps volume + shared computer activation (deliberately out of scope of VolumeActivation); DFS Namespace delegation/`Grant-DfsnAccess` if tickets appear.
 
+## New Topics — SQL Server AG listener multi-subnet client connectivity (run 285)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SQLAGListener-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/SQLAGListener-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-SQLAGListenerHealth.ps1` | ✅ | auto-build |
+
+_2026-10-17 (run 285, scheduled task "ezadmin-day-build"): connected-folder mount still stale (run 169-era git state) — untouched; worked in a fresh `/tmp` clone of `master` (HEAD `b9935d9`, run 284), pushed from the sandbox using the mount's configured remote. Queue empty → Expansion Rules. Took run 284's "SQL AG listener multi-subnet client timeouts" candidate (grep confirmed only passing mentions in RDConnectionBroker-A/B and ClusterADObjects-A). Built hotfix + deep dive + read-only audit script; Windows/_AGENT.md and AGENT_INDEX.md updated._
+
+## ⚠️ Skipped Items / Notes (run 285)
+- Web-verified via search: RAPI=0 + low TTL workaround and resource-cycle requirement (KB 2879704 / AlwaysOnPro archive), mixed-estate second-listener pattern, DNN version prerequisites (2016 SP3 / 2017 CU25 / 2019 CU8, WS2016+) and DNN registering every replica IP.
+- Not web-verified this run (established docs/field practice): HostRecordTTL default 1200 for SQL-created listeners, ~21 s TCP SYN timeout figure, TNIR ~500 ms first-IP behaviour and .NET 4.6.1+ default, per-driver MSF keyword spelling, DNN requiring MSF in client strings, `is_distributed_network_name` column availability.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (147/95/32 pairs), ASCII-only, hand-reviewed for 5.1/StrictMode. Dependency-expression AND detection is regex-based on the `DependencyExpression` string.
+- EWS post-10-Oct re-check deferred (run 281 already folded in MC1485116); still worth a sweep next run.
+
+**For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); Office/M365 Apps activation deep dive (vNext licensing, device-based licensing, SCA token roaming — only partially covered in Deployment-UpdateChannels-A); DFS Namespace delegation/`Grant-DfsnAccess`; SQL Server FCI on S2D / DNN for FCI if tickets appear.
+
 ---
 
-Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 285, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
