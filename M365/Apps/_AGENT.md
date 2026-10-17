@@ -29,12 +29,17 @@ Does not cover Outlook-specific profile/Autodiscover/OST/COM add-in issues (`M36
 | `PublisherRetirement-B.md` | Hotfix — Microsoft Publisher end of life (M365 access ends 1 Oct 2026; perpetual support ends 13 Oct 2026): subscription vs perpetual triage, `.pub` inventory, bulk PDF/DOCX conversion while a Publisher engine exists |
 | `PublisherRetirement-A.md` | Deep dive — format-extinction framing, Publisher COM object model (`ExportAsFixedFormat` PDF=2), PS 5.1 interop requirement, Search vs Purview discovery, perpetual "conversion station", LibreOffice fallback |
 | `Scripts/Get-PublisherRetirementReadiness.ps1` | Publisher install-type detection + recursive `.pub` inventory (optional Microsoft Search via Graph) + optional `-Convert`/`-AlsoWord` bulk conversion with log |
+| `Activation-B.md` | Hotfix — Microsoft 365 Apps activation/licensing: Unlicensed Product / Product Deactivated / Subscription expired, WAM wrong-account and sign-in loops, SCA on/off on existing installs, 5-device limit, Business↔Enterprise SKU mismatch, scripted activation reset |
+| `Activation-A.md` | Deep dive — vNext licensing (per-user licence files, why OSPP.VBS shows nothing, vNextDiag.ps1), WAM/PRT identity dependency, user-based vs SCA vs device-based modes, SCA token roaming on FSLogix/non-persistent VDI, tenant-migration and product-switch playbooks |
+| `Scripts/Get-M365AppsActivationDiagnostics.ps1` | Read-only per-user/device activation audit: product IDs, SCA (C2R/policy/token override) vs host type, licence/token file age, cached Office identities vs expected UPN, legacy ADAL overrides, dsregcmd PRT, BrokerPlugin, endpoint 443, AAD events, optional Graph Apps-plan check |
 | `Scripts/Get-M365AppsHealth.ps1` | Read-only fleet/device health check: install type, resolved update channel + authority (GPO/ODT/admin center), update task state, CDN reachability, activation status |
 
 ---
 
 ## Common entry points
 
+- "Unlicensed Product" / "Product Deactivated" / "Subscription expired" / wrong account in File > Account → `Activation-B.md` (identity first, then reset)
+- "Enable Shared Computer Activation on an existing RDS/AVD host" or "users hit the 5-device limit on the session host" → `Activation-B.md` Fix 4 / `Activation-A.md` Playbook 1
 - "I changed the update channel and nothing happened" → `Deployment-UpdateChannels-B.md` § Fix 1 — check for a GPO silently overriding ODT/admin center
 - "Office repair dialog does nothing when I click Repair" → `Deployment-UpdateChannels-B.md` § Fix 3 — Quick Repair → Online Repair fallback sequence
 - "Unlicensed Product / can't sign in" on a shared or kiosk device → `Deployment-UpdateChannels-B.md` § Fix 4 — Shared Computer Activation quota/token issue

@@ -5925,6 +5925,24 @@ _2026-10-17 (run 285, scheduled task "ezadmin-day-build"): connected-folder moun
 
 **For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); Office/M365 Apps activation deep dive (vNext licensing, device-based licensing, SCA token roaming — only partially covered in Deployment-UpdateChannels-A); DFS Namespace delegation/`Grant-DfsnAccess`; SQL Server FCI on S2D / DNN for FCI if tickets appear.
 
+
+## New Topics — Microsoft 365 Apps activation & licensing (run 286)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Apps/Activation-B.md` | ✅ | auto-build |
+| `M365/Apps/Activation-A.md` | ✅ | auto-build |
+| `M365/Apps/Scripts/Get-M365AppsActivationDiagnostics.ps1` | ✅ | auto-build |
+
+_2026-10-17 (run 286, scheduled task "ezadmin-night-build"): connected-folder mount still stale (run 169-era git state, ~480 uncommitted changes) — left untouched; worked in a fresh `/tmp` clone of `master` and pushed from the sandbox using the mount's configured remote. Queue empty → Expansion Rules, building run 284/285's "Office/M365 Apps activation deep dive" candidate (previously one SCA fix inside Deployment-UpdateChannels). **Collision note:** this run also built a SQL AG listener multi-subnet A/B + script in parallel, but the concurrent day-build run 285 pushed `SQLAGListener-A/B` + `Get-SQLAGListenerHealth.ps1` first — the duplicate was discarded at rebase time (never-repeat rule); nothing from it was committed. **Correction:** `Deployment-UpdateChannels-A.md` and `-B.md` Learning Pointers wrongly stated SCA cannot be enabled post-install; Microsoft Learn documents registry/GPO/SaRA enablement without reinstall (reboot + reset earlier activations) — both lines rewritten and marked "corrected in run 285" (run number as drafted pre-rebase; same fix). Updated `M365/Apps/_AGENT.md` (3 rows, 2 entry points) and `AGENT_INDEX.md` (1 row)._
+
+## ⚠️ Skipped Items / Notes (run 286)
+- Skipped/discarded: SQL AG listener multi-subnet files (duplicate of run 285 `SQLAGListener-*`).
+- Web-verified via search (Microsoft Learn summaries): SCA post-install enablement (C2R REG_SZ `SharedComputerLicensing`=1, GPO under *Microsoft Office 2016 (Machine) > Licensing Settings*, GPO not applicable to Microsoft 365 Apps for business, reboot + reset earlier activations); licensing-mode comparison (device-based needs Entra-synced device, no user licence; device subscription licences don't support SCA); reset guidance (Get Help troubleshooter, SaRA Enterprise); Identity key / work-or-school account fixes for Unlicensed Product.
+- Not web-verified (established docs/field practice): `vNextDiag.ps1` parameters (runbooks invoke it without switches); SCA token ~30-day validity; `SCLCacheOverride`/`SCLCacheOverrideDirectory` value names; SaRAcmd scenario `ResetOfficeActivation` and current SaRA availability (hedged); Credential Manager target prefix `MicrosoftOffice1x_Data`; legacy `EnableADAL`/`DisableADALatopWAMOverride`/`DisableAADWAM` names.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (0/0/0), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); Office LTSC 2024 volume activation (KMS/MAK via OSPP — out of scope of Activation-A); DFS Namespace delegation/`Grant-DfsnAccess`; SQL Server FCI on S2D / DNN for FCI if tickets appear.
+
 ---
 
-Last updated: 2026-10-17 (auto-build, run 285, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 286, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
