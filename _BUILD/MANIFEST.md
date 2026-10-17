@@ -5967,6 +5967,29 @@ _2026-10-17 (run 287, scheduled task "ezadmin-night-build"): connected-folder mo
 
 **For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); SQL Server FCI on S2D / DNN for FCI; DFS Replication delegation (Replication node, `Grant-DfsrDelegation`) as a short addendum to DFSN-Delegation if tickets appear; Office LTSC 2024 → Microsoft 365 Apps migration (Retail/Volume → subscription ODT path) if requested.
 
+## New Topics — SQL Server Failover Cluster Instance (run 288)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/SQLFCI-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/SQLFCI-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-SQLFCIHealth.ps1` | ✅ | auto-build |
+
+## New Topics — MSI / LTSC / retail Office → Microsoft 365 Apps migration (run 288)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Apps/OfficeToM365Migration-B.md` | ✅ | auto-build |
+| `M365/Apps/OfficeToM365Migration-A.md` | ✅ | auto-build |
+| `M365/Apps/Scripts/Get-OfficeMigrationReadiness.ps1` | ✅ | auto-build |
+
+_2026-10-17 (run 288, scheduled task "ezadmin-night-build"): connected-folder mount still stale (run 169-era) — left untouched; worked in a fresh `/tmp` clone of `master` (HEAD `5b0bccf`, run 287) and pushed from the sandbox. Queue empty → Expansion Rules. Took two run 287 candidates: (1) SQL Server FCI — scoped as the FCI-role counterpart to `SQLAGListener-*` (start/failover/health detection/dependencies/possible owners) with DNN as one fix path rather than a DNN-only topic; (2) Office LTSC/MSI/retail → Microsoft 365 Apps migration, built around remove-then-install and the Learn coexistence caveats. Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `M365/Apps/_AGENT.md` (3 rows, 1 entry point), `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 288)
+- Web-verified (Learn / MicrosoftDocs GitHub fetched): FCI DNN prerequisites (SQL 2019 CU8 / 2017 CU25 / 2016 SP3+, WS2016+), `Add-ClusterResource -ResourceType 'Distributed Network Name'` + `DnsName` + `Start-ClusterResource`, VNN must not be deleted, possible-owner trimming, `MultiSubnetFailover=True` requirement, APIPA VIP option; Office coexistence table (Visio/Project 2024/2021/2019 volume with M365 Apps needs build 2408/2108/1808, same bitness, same channel), `RemoveMSI` scope (MSI 2007–2016, not C2R).
+- Not web-verified (established docs/field practice): `FailureConditionLevel` 1–5 semantics and `HealthCheckTimeout` 60000 default, error 5184 wording, Event 1230 meaning, `sys.dm_io_cluster_valid_path_names`, `PatchLevel` registry value; ODT `MatchPreviousMSI` + `MatchOS` combination, `Remove All="TRUE"` behaviour with Visio, CDNBaseUrl GUIDs for preview/beta/PerpetualVL channels, ODT `Remove` not targeting 15.0 C2R, SPP licence name patterns used in filters.
+- No PowerShell parser in sandbox; both scripts bracket-balanced via Python (0/0/0), ASCII-only, hand-reviewed for 5.1/StrictMode (fixed a `-like "*[$name]*"` wildcard-class bug → `.Contains()` and a null `DependencyExpression` guard).
+
+**For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); DFS Replication delegation addendum to DFSN-Delegation; SQL Server FCI rename / VNN rename procedure (if tickets appear, currently a pointer in SQLFCI-A Playbook D); Office add-in bitness inventory script (32-bit COM/VSTO) as a companion to OfficeToM365Migration.
+
 ---
 
-Last updated: 2026-10-17 (auto-build, run 287, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 288, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
