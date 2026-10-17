@@ -4691,7 +4691,7 @@ _2026-09-02 (run 210, scheduled task "ezadmin-day-build"): started this run from
 
 ---
 
-Last updated: 2026-10-17 (auto-build, run 290, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
 
 ---
 
@@ -4988,7 +4988,7 @@ _2026-09-03 (run 229, scheduled task "ezadmin-night-build"): started with the st
 
 ---
 
-Last updated: 2026-10-17 (auto-build, run 290, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
 
 ## New Topic — AD FS DKM Container ACL Hardening / CVE-2026-56155 (run 230)
 | File | Status | Assigned |
