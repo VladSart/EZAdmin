@@ -255,6 +255,7 @@ Or run `Scripts/Get-OfficeMigrationReadiness.ps1 -GenerateXml` for a classified 
 | User licences | `Get-MgUserLicenseDetail -UserId <UPN>` |
 | Update policy | `Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate'` |
 | Readiness report | `.\Get-OfficeMigrationReadiness.ps1 -GenerateXml` |
+| Add-in bitness inventory (per user) | `.\Get-OfficeAddinInventory.ps1 -TargetBitness x64` |
 
 ---
 ## 🎓 Learning Pointers

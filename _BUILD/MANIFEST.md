@@ -5990,6 +5990,30 @@ _2026-10-17 (run 288, scheduled task "ezadmin-night-build"): connected-folder mo
 
 **For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B); DFS Replication delegation addendum to DFSN-Delegation; SQL Server FCI rename / VNN rename procedure (if tickets appear, currently a pointer in SQLFCI-A Playbook D); Office add-in bitness inventory script (32-bit COM/VSTO) as a companion to OfficeToM365Migration.
 
+
+## New Topics — NCSI "No Internet" false positives (run 289)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/NCSI-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/NCSI-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-NCSIDiagnostics.ps1` | ✅ | auto-build |
+
+## New Topics — Office add-in bitness inventory (run 289)
+| File | Status | Assigned |
+|------|--------|---------|
+| `M365/Apps/Scripts/Get-OfficeAddinInventory.ps1` | ✅ | auto-build |
+
+_2026-10-17 (run 289, scheduled task "ezadmin-night-build"): connected-folder mount still stale (run 169-era refs) — left untouched; worked in a fresh `/tmp` clone of `master` (HEAD `2031f78`, run 288) and pushed from the sandbox. Queue empty → Expansion Rules. Gap check by grep: NCSI / `msftconnecttest` / `EnableActiveProbing` appeared nowhere outside the GSA macOS files and Autopilot network-test scripts; NLA was only covered for firewall *profile* selection in `Firewall-A.md`. Built NCSI trio as the connectivity-level counterpart (scoped away from domain-profile detection). Took run 288's "Office add-in bitness inventory" candidate as a standalone script companion to `OfficeToM365Migration-*` (added a cheat-sheet row there). Updated `Windows/_AGENT.md` (2 rows, 1 entry point), `M365/Apps/_AGENT.md` (1 row, 1 entry point), `AGENT_INDEX.md` (2 rows)._
+
+## ⚠️ Skipped Items / Notes (run 289)
+- No items skipped.
+- Web-verified (Learn NCSI overview / FAQ / troubleshooting guide fetched): Akamai hosting since 20 Jun 2023 and the `13.107.4.52` IP-rule breakage; netprofm (Win11 / Server 2022+) vs NlaSvc hosting; `NlaSvc\Parameters\Internet` path and `ManualProxies`; probe `www.msftconnecttest.com/connecttest.txt` → "Microsoft Connect Test" (since 1607); Win11 HTTP-only; IPv4/IPv6 parallel probes; proxy-failure → None vs direct-failure → Local; failure reason codes table; passive poll 15 s, hop-count default 8 / suggested 3; Office uses `get_IsConnectedToInternet`; Analytic event IDs 4013/4017/4018/4014/4005/4051 and WinHTTP 12007; "don't disable active probing".
+- Not web-verified (established ADMX/field practice): policy value names `NoActiveProbe` / `UseGlobalDns` / `DisablePassivePolling` under `Policies\Microsoft\Windows\NetworkConnectivityStatusIndicator`; Intune Settings catalog name *Connectivity › Disallow Network Connectivity Active Tests*; `dns.msftncsi.com` → `131.107.255.255` still current; Office add-in registry locations incl. C2R virtual registry `ClickToRun\REGISTRY\MACHINE`, `LoadBehavior` meanings, Excel `OPENx` value format, Resiliency `DoNotDisableAddinList` path.
+- Known limitation: in Windows PowerShell 5.1, `Invoke-WebRequest -MaximumRedirection 0` on a 3xx may throw without a `Response` object, so `Get-NCSIDiagnostics.ps1` reports it as "No response" rather than "redirect"; the A runbook's Playbook E snippet uses `-ErrorAction SilentlyContinue` to show the Location header instead.
+- No PowerShell parser in sandbox; both scripts bracket-balanced via Python (0/0/0), ASCII-only, hand-reviewed for 5.1/StrictMode.
+
+**For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B — now past 1 Oct 2026); DFS Replication delegation addendum to DFSN-Delegation; NLA domain-detection-only runbook (Public profile on domain LAN, `AlwaysExpectDomainController`) if Firewall-A coverage proves too thin; Outlook classic → new Outlook COM add-in gap report building on `Get-OfficeAddinInventory.ps1`.
+
 ---
 
-Last updated: 2026-10-17 (auto-build, run 288, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 289, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
