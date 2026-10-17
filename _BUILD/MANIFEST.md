@@ -4691,7 +4691,7 @@ _2026-09-02 (run 210, scheduled task "ezadmin-day-build"): started this run from
 
 ---
 
-Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 290, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ---
 
@@ -4988,7 +4988,7 @@ _2026-09-03 (run 229, scheduled task "ezadmin-night-build"): started with the st
 
 ---
 
-Last updated: 2026-10-09 (auto-build, run 284, scheduled task "ezadmin-day-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 290, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
 
 ## New Topic — AD FS DKM Container ACL Hardening / CVE-2026-56155 (run 230)
 | File | Status | Assigned |
@@ -6014,6 +6014,23 @@ _2026-10-17 (run 289, scheduled task "ezadmin-night-build"): connected-folder mo
 
 **For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B — now past 1 Oct 2026); DFS Replication delegation addendum to DFSN-Delegation; NLA domain-detection-only runbook (Public profile on domain LAN, `AlwaysExpectDomainController`) if Firewall-A coverage proves too thin; Outlook classic → new Outlook COM add-in gap report building on `Get-OfficeAddinInventory.ps1`.
 
+
+## New Topic — NLA Domain Network Detection (run 290)
+| File | Status | Assigned |
+|------|--------|---------|
+| `Windows/Troubleshooting/NLADomainProfile-B.md` | ✅ | auto-build |
+| `Windows/Troubleshooting/NLADomainProfile-A.md` | ✅ | auto-build |
+| `Windows/Scripts/Get-NLADomainDetection.ps1` | ✅ | auto-build |
+
+_2026-10-17 (run 290, scheduled task "ezadmin-night-build"): fresh `/tmp` clone, `git checkout master` (HEAD `2c56391`, run 289; connected-folder mount still stale at run 169-era HEAD with unremovable `.git` pack/index files — untouched). Queue empty → Expansion Rules; took run 289's NLA candidate. Gap check: NLA domain detection was one Symptom-map row + one fix paragraph in `Firewall-A.md`; `NCSI-A/B` explicitly scope it out. Built B (6 fixes: re-detect, member-server timing, DCs, DNS/locator, multi-homed, VPN/802.1X), A (detection sequence, DC boot timing, persistence, 6 playbooks incl. destructive NetworkList reset with reg-export rollback, evidence pack), script (read-only + `-Remediate` = Fix 1 only). Also corrected `Firewall-A.md` Phase 3, which advised `Set-NetConnectionProfile -NetworkCategory DomainAuthenticated` (not a settable value) — now points to re-detection + this runbook. `Windows/_AGENT.md` + `AGENT_INDEX.md` updated._
+
+## ⚠️ Skipped Items / Notes (run 290)
+- Web-verified (search): `AlwaysExpectDomainController` DWORD under `NlaSvc\Parameters` is sourced from Microsoft Q&A / Dell KB 000207835 (paired with NlaSvc delayed-auto), not Microsoft Learn — runbooks label it a workaround; Netlogon negative-cache + DsGetDcName/CLDAP UDP 389 description per Q&A; Server 2025 DC non-domain-profile-after-restart bug fixed in KB5060842 (June 2025), interim `Restart-NetAdapter *` workaround (BleepingComputer/Petri reporting).
+- Not web-verified (established docs/field practice): KB5060842 = build 26100.4349 (script uses this as the threshold — verify against release health if flagged); NetworkProfile/Operational 10000 message field labels `Name:`/`Category:` (script parses defensively, English-only); `DependOnService` DNS tweak (kept optional, flagged community); Server 2022 NlaSvc restart hang reports.
+- No PowerShell parser in sandbox; script bracket-balanced via Python (pairs balanced), ASCII-only, hand-reviewed for 5.1/StrictMode (native `nltest` stderr wrapped with local EAP=Continue).
+
+**For next run:** Expansion Rules. Candidates: EWS post-enforcement MC sweep (EWSRetirement-A/B, OutlookMac-A/B — now past 1 Oct 2026); DFS Replication delegation addendum to DFSN-Delegation; Outlook classic → new Outlook COM add-in gap report building on `Get-OfficeAddinInventory.ps1`; Netlogon secure-channel / machine-account password trust failures (check `ActiveDirectory/` coverage first).
+
 ---
 
-Last updated: 2026-10-17 (auto-build, run 289, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).
+Last updated: 2026-10-17 (auto-build, run 290, scheduled task "ezadmin-night-build", run as an unattended scheduled task with no user present).

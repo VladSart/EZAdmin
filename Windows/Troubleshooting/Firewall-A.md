@@ -254,7 +254,7 @@ netsh wfp show filters file="C:\Temp\wfp-filters.xml"
 2. Check: `Test-NetConnection -ComputerName <DC-hostname> -Port 389`. If this fails, NLA can't detect the domain.
 3. Fixes in order of preference:
    - Fix the DC connectivity (routing, DNS, VLAN)
-   - Set the interface category manually (PowerShell, temporary): `Set-NetConnectionProfile -InterfaceAlias "Ethernet" -NetworkCategory DomainAuthenticated` — this only persists until next reboot/reconnect
+   - Force NLA to re-detect: `nltest /dsgetdc:<domainFQDN> /force; Restart-Service NlaSvc -Force`. Note `Set-NetConnectionProfile` only accepts `Public`/`Private` — `DomainAuthenticated` can be detected, never set. Full timing/DC/multi-homed coverage: `NLADomainProfile-B.md` / `-A.md`
    - Configure the firewall rule to apply to `Public` profile as well (less secure but may unblock immediately)
 
 ### Phase 4 — Intune and GPO Policy Conflicts
